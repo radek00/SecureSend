@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend", "SecureSend\SecureSend.csproj", "{EB9A5562-34AB-4CAB-B488-5E68C4218270}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend", "SecureSend\SecureSend.csproj", "{EB9A5562-34AB-4CAB-B488-5E68C4218270}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend.Domain", "SecureSend.Domain\SecureSend.Domain.csproj", "{F0487577-AF18-46AC-9478-DBA2498F2308}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend.Application", "SecureSend.Application\SecureSend.Application.csproj", "{B5B5EA9A-8A59-4493-A64B-E9894266B6BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend.Infrastructure", "SecureSend.Infrastructure\SecureSend.Infrastructure.csproj", "{9E79BF8F-C9D8-4E0A-995C-AE5D4B0DEACD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{EB9A5562-34AB-4CAB-B488-5E68C4218270}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB9A5562-34AB-4CAB-B488-5E68C4218270}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB9A5562-34AB-4CAB-B488-5E68C4218270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0487577-AF18-46AC-9478-DBA2498F2308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0487577-AF18-46AC-9478-DBA2498F2308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0487577-AF18-46AC-9478-DBA2498F2308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0487577-AF18-46AC-9478-DBA2498F2308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B5EA9A-8A59-4493-A64B-E9894266B6BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B5EA9A-8A59-4493-A64B-E9894266B6BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B5EA9A-8A59-4493-A64B-E9894266B6BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B5EA9A-8A59-4493-A64B-E9894266B6BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E79BF8F-C9D8-4E0A-995C-AE5D4B0DEACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E79BF8F-C9D8-4E0A-995C-AE5D4B0DEACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E79BF8F-C9D8-4E0A-995C-AE5D4B0DEACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E79BF8F-C9D8-4E0A-995C-AE5D4B0DEACD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
