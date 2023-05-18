@@ -8,18 +8,11 @@ namespace SecureSend.Domain.ValueObjects
         public string FileName { get; }
         public string ContentType { get; }
 
-        public SecureSendFile(string fileName)
+        public SecureSendFile(string fileName, string contentType)
         {
             if (string.IsNullOrEmpty(fileName)) throw new EmptyFileNameException();
             FileName = fileName;
-            ContentType = GetContentType(fileName);
-        }
-
-        private string GetContentType(string fileName)
-        {
-            string contentType;
-            new FileExtensionContentTypeProvider().TryGetContentType(fileName, out contentType);
-            return contentType ?? "application/octet-stream";
+            ContentType = contentType;
         }
     }
 }
