@@ -16,10 +16,10 @@ namespace SecureSend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<object>> Post([FromQuery] CreateSecureUpload command)
+        public async Task<IActionResult> Post([FromQuery] CreateSecureUpload command)
         {
-            var result = await _sender.Send(command);
-            return Ok(result);
+            await _sender.Send(command);
+            return CreatedAtAction(nameof(Post), new { id = command.uploadId }, null);
         } 
     }
 }
