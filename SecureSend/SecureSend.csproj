@@ -54,4 +54,8 @@
     <ProjectReference Include="..\SecureSend.Infrastructure\SecureSend.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Files\" />
+  </ItemGroup>
+
 </Project>
