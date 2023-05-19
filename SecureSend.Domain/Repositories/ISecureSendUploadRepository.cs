@@ -9,5 +9,6 @@ namespace SecureSend.Domain.Repositories
         Task AddAsync(SecureSendUpload upload);
         Task DeleteAsync(SecureSendUpload id);
         Task UpdateAsync(SecureSendUpload upload);
+        Task SaveChanges();
     }
 }

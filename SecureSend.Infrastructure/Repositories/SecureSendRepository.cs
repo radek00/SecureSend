@@ -20,13 +20,13 @@ namespace SecureSend.Infrastructure.Repositories
         public async Task AddAsync(SecureSendUpload upload)
         {
             await _uploads.AddAsync(upload);
-            await _context.SaveChangesAsync();
+            await SaveChanges();
         }
 
         public async Task DeleteAsync(SecureSendUpload upload)
         {
             _context.Remove(upload);
-            await _context.SaveChangesAsync();
+            await SaveChanges();
             
         }
 
@@ -39,6 +39,11 @@ namespace SecureSend.Infrastructure.Repositories
         public async Task UpdateAsync(SecureSendUpload upload)
         {
             _uploads.Update(upload);
+            await SaveChanges();
+        }
+
+        public async Task SaveChanges()
+        {
             await _context.SaveChangesAsync();
         }
     }

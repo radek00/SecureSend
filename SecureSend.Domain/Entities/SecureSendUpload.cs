@@ -7,17 +7,17 @@ namespace SecureSend.Domain.Entities
     public class SecureSendUpload
     {
         public SecureSendUploadId Id {get; private set;}
-        private SecureSendUploadDate _uploadDate;
-        private SecureSendExpiryDate _expiryDate;
-        private SecureSendIsViewed _isViewedl;
-        private List<SecureSendFile> _files = new();
+        public SecureSendUploadDate UploadDate { get; private set; }
+        public SecureSendExpiryDate ExpiryDate { get; private set; }
+        public SecureSendIsViewed IsViewed { get; private set; }
+        public List<SecureSendFile> Files { get; private set; } = new();
 
-        public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl)
+    public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl)
         {
             Id = id;
-            _uploadDate = uploadDate;
-            _expiryDate = expiryDate;
-            _isViewedl = isViewedl;
+            UploadDate = uploadDate;
+            ExpiryDate = expiryDate;
+            IsViewed = isViewedl;
         }
 
         public SecureSendUpload()
@@ -26,14 +26,19 @@ namespace SecureSend.Domain.Entities
 
         public void AddFile(SecureSendFile file)
         {
-            var alreadeExists = _files.Any(f => f.FileName == file.FileName);
+            var alreadeExists = Files.Any(f => f.FileName == file.FileName);
             if (alreadeExists) throw new FileAlreadyExistsException(Id, file.FileName);
-            _files.Add(file);
+            Files.Add(file);
         }
 
         public void AddMultipleFiles(IEnumerable<SecureSendFile> files)
         {
             foreach (var file in files) AddFile(file);
+        }
+
+        public void MarkAsViewed()
+        {
+            IsViewed = true;
         }
 
 

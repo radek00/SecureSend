@@ -25,21 +25,21 @@ namespace SecureSend.Infrastructure.EF.Config
 
             builder.Property(p => p.Id).HasConversion(id => id.Value, id => new SecureSendUploadId(id));
 
-            builder.Property(typeof(SecureSendUploadDate), SecureSendFields.uploadDate)
+            builder.Property(p => p.UploadDate)
                 .HasConversion(uploadDateConverter)
                 .HasColumnName("UploadDate");
 
 
-            builder.Property(typeof(SecureSendExpiryDate), SecureSendFields.expiryDate)
+            builder.Property(p => p.ExpiryDate)
                 .HasConversion(expiryDateConverter)
                 .HasColumnName("ExpiryDate")
                 .IsRequired(false);
 
-            builder.Property(typeof(SecureSendIsViewed), SecureSendFields.isViewed)
+            builder.Property(p => p.IsViewed)
                 .HasConversion(isViewedConverter)
                 .HasColumnName("IsViewed");
 
-            builder.OwnsMany<SecureSendFile>(SecureSendFields.files, fileBuilder =>
+            builder.OwnsMany<SecureSendFile>(p => p.Files, fileBuilder =>
             {
                 fileBuilder.Property<int>("Id");
                 fileBuilder.HasKey("Id");
