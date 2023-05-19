@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SecureSend.Application.Commands;
+using SecureSend.Application.DTO;
+using SecureSend.Application.Queries;
 
 namespace SecureSend.Controllers
 {
@@ -13,6 +15,13 @@ namespace SecureSend.Controllers
         public SecureSendController(ISender sender)
         {
             _sender = sender;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<SecureUploadDto>> Get([FromQuery] GetSecureUpload query)
+        {
+            var result  = await _sender.Send(query);
+            return OkOrNotFound(result);
         }
 
         [HttpPost]
