@@ -24,6 +24,13 @@ namespace SecureSend.Controllers
             return OkOrNotFound(result);
         }
 
+        [HttpGet]
+        public async Task<FileStreamResult> DownloadFile([FromQuery] DownloadFile file)
+        {
+            var fileStream = await _sender.Send(file);
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromQuery] CreateSecureUpload command)
         {
