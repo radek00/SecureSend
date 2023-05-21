@@ -17,6 +17,7 @@ namespace SecureSend.Application.Queries.Handlers
         {
             var upload = await _repository.GetAsync(request.id);
             if (upload == null) throw new UploadDoesNotExistException(request.id);
+            if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow) throw new UploadExpiredException(upload.ExpiryDate);
             upload.MarkAsViewed();
             await _repository.SaveChanges();
 
