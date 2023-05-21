@@ -25,10 +25,11 @@ namespace SecureSend.Controllers
         }
 
         [HttpGet]
+        [Route("[controller]/download")]
         public async Task<FileStreamResult> DownloadFile([FromQuery] DownloadFile file)
         {
             var fileStream = await _sender.Send(file);
-
+            return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
         }
 
         [HttpPost]
