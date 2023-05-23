@@ -30,9 +30,10 @@ namespace SecureSend.Infrastructure.Repositories
             
         }
 
-        public async Task<SecureSendUpload> GetAsync(SecureSendUploadId id)
+        public async Task<SecureSendUpload> GetAsync(SecureSendUploadId id, bool track)
         {
-            var upload = await _uploads.FirstOrDefaultAsync(x => x.Id == id);
+            var query = track ? _uploads : _uploads.AsNoTracking();
+            var upload = await query.FirstOrDefaultAsync(x => x.Id == id);
             return upload;
         }
 

@@ -43,6 +43,11 @@ namespace SecureSend.Controllers
 
         }
 
-
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery] DeleteSecureUpload command, CancellationToken token)
+        {
+            await _sender.Send(command, token);
+            return NoContent();
+        }
     }
 }

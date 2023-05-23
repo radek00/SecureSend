@@ -83,7 +83,7 @@ namespace SecureSend.Infrastructure.Services
             return null;
         }
 
-        public void RemovecancelledUpload(Guid uploadId)
+        public void RemoveUpload(Guid uploadId)
         {
             var directory = GetDirectory(uploadId);
 

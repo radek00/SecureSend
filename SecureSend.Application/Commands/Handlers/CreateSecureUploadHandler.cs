@@ -50,7 +50,7 @@ namespace SecureSend.Application.Commands.Handlers
             catch (TaskCanceledException)
             {
 
-                _fileService.RemovecancelledUpload(command.uploadId);
+                _fileService.RemoveUpload(command.uploadId);
                 await _secureSendUploadRepository.DeleteAsync(secureUpload);
             }
 
