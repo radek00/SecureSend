@@ -15,9 +15,7 @@ namespace SecureSend.Application.Queries.Handlers
 
         public Task<FileResultDto> Handle(DownloadFile request, CancellationToken cancellationToken)
         {
-
             var stream = _fileService.DownloadFile(request.id, request.fileName);
-
             if (stream == null) throw new NoSavedFileFoundException(request.fileName, request.id);
 
             return Task.FromResult(
@@ -28,6 +26,7 @@ namespace SecureSend.Application.Queries.Handlers
                     ContentType = request.contentType ?? "application/octet-stream"
                 }
             );
+
         }
     }
 }

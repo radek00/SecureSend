@@ -11,5 +11,7 @@ namespace SecureSend.Application.Services
         Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles);
         Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId);
 
+        void RemovecancelledUpload(Guid uploadId);
+
     }
 }

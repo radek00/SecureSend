@@ -82,5 +82,12 @@ namespace SecureSend.Infrastructure.Services
             if (Directory.Exists($"{_storage.Path}/{uploadId}")) return Directory.CreateDirectory($"{_storage.Path}/{uploadId}");
             return null;
         }
+
+        public void RemovecancelledUpload(Guid uploadId)
+        {
+            var directory = GetDirectory(uploadId);
+
+            if (directory != null) Directory.Delete(directory.FullName, true);
+        }
     }
 }
