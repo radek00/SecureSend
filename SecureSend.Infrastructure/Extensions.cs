@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Repositories;
 using SecureSend.Infrastructure.EF.Context;
 using SecureSend.Infrastructure.EF.Options;
+using SecureSend.Infrastructure.Middlewares;
 using SecureSend.Infrastructure.Repositories;
 using SecureSend.Infrastructure.Services;
 
@@ -18,12 +20,20 @@ namespace SecureSend.Infrastructure
 
             services.AddScoped<IFileService, FileService>();
 
+            services.AddScoped<ExceptionMiddleware>();
+
             var options = configuration.GetSection("SqlServer").Get<SqlServerOptions>();
             services.AddDbContext<SecureSendDbContext>(ctx =>
                 ctx.UseSqlServer(options!.ConnectionString));
 
             return services;
 
+        }
+
+        public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<ExceptionMiddleware>();
+            return app;
         }
     }
 }

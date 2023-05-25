@@ -45,7 +45,6 @@ namespace SecureSend.Application.Commands.Handlers
 
 
                 }
-                await Task.Delay(10000, cancellationToken);
             }
             catch (TaskCanceledException)
             {

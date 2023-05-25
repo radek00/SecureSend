@@ -34,6 +34,8 @@ app.UseSpa(config =>
     config.Options.SourcePath = "ClientApp";
 });
 
+app.UseInfrastructure();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
