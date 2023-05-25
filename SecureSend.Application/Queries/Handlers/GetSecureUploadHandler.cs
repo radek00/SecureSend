@@ -15,8 +15,9 @@ namespace SecureSend.Application.Queries.Handlers
 
         public async Task<SecureUploadDto> Handle(GetSecureUpload request, CancellationToken cancellationToken)
         {
-            var upload = await _repository.GetAsync(request.id);
+            var upload = await _repository.GetAsync(request.id, true);
             if (upload == null) throw new UploadDoesNotExistException(request.id);
+            if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow) throw new UploadExpiredException(upload.ExpiryDate);
             upload.MarkAsViewed();
             await _repository.SaveChanges();
 

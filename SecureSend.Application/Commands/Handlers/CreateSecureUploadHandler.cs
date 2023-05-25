@@ -1,5 +1,6 @@
 ﻿
 
+using MediatR;
 using SecureSend.Application.Exceptions;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Factories;
@@ -26,22 +27,33 @@ namespace SecureSend.Application.Commands.Handlers
         public async Task Handle (CreateSecureUpload command, CancellationToken cancellationToken)
         {
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
-            var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);        
-
-            await _fileService.SaveChunkToDisk(chunk, secureUpload.Id);
-
-            if (chunk.IsLast)
+            var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);
+            try
             {
-                
-                var savedChunks = _fileService.GetChunksList(secureUpload.Id);
-                if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
-                await _fileService.MergeFiles(secureUpload.Id, savedChunks);
 
-                secureUpload.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
-                await _secureSendUploadRepository.AddAsync(secureUpload);
-                
+                await _fileService.SaveChunkToDisk(chunk, secureUpload.Id);
 
+                if (chunk.IsLast)
+                {
+
+                    var savedChunks = _fileService.GetChunksList(secureUpload.Id);
+                    if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
+                    await _fileService.MergeFiles(secureUpload.Id, savedChunks);
+
+                    secureUpload.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
+                    await _secureSendUploadRepository.AddAsync(secureUpload);
+
+
+                }
+                await Task.Delay(10000, cancellationToken);
             }
+            catch (TaskCanceledException)
+            {
+
+                _fileService.RemoveUpload(command.uploadId);
+                await _secureSendUploadRepository.DeleteAsync(secureUpload);
+            }
+
         }
 
     }
