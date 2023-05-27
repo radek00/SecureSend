@@ -30,6 +30,7 @@ namespace SecureSend.Application.Commands.Handlers
                 if (chunk.IsLast)
                 {
                     persisted = await _repository.GetAsync(command.uploadId, true);
+                    if (persisted is null) throw new UploadDoesNotExistException(command.uploadId);
                     var savedChunks = _fileService.GetChunksList(command.uploadId);
                     if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
                     await _fileService.MergeFiles(persisted.Id, savedChunks);
