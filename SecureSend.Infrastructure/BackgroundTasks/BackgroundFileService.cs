@@ -44,7 +44,7 @@ namespace SecureSend.Infrastructure.BackgroundTasks
 
                     if (expiredUploads.Count > 0) await query.ExecuteDeleteAsync();
 
-                    await Task.Delay(60000, token);
+                    await Task.Delay(3600000, token);
                 }
             }
 
