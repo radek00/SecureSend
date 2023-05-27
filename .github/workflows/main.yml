@@ -1,0 +1,30 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Build .NET Core project
+      run: dotnet build
+      
+    - name: Build Node.js project
+      run: |
+        cd ClientApp
+        npm install
+        npm run build
+      
+    - name: Run tests for .NET project
+      run: dotnet test  dotnet test --no-build --verbosity normal
+      
+#     - name: Run tests for Node.js project
+#       run: |
+#         cd <path_to_node_project>
+#         npm test
