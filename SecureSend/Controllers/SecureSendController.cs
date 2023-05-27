@@ -33,14 +33,20 @@ namespace SecureSend.Controllers
         }
 
         [HttpPost]
-        [RequestSizeLimit(10L * 1024L * 1024L * 1024L)]
-        [RequestFormLimits(MultipartBodyLengthLimit = 10L * 1024L * 1024L * 1024L)]
         public async Task<IActionResult> Post([FromQuery] CreateSecureUpload command, CancellationToken token)
         {
                 await _sender.Send(command, token);
                 return CreatedAtAction(nameof(Post), new { id = command.uploadId }, null);
             
 
+        }
+
+        [HttpPost]
+        [Route("[controller]/uploadChunks")]
+        public async Task<IActionResult> UploadChunks([FromQuery] UploadChunks command, CancellationToken token)
+        {
+            await _sender.Send(command, token);
+            return NoContent();
         }
 
         [HttpDelete]

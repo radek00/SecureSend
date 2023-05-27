@@ -26,34 +26,43 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task Handle (CreateSecureUpload command, CancellationToken cancellationToken)
         {
+            var persisted = await _secureSendUploadRepository.GetAsync(command.uploadId, false);
+            if (persisted is not null) throw new UploadAlreadyExistsException(persisted.Id);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
-            var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);
-            try
-            {
-
-                await _fileService.SaveChunkToDisk(chunk, secureUpload.Id);
-
-                if (chunk.IsLast)
-                {
-
-                    var savedChunks = _fileService.GetChunksList(secureUpload.Id);
-                    if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
-                    await _fileService.MergeFiles(secureUpload.Id, savedChunks);
-
-                    secureUpload.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
-                    await _secureSendUploadRepository.AddAsync(secureUpload);
-
-
-                }
-            }
-            catch (TaskCanceledException)
-            {
-
-                _fileService.RemoveUpload(command.uploadId);
-                await _secureSendUploadRepository.DeleteAsync(secureUpload);
-            }
+            await _secureSendUploadRepository.AddAsync(secureUpload);
 
         }
+
+        //public async Task Handle(CreateSecureUpload command, CancellationToken cancellationToken)
+        //{
+        //    var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
+        //    var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);
+        //    try
+        //    {
+
+        //        await _fileService.SaveChunkToDisk(chunk, secureUpload.Id);
+
+        //        if (chunk.IsLast)
+        //        {
+
+        //            var savedChunks = _fileService.GetChunksList(secureUpload.Id);
+        //            if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
+        //            await _fileService.MergeFiles(secureUpload.Id, savedChunks);
+
+        //            secureUpload.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
+        //            await _secureSendUploadRepository.AddAsync(secureUpload);
+
+
+        //        }
+        //    }
+        //    catch (TaskCanceledException)
+        //    {
+
+        //        _fileService.RemoveUpload(command.uploadId);
+        //        await _secureSendUploadRepository.DeleteAsync(secureUpload);
+        //    }
+
+        //}
 
     }
 }
