@@ -22,7 +22,7 @@ jobs:
         npm run build
       
     - name: Run tests for .NET project
-      run: dotnet test  dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
       
 #     - name: Run tests for Node.js project
 #       run: |
