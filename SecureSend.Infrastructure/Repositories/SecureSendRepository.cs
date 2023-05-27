@@ -35,7 +35,6 @@ namespace SecureSend.Infrastructure.Repositories
         {
             var query = track ? _uploads : _uploads.AsNoTracking();
             var upload = await query.FirstOrDefaultAsync(x => x.Id == id);
-            if (upload == null) throw new UploadDoesNotExistException(id);
             return upload;
         }
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Repositories;
+using SecureSend.Infrastructure.BackgroundTasks;
 using SecureSend.Infrastructure.EF.Context;
 using SecureSend.Infrastructure.EF.Options;
 using SecureSend.Infrastructure.Middlewares;
@@ -25,6 +26,8 @@ namespace SecureSend.Infrastructure
             var options = configuration.GetSection("SqlServer").Get<SqlServerOptions>();
             services.AddDbContext<SecureSendDbContext>(ctx =>
                 ctx.UseSqlServer(options!.ConnectionString));
+
+            services.AddHostedService<BackgroundFileService>();
 
             return services;
 
