@@ -37,7 +37,7 @@ namespace SecureSend.Application.Commands.Handlers
 
                     
                     persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
-                    await _repository.SaveChanges();
+                    await _repository.SaveChanges(cancellationToken);
 
                 }
             }
@@ -45,7 +45,7 @@ namespace SecureSend.Application.Commands.Handlers
             {
 
                 _fileService.RemoveUpload(command.uploadId);
-                if (persisted is not null) await _repository.DeleteAsync(persisted);
+                if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
 
             }
         }

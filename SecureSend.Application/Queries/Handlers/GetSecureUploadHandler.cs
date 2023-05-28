@@ -19,7 +19,7 @@ namespace SecureSend.Application.Queries.Handlers
             if (upload is null) throw new UploadDoesNotExistException(request.id);
             if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow) throw new UploadExpiredException(upload.ExpiryDate);
             upload.MarkAsViewed();
-            await _repository.SaveChanges();
+            await _repository.SaveChanges(cancellationToken);
 
             var uploadDto = new SecureUploadDto()
             {

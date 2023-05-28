@@ -29,7 +29,7 @@ namespace SecureSend.Application.Commands.Handlers
             var persisted = await _secureSendUploadRepository.GetAsync(command.uploadId, false);
             if (persisted is not null) throw new UploadAlreadyExistsException(persisted.Id);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
-            await _secureSendUploadRepository.AddAsync(secureUpload);
+            await _secureSendUploadRepository.AddAsync(secureUpload, cancellationToken);
 
         }
 

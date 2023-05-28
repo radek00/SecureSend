@@ -20,7 +20,7 @@ namespace SecureSend.Application.Commands.Handlers
             var persisted = await _repository.GetAsync(request.id ,true);
             if (persisted is null) throw new UploadDoesNotExistException(request.id);
             _fileService.RemoveUpload(request.id);
-            await _repository.DeleteAsync(persisted);
+            await _repository.DeleteAsync(persisted, cancellationToken);
         }
     }
 }

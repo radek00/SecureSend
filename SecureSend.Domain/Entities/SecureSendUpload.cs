@@ -1,26 +1,27 @@
-﻿using SecureSend.Domain.Exceptions;
+﻿using SecureSend.Domain.Events;
+using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.ValueObjects;
 
 
 namespace SecureSend.Domain.Entities
 {
-    public class SecureSendUpload
+    public sealed class SecureSendUpload: AggregateRoot<SecureSendUploadId>
     {
-        public SecureSendUploadId Id {get; private set;}
+        //public SecureSendUploadId Id {get; private set;}
         public SecureSendUploadDate UploadDate { get; private set; }
         public SecureSendExpiryDate ExpiryDate { get; private set; }
         public SecureSendIsViewed IsViewed { get; private set; }
         public List<SecureSendFile> Files { get; private set; } = new();
 
     public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl)
+            : base(id)
         {
-            Id = id;
             UploadDate = uploadDate;
             ExpiryDate = expiryDate;
             IsViewed = isViewedl;
         }
 
-        public SecureSendUpload()
+        private SecureSendUpload()
         {
         }
 
@@ -38,7 +39,11 @@ namespace SecureSend.Domain.Entities
 
         public void MarkAsViewed()
         {
-            IsViewed = true;
+            if (!IsViewed)
+            {
+                IsViewed = true;
+                RaiseDomainEvent(new SecureUploadViewedEvent(this));
+            }
         }
 
 

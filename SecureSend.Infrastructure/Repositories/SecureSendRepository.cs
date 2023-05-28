@@ -18,16 +18,16 @@ namespace SecureSend.Infrastructure.Repositories
             _uploads = context.SecureSendUploads;
         }
 
-        public async Task AddAsync(SecureSendUpload upload)
+        public async Task AddAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             await _uploads.AddAsync(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
         }
 
-        public async Task DeleteAsync(SecureSendUpload upload)
+        public async Task DeleteAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             _context.Remove(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
             
         }
 
@@ -38,15 +38,15 @@ namespace SecureSend.Infrastructure.Repositories
             return upload;
         }
 
-        public async Task UpdateAsync(SecureSendUpload upload)
+        public async Task UpdateAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             _uploads.Update(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
         }
 
-        public async Task SaveChanges()
+        public async Task SaveChanges(CancellationToken cancellationToken)
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
