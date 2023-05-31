@@ -26,10 +26,10 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task Handle (CreateSecureUpload command, CancellationToken cancellationToken)
         {
-            var persisted = await _secureSendUploadRepository.GetAsync(command.uploadId, false);
+            var persisted = await _secureSendUploadRepository.GetAsync(command.uploadId, false, cancellationToken);
             if (persisted is not null) throw new UploadAlreadyExistsException(persisted.Id);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
-            await _secureSendUploadRepository.AddAsync(secureUpload);
+            await _secureSendUploadRepository.AddAsync(secureUpload, cancellationToken);
 
         }
 

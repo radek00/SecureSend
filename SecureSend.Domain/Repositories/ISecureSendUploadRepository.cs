@@ -5,10 +5,10 @@ namespace SecureSend.Domain.Repositories
 {
     public interface ISecureSendUploadRepository
     {
-        Task<SecureSendUpload> GetAsync(SecureSendUploadId id, bool track);
-        Task AddAsync(SecureSendUpload upload);
-        Task DeleteAsync(SecureSendUpload id);
-        Task UpdateAsync(SecureSendUpload upload);
-        Task SaveChanges();
+        Task<SecureSendUpload> GetAsync(SecureSendUploadId id, bool track, CancellationToken cancellationToken);
+        Task AddAsync(SecureSendUpload upload, CancellationToken cancellationToken);
+        Task DeleteAsync(SecureSendUpload id, CancellationToken cancellationToken);
+        Task UpdateAsync(SecureSendUpload upload, CancellationToken cancellationToken);
+        Task SaveChanges(CancellationToken cancellationToken);
     }
 }

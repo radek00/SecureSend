@@ -18,35 +18,35 @@ namespace SecureSend.Infrastructure.Repositories
             _uploads = context.SecureSendUploads;
         }
 
-        public async Task AddAsync(SecureSendUpload upload)
+        public async Task AddAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             await _uploads.AddAsync(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
         }
 
-        public async Task DeleteAsync(SecureSendUpload upload)
+        public async Task DeleteAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             _context.Remove(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
             
         }
 
-        public async Task<SecureSendUpload> GetAsync(SecureSendUploadId id, bool track)
+        public async Task<SecureSendUpload?> GetAsync(SecureSendUploadId id, bool track, CancellationToken cancellationToken)
         {
             var query = track ? _uploads : _uploads.AsNoTracking();
-            var upload = await query.FirstOrDefaultAsync(x => x.Id == id);
+            var upload = await query.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             return upload;
         }
 
-        public async Task UpdateAsync(SecureSendUpload upload)
+        public async Task UpdateAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
             _uploads.Update(upload);
-            await SaveChanges();
+            await SaveChanges(cancellationToken);
         }
 
-        public async Task SaveChanges()
+        public async Task SaveChanges(CancellationToken cancellationToken)
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

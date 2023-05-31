@@ -2,24 +2,24 @@
 using SecureSend.Application.Exceptions;
 using SecureSend.Domain.Repositories;
 
-namespace SecureSend.Application.Queries.Handlers
+namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class GetSecureUploadHandler: IQueryHandler<GetSecureUpload, SecureUploadDto>
+    internal sealed class ViewSecureUploadHandler : ICommandHandler<ViewSecureUpload, SecureUploadDto>
     {
         private readonly ISecureSendUploadRepository _repository;
 
-        public GetSecureUploadHandler(ISecureSendUploadRepository repository)
+        public ViewSecureUploadHandler(ISecureSendUploadRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<SecureUploadDto> Handle(GetSecureUpload request, CancellationToken cancellationToken)
+        public async Task<SecureUploadDto> Handle(ViewSecureUpload request, CancellationToken cancellationToken)
         {
-            var upload = await _repository.GetAsync(request.id, true);
+            var upload = await _repository.GetAsync(request.id, true, cancellationToken);
             if (upload is null) throw new UploadDoesNotExistException(request.id);
             if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow) throw new UploadExpiredException(upload.ExpiryDate);
             upload.MarkAsViewed();
-            await _repository.SaveChanges();
+            await _repository.SaveChanges(cancellationToken);
 
             var uploadDto = new SecureUploadDto()
             {

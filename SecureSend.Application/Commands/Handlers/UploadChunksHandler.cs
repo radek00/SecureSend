@@ -29,15 +29,19 @@ namespace SecureSend.Application.Commands.Handlers
 
                 if (chunk.IsLast)
                 {
-                    persisted = await _repository.GetAsync(command.uploadId, true);
-                    if (persisted is null) throw new UploadDoesNotExistException(command.uploadId);
+                    persisted = await _repository.GetAsync(command.uploadId, true, cancellationToken);
+                    if (persisted is null)
+                    {
+                        _fileService.RemoveUpload(command.uploadId);
+                        throw new UploadDoesNotExistException(command.uploadId);
+                    }
                     var savedChunks = _fileService.GetChunksList(command.uploadId);
                     if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
                     await _fileService.MergeFiles(persisted.Id, savedChunks);
 
                     
                     persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));
-                    await _repository.SaveChanges();
+                    await _repository.SaveChanges(cancellationToken);
 
                 }
             }
@@ -45,7 +49,7 @@ namespace SecureSend.Application.Commands.Handlers
             {
 
                 _fileService.RemoveUpload(command.uploadId);
-                if (persisted is not null) await _repository.DeleteAsync(persisted);
+                if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
 
             }
         }

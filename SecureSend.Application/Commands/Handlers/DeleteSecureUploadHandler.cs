@@ -17,10 +17,10 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task Handle(DeleteSecureUpload request, CancellationToken cancellationToken)
         {
-            var persisted = await _repository.GetAsync(request.id ,true);
+            var persisted = await _repository.GetAsync(request.id ,true, cancellationToken);
             if (persisted is null) throw new UploadDoesNotExistException(request.id);
             _fileService.RemoveUpload(request.id);
-            await _repository.DeleteAsync(persisted);
+            await _repository.DeleteAsync(persisted, cancellationToken);
         }
     }
 }

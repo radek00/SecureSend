@@ -17,8 +17,8 @@ namespace SecureSend.Controllers
             _sender = sender;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<SecureUploadDto>> Get([FromQuery] GetSecureUpload query, CancellationToken token)
+        [HttpPut]
+        public async Task<ActionResult<SecureUploadDto>> ViewSecureUpload([FromQuery] ViewSecureUpload query, CancellationToken token)
         {
             var result  = await _sender.Send(query, token);
             return OkOrNotFound(result);
