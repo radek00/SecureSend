@@ -15,7 +15,7 @@ namespace SecureSend.Infrastructure.EF.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("upload");
-            var config = new EfConfiguration();
+            var config = new SecureSendUploadConfiguration();
             modelBuilder.ApplyConfiguration<SecureSendUpload>(config);
         }
     }

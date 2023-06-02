@@ -2,9 +2,9 @@
 {
     public class FileResultDto
     {
-        public string FileName { get; set; }
-        public string ContentType { get; set; }
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
 
-        public FileStream FileStream { get; set; }
+        public FileStream? FileStream { get; set; }
     }
 }
