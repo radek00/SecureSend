@@ -25,7 +25,7 @@ namespace SecureSend.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/download")]
+        [Route("download")]
         public async Task<FileStreamResult> DownloadFile([FromQuery] DownloadFile file, CancellationToken token)
         {
             var fileStream = await _sender.Send(file, token);
@@ -42,7 +42,7 @@ namespace SecureSend.Controllers
         }
 
         [HttpPost]
-        [Route("[controller]/uploadChunks")]
+        [Route("uploadChunks")]
         public async Task<IActionResult> UploadChunks([FromQuery] UploadChunks command, CancellationToken token)
         {
             await _sender.Send(command, token);

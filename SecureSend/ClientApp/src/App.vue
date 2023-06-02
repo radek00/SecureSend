@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
 import { onMounted } from 'vue';
-
+import FileUpload from './views/FileUpload.vue';
 
 onMounted(async () => {
   console.log('mounted')
@@ -11,6 +12,7 @@ onMounted(async () => {
 </script>
 
 <template>
-
+  <!-- <RouterView /> -->
+  <FileUpload></FileUpload>
 </template>
 
