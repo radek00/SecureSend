@@ -1,8 +1,13 @@
 <template>
 <div class="button-wrap">
-    <input ref="fileInput" type="file" multiple>
+    <input ref="fileInput" type="file" multiple @change="onFilesChange($event)">
     <button @click="uploadFile()">Upload</button>
-    <button>Download</button>
+</div>
+
+<div class="button-wrap">
+    <div v-for="[key, value] in files">
+        {{ key.name }} = {{ value }}
+    </div>
 </div>
 </template>
 
@@ -24,6 +29,17 @@ const fileInput = ref();
 const uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
+const files =  ref(new Map());
+
+const onFilesChange = (event: any) => {
+    files.value.clear();
+    for (let i = 0; i < event.target.files.length; i++) {
+        const file = event.target.files[i];
+
+        files.value.set(file, 0);
+    }
+}
+
 const uploadFile = async() => {
     try {
         await SecureSendService.createSecureUpload(uuid);
@@ -35,12 +51,11 @@ const uploadFile = async() => {
 
 const encryptFile = async () => {
     uploadStatus.value = 0;
-    const files: File[] = fileInput.value.files;
     const requests: Promise<unknown>[] = [];
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+    for (const [file] of files.value) {
         const promise = splitFile(file, 64 * 1024, async (chunk: ArrayBuffer, num, totalChunks) => {
             await SecureSendService.uploadChunk(uuid, num, totalChunks, file.name, chunk);
+            files.value.set(file, Math.ceil(((num + 1) / totalChunks) * 100))
         }, async (chunk, num) => await keychain.encrypt(chunk, num));
         requests.push(promise);
     }
@@ -51,6 +66,7 @@ const encryptFile = async () => {
 <style scoped>
 .button-wrap {
     display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 </style>
