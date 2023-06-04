@@ -28,7 +28,7 @@ namespace SecureSend.Infrastructure.Middlewares
             {
                 context.Response.StatusCode = 500;
                 context.Response.Headers.Add("content-type", "application/json");
-                await context.Response.WriteAsync("Something went wrong.");
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new {Message = "Something went wrong."}));
 
             }
         }

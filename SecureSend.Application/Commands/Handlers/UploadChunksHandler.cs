@@ -35,9 +35,9 @@ namespace SecureSend.Application.Commands.Handlers
                         _fileService.RemoveUpload(command.uploadId);
                         throw new UploadDoesNotExistException(command.uploadId);
                     }
-                    var savedChunks = _fileService.GetChunksList(command.uploadId);
+                    var savedChunks = _fileService.GetChunksList(command.uploadId, chunk.ChunkDirectory);
                     if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
-                    await _fileService.MergeFiles(persisted.Id, savedChunks);
+                    await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory);
 
                     
                     persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType));

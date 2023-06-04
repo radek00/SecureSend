@@ -18,9 +18,11 @@ namespace SecureSend.Domain.ValueObjects
 
         public string ContentType { get; }
 
-        public string ChunkName { get; set; }
+        public string ChunkName { get; }
 
         public IFormFile Chunk { get; }
+
+        public string ChunkDirectory { get; }
 
         public SecureUploadChunk(int chunkNumber, int totalChunks, IFormFile chunk)
         {
@@ -31,6 +33,7 @@ namespace SecureSend.Domain.ValueObjects
             Chunk = chunk;
             ContentType = chunk.ContentType;
             ChunkName = $"{chunkNumber}_{chunk.FileName}";
+            ChunkDirectory = Path.GetFileNameWithoutExtension(chunk.FileName);
         }
     }
 }
