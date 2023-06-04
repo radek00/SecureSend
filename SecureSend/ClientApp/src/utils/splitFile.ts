@@ -12,10 +12,22 @@ export default async function splitFile(
     let offset = 0;
   
     const readChunk = () => {
-      const r = new FileReader();
-      const blob = file.slice(offset, chunkSize + offset);
-      r.onload = readEventHandler;
-      r.readAsArrayBuffer(blob);
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        const blob = file.slice(offset, chunkSize + offset);
+        r.onload = async(evt) => {
+          const execute = async() => {
+            try {
+              await readEventHandler(evt);
+            } catch (error) {
+              reject(error)
+            }
+          }
+          resolve(await execute());
+        };
+        r.readAsArrayBuffer(blob);
+      })
+
     };
   
     const readEventHandler = async (evt: any) => {
@@ -25,13 +37,9 @@ export default async function splitFile(
         let data = new Uint8Array(evt.target.result);
   
         if (transformer) {
-          try {
+
             data = await transformer(data, sequenceNumber);
             await callback(data, sequenceNumber, totalChunks);
-          } catch (error) {
-            console.log('error',error);
-            return;
-          }
         }
         
         
@@ -46,10 +54,10 @@ export default async function splitFile(
       }
   
       // Off to the next chunk.
-      readChunk();
+      await readChunk();
     };
   
     // Let's start reading the first block.
-    readChunk();
+    await readChunk();
   }
   

@@ -1,12 +1,13 @@
 <template>
 <div class="button-wrap">
-    <input ref="fileInput" type="file">
+    <input ref="fileInput" type="file" multiple>
     <button @click="uploadFile()">Upload</button>
     <button>Download</button>
 </div>
 </template>
 
 <script setup lang="ts">
+import { SecureSendService } from '@/services/SecureSendService';
 import AuthenticatedSecretKeyCryptography from '@/utils/AuthenticatedSecretKeyCryptography';
 import splitFile from '@/utils/splitFile';
 import { onMounted } from 'vue';
@@ -24,37 +25,26 @@ const uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
 const uploadFile = async() => {
-    await setUpUpload();
-    await encryptFile();
-}
-
-const setUpUpload = async () => {
-    await fetch(`api/SecureSend?uploadId=${uuid}`, {
-        "method": "POST",
-    });
-}
-
-const uploadChunk = async(id: string, chunkNumber: number, totalChunks: number, name: string, chunk: ArrayBuffer) => {
-    const formData = new FormData();
-    formData.append('chunk', new Blob([chunk]), name)
-    uploadStatus.value = Math.ceil(((chunkNumber + 1) / totalChunks) * 100);
-    chunkNumber = +chunkNumber + 1;
-    const requestOptions = {
-        method: 'POST',
-        body: formData
+    try {
+        await SecureSendService.createSecureUpload(uuid);
+        await encryptFile();
+    } catch (error) {
+        console.log(error)
     }
-    const response = await fetch(`api/SecureSend/uploadChunks?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}`, requestOptions);
-    if (!response.ok) throw response.statusText;
-
 }
 
 const encryptFile = async () => {
-  uploadStatus.value = 0;
-  const file = fileInput.value.files[0];
-  // console.log(file);
-  await splitFile(file, 64 * 1024, async (chunk: ArrayBuffer, num, totalChunks) => {
-    return await uploadChunk(uuid, num, totalChunks, file.name, chunk);
-  }, async (chunk, num) => await keychain.encrypt(chunk, num));
+    uploadStatus.value = 0;
+    const files: File[] = fileInput.value.files;
+    const requests: Promise<unknown>[] = [];
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const promise = splitFile(file, 64 * 1024, async (chunk: ArrayBuffer, num, totalChunks) => {
+            await SecureSendService.uploadChunk(uuid, num, totalChunks, file.name, chunk);
+        }, async (chunk, num) => await keychain.encrypt(chunk, num));
+        requests.push(promise);
+    }
+    await Promise.all(requests);
 }
 </script>
 
