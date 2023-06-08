@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace SecureSend.Application.Behaviors
 {
     internal sealed class LoggingPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest<TResponse> where TResponse : class
+        where TRequest : IRequest<TResponse>
     {
         private readonly ILogger<LoggingPipelineBehavior<TRequest, TResponse>> _logger;
 

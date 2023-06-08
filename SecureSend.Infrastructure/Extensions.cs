@@ -28,7 +28,7 @@ namespace SecureSend.Infrastructure
                 ctx.UseSqlServer(options!.ConnectionString));
 
             services.AddHostedService<BackgroundFileService>();
-
+            services.AddHostedService<BackgroundFailedUploadRemoverService>();
             return services;
 
         }
