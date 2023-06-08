@@ -33,18 +33,18 @@ namespace SecureSend.Infrastructure.Services
 
         public async Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId)
         {
-            var directory = GetOrCreateDirectory(uploadId);
+            var directory = GetOrCreateDirectory(uploadId, chunk.ChunkDirectory);
             using (FileStream output = System.IO.File.OpenWrite($"{directory.FullName}/{chunk.ChunkName}"))
             {
                 await chunk.Chunk.CopyToAsync(output);
             }
         }
 
-        public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles)
+        public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory)
         {
 
 
-            var dir = GetOrCreateDirectory(uploadId);
+            var dir = GetOrCreateDirectory(uploadId, chunkDirectory);
 
             var chunkName = chunkFiles.FirstOrDefault();
             var fileName = chunkName!.Substring(chunkName.IndexOf("_") + 1);
@@ -53,7 +53,7 @@ namespace SecureSend.Infrastructure.Services
             {
                 foreach (var chunkFile in chunkFiles)
                 {
-                    using (var chunkStream = new FileStream(chunkFile, FileMode.Open))
+                    using (var chunkStream = new FileStream(Path.Combine(dir.FullName, chunkFile), FileMode.Open))
                     {
                         await chunkStream.CopyToAsync(mergedFile);
                     }
@@ -63,18 +63,19 @@ namespace SecureSend.Infrastructure.Services
 
         }
 
-        public IEnumerable<string> GetChunksList(Guid uploadId)
+        public IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory)
         {
-            var chunkDirectory = GetOrCreateDirectory(uploadId).FullName;
-            var chunkFiles = Directory.GetFiles(chunkDirectory)
+            var directory = GetOrCreateDirectory(uploadId, chunkDirectory).FullName;
+            var chunkFiles = Directory.GetFiles(directory)
+                                      .Select(x => Path.GetFileName(x))
                                       .OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f).Split('_')[0]))
                                       .ToList();
             return chunkFiles;
         }
 
-        private DirectoryInfo GetOrCreateDirectory(Guid uploadId)
+        private DirectoryInfo GetOrCreateDirectory(Guid uploadId, string chunkDirectory)
         {
-            return System.IO.Directory.CreateDirectory($"{_storage.Path}/{uploadId}/chunks");
+            return System.IO.Directory.CreateDirectory($"{_storage.Path}/{uploadId}/{chunkDirectory}");
         }
 
         private DirectoryInfo? GetDirectory(Guid uploadId)
