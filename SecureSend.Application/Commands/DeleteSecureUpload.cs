@@ -1,6 +1,8 @@
-﻿namespace SecureSend.Application.Commands
+﻿using MediatR;
+
+namespace SecureSend.Application.Commands
 {
-    public record DeleteSecureUpload(Guid id): ICommand
+    public record DeleteSecureUpload(Guid id): ICommand<Unit>
     {
     }
 }

@@ -7,7 +7,7 @@ using SecureSend.Domain.ValueObjects;
 
 namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class UploadChunksHandler : IRequestHandler<UploadChunks>
+    internal sealed class UploadChunksHandler : IRequestHandler<UploadChunks, Unit>
     {
         private readonly IFileService _fileService;
         private readonly ISecureSendUploadRepository _repository;
@@ -18,7 +18,7 @@ namespace SecureSend.Application.Commands.Handlers
             _repository = repository;
         }
 
-        public async Task Handle(UploadChunks command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UploadChunks command, CancellationToken cancellationToken)
         {
             var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);
             SecureSendUpload? persisted = null;
@@ -44,12 +44,14 @@ namespace SecureSend.Application.Commands.Handlers
                     await _repository.SaveChanges(cancellationToken);
 
                 }
+                return Unit.Value;
             }
             catch (TaskCanceledException)
             {
 
                 _fileService.RemoveUpload(command.uploadId);
                 if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
+                return Unit.Value;
 
             }
         }
