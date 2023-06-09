@@ -21,6 +21,8 @@ namespace SecureSend.Infrastructure
 
             services.AddScoped<IFileService, FileService>();
 
+            services.AddScoped<ISecureUploadReadService, SecureUploadReadService>();
+
             services.AddScoped<ExceptionMiddleware>();
 
             var options = configuration.GetSection("SqlServer").Get<SqlServerOptions>();
