@@ -36,7 +36,7 @@ namespace SecureSend.Infrastructure.BackgroundTasks
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbContext>();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
                     var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
                     var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any());
                     var emptyUploads = await query.AsNoTracking().ToListAsync();

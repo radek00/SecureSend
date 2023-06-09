@@ -13,7 +13,7 @@ namespace SecureSend.Infrastructure.EF.Config
         internal static string isViewed = "_isViewedl";
         internal static string files = "_files";
     }
-    internal sealed class SecureSendUploadConfiguration: IEntityTypeConfiguration<SecureSendUpload>
+    internal sealed class SecureSendUploadWriteConfiguration: IEntityTypeConfiguration<SecureSendUpload>
     {
         public void Configure(EntityTypeBuilder<SecureSendUpload> builder)
         {

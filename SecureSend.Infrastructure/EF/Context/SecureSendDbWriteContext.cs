@@ -4,18 +4,18 @@ using SecureSend.Infrastructure.EF.Config;
 
 namespace SecureSend.Infrastructure.EF.Context
 {
-    internal sealed class SecureSendDbContext: DbContext
+    internal sealed class SecureSendDbWriteContext: DbContext
     {
         public DbSet<SecureSendUpload> SecureSendUploads { get; set; }
 
-        public SecureSendDbContext(DbContextOptions<SecureSendDbContext> options): base(options)
+        public SecureSendDbWriteContext(DbContextOptions<SecureSendDbWriteContext> options): base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("upload");
-            var config = new SecureSendUploadConfiguration();
+            var config = new SecureSendUploadWriteConfiguration();
             modelBuilder.ApplyConfiguration<SecureSendUpload>(config);
         }
     }

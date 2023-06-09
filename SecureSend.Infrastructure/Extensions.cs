@@ -24,8 +24,10 @@ namespace SecureSend.Infrastructure
             services.AddScoped<ExceptionMiddleware>();
 
             var options = configuration.GetSection("SqlServer").Get<SqlServerOptions>();
-            services.AddDbContext<SecureSendDbContext>(ctx =>
+            services.AddDbContext<SecureSendDbWriteContext>(ctx =>
                 ctx.UseSqlServer(options!.ConnectionString));
+
+            services.AddDbContext<SecureSendDbWriteContext>(ctx => ctx.UseSqlServer(options!.ConnectionString));
 
             services.AddHostedService<BackgroundFileService>();
             services.AddHostedService<BackgroundFailedUploadRemoverService>();

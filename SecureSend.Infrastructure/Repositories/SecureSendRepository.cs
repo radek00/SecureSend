@@ -10,9 +10,9 @@ namespace SecureSend.Infrastructure.Repositories
     internal sealed class SecureSendRepository: ISecureSendUploadRepository
     {
         private readonly DbSet<SecureSendUpload> _uploads;
-        private readonly SecureSendDbContext _context;
+        private readonly SecureSendDbWriteContext _context;
 
-        public SecureSendRepository(SecureSendDbContext context)
+        public SecureSendRepository(SecureSendDbWriteContext context)
         {
             _context = context;
             _uploads = context.SecureSendUploads;
