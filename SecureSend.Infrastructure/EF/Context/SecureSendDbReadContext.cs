@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SecureSend.Domain.Entities;
 using SecureSend.Infrastructure.EF.Config;
-using SecureSend.Infrastructure.EF.Models;
+using SecureSend.Domain.ReadModels;
 
 namespace SecureSend.Infrastructure.EF.Context
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SecureSend.Infrastructure.EF.Models;
+using SecureSend.Domain.ReadModels;
 
 namespace SecureSend.Infrastructure.EF.Config
 {
