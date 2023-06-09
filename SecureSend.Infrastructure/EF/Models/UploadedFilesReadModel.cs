@@ -1,6 +1,6 @@
 ﻿namespace SecureSend.Infrastructure.EF.Models
 {
-    internal sealed class UploadedFilesReadModel
+    internal class UploadedFilesReadModel
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }

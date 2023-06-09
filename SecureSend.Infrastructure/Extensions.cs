@@ -27,7 +27,7 @@ namespace SecureSend.Infrastructure
             services.AddDbContext<SecureSendDbWriteContext>(ctx =>
                 ctx.UseSqlServer(options!.ConnectionString));
 
-            services.AddDbContext<SecureSendDbWriteContext>(ctx => ctx.UseSqlServer(options!.ConnectionString));
+            services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(options!.ConnectionString));
 
             services.AddHostedService<BackgroundFileService>();
             services.AddHostedService<BackgroundFailedUploadRemoverService>();

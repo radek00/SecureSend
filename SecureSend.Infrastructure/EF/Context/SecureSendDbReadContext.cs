@@ -5,7 +5,7 @@ using SecureSend.Infrastructure.EF.Models;
 
 namespace SecureSend.Infrastructure.EF.Context
 {
-    internal class SecureSendDbReadContext: DbContext
+    internal sealed class SecureSendDbReadContext: DbContext
     {
         public DbSet<SecureUploadsReadModel> SecureSendUploads { get; set; }
         public DbSet<UploadedFilesReadModel> UploadedFiles { get; set; }

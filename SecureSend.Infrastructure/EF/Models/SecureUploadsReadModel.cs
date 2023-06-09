@@ -1,6 +1,6 @@
 ﻿namespace SecureSend.Infrastructure.EF.Models
 {
-    internal sealed class SecureUploadsReadModel
+    internal class SecureUploadsReadModel
     {
         public Guid Id { get; set; }
         public DateTime? ExpiryDate { get; set; }
