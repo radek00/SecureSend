@@ -10,7 +10,7 @@ using SecureSend.Infrastructure.EF.Context;
 
 namespace SecureSend.Infrastructure.EF.Migrations
 {
-    [DbContext(typeof(SecureSendDbContext))]
+    [DbContext(typeof(SecureSendDbWriteContext))]
     partial class SecureSendDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

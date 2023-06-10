@@ -29,7 +29,7 @@ namespace SecureSend.Application.Commands.Handlers
 
                 if (chunk.IsLast)
                 {
-                    persisted = await _repository.GetAsync(command.uploadId, true, cancellationToken);
+                    persisted = await _repository.GetAsync(command.uploadId, cancellationToken);
                     if (persisted is null)
                     {
                         _fileService.RemoveUpload(command.uploadId);

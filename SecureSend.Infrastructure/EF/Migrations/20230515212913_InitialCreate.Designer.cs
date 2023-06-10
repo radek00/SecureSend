@@ -11,7 +11,7 @@ using SecureSend.Infrastructure.EF.Context;
 
 namespace SecureSend.Infrastructure.EF.Migrations
 {
-    [DbContext(typeof(SecureSendDbContext))]
+    [DbContext(typeof(SecureSendDbWriteContext))]
     [Migration("20230515212913_InitialCreate")]
     partial class InitialCreate
     {

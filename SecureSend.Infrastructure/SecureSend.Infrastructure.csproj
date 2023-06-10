@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SecureSend.Application\SecureSend.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EF\Migrations\" />
-  </ItemGroup>
-
 </Project>

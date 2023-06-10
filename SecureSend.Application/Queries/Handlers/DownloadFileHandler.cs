@@ -7,25 +7,29 @@ namespace SecureSend.Application.Queries.Handlers
     internal sealed class DownloadFileHandler : IQueryHandler<DownloadFile, FileResultDto>
     {
         private readonly IFileService _fileService;
+        private readonly ISecureUploadReadService _secureUploadReadService;
 
-        public DownloadFileHandler(IFileService fileService)
+        public DownloadFileHandler(IFileService fileService, ISecureUploadReadService secureUploadReadService)
         {
             _fileService = fileService;
+            _secureUploadReadService = secureUploadReadService;
         }
 
-        public Task<FileResultDto> Handle(DownloadFile request, CancellationToken cancellationToken)
+        public async Task<FileResultDto> Handle(DownloadFile request, CancellationToken cancellationToken)
         {
-            var stream = _fileService.DownloadFile(request.id, request.fileName);
-            if (stream == null) throw new NoSavedFileFoundException(request.fileName, request.id);
+            var file = await _secureUploadReadService.GetUploadedFile(request.fileName, request.id, cancellationToken);
+            if (file == null) throw new FileDoesNotExistException(request.fileName);
+            var stream = _fileService.DownloadFile(file.SecureSendUploadId, file.FileName);
+            if (stream == null) throw new NoSavedFileFoundException(file.FileName, file.SecureSendUploadId);
 
-            return Task.FromResult(
+            return
                 new FileResultDto
                 {
                     FileStream = stream,
-                    FileName = request.fileName,
-                    ContentType = request.contentType ?? "application/octet-stream"
-                }
-            );
+                    FileName = file.FileName,
+                    ContentType = file.ContentType
+                };
+            
 
         }
     }

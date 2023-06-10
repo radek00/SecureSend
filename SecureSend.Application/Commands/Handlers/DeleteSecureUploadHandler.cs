@@ -18,7 +18,7 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task<Unit> Handle(DeleteSecureUpload request, CancellationToken cancellationToken)
         {
-            var persisted = await _repository.GetAsync(request.id ,true, cancellationToken);
+            var persisted = await _repository.GetAsync(request.id, cancellationToken);
             if (persisted is null) throw new UploadDoesNotExistException(request.id);
             _fileService.RemoveUpload(request.id);
             await _repository.DeleteAsync(persisted, cancellationToken);

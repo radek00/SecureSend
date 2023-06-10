@@ -2,7 +2,7 @@
 
 namespace SecureSend.Application.Queries
 {
-    public record DownloadFile(Guid id, string fileName, string? contentType): IQuery<FileResultDto>
+    public record DownloadFile(Guid id, string fileName): IQuery<FileResultDto>
     {
     }
 }
