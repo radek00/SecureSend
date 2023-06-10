@@ -17,7 +17,7 @@ namespace SecureSend.Application.Queries.Handlers
 
         public async Task<FileResultDto> Handle(DownloadFile request, CancellationToken cancellationToken)
         {
-            var file = await _secureUploadReadService.GetUploadedFile(request.fileName, request.id);
+            var file = await _secureUploadReadService.GetUploadedFile(request.fileName, request.id, cancellationToken);
             if (file == null) throw new FileDoesNotExistException(request.fileName);
             var stream = _fileService.DownloadFile(file.SecureSendUploadId, file.FileName);
             if (stream == null) throw new NoSavedFileFoundException(file.FileName, file.SecureSendUploadId);

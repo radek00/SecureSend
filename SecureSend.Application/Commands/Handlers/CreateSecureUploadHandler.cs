@@ -11,19 +11,21 @@ namespace SecureSend.Application.Commands.Handlers
     {
         private readonly ISecureSendUploadRepository _secureSendUploadRepository;
         private readonly ISecureSendUploadFactory _secureSendUploadFactory;
+        private readonly ISecureUploadReadService _secureUploadReadService;
 
         public CreateSecureUploadHandler(ISecureSendUploadRepository secureSendUploadRepository,
-                                         IFileService fileService,
-                                         ISecureSendUploadFactory secureSendUploadFactory)
+                                         ISecureSendUploadFactory secureSendUploadFactory,
+                                         ISecureUploadReadService secureUploadReadService)
         {
             _secureSendUploadRepository = secureSendUploadRepository;
             _secureSendUploadFactory = secureSendUploadFactory;
+            _secureUploadReadService = secureUploadReadService;
         }
 
         public async Task<Unit> Handle (CreateSecureUpload command, CancellationToken cancellationToken)
         {
-            var persisted = await _secureSendUploadRepository.GetAsync(command.uploadId, false, cancellationToken);
-            if (persisted is not null) throw new UploadAlreadyExistsException(persisted.Id);
+            var persisted = await _secureUploadReadService.GetUploadId(command.uploadId, cancellationToken);
+            if (persisted != Guid.Empty) throw new UploadAlreadyExistsException(persisted.Value);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false);
             await _secureSendUploadRepository.AddAsync(secureUpload, cancellationToken);
             return Unit.Value;
