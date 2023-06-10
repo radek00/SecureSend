@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Options;
 using SecureSend.Application.Services;
 using SecureSend.Domain.ValueObjects;
 using SecureSend.Infrastructure.EF.Options;
@@ -8,12 +8,11 @@ namespace SecureSend.Infrastructure.Services
 
     internal sealed class FileService : IFileService
     {
-        private readonly FileStorageOptions _storage;
+        private readonly IOptions<FileStorageOptions> _storage;
 
-        public FileService(IConfiguration configuration)
+        public FileService(IOptions<FileStorageOptions> storage)
         {
-            _storage = new();
-            configuration.GetSection("FileStoragePath").Bind(_storage);
+            _storage = storage;
         }
 
         public FileStream? DownloadFile(Guid uploadId, string fileName)
@@ -75,12 +74,12 @@ namespace SecureSend.Infrastructure.Services
 
         private DirectoryInfo GetOrCreateDirectory(Guid uploadId, string chunkDirectory)
         {
-            return System.IO.Directory.CreateDirectory($"{_storage.Path}/{uploadId}/{chunkDirectory}");
+            return System.IO.Directory.CreateDirectory($"{_storage.Value.Path}/{uploadId}/{chunkDirectory}");
         }
 
         private DirectoryInfo? GetDirectory(Guid uploadId)
         {
-            if (Directory.Exists($"{_storage.Path}/{uploadId}")) return Directory.CreateDirectory($"{_storage.Path}/{uploadId}");
+            if (Directory.Exists($"{_storage.Value.Path}/{uploadId}")) return Directory.CreateDirectory($"{_storage.Value.Path}/{uploadId}");
             return null;
         }
 

@@ -25,7 +25,7 @@ namespace SecureSend.Infrastructure
 
             services.AddScoped<ExceptionMiddleware>();
 
-            var options = configuration.GetSection("SqlServer").Get<SqlServerOptions>();
+            var options = configuration.GetSection("SqlServerOptions").Get<SqlServerOptions>();
             services.AddDbContext<SecureSendDbWriteContext>(ctx =>
                 ctx.UseSqlServer(options!.ConnectionString));
 
