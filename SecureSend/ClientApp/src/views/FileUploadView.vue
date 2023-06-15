@@ -62,8 +62,9 @@ const onSubmit = handleSubmit(values => {
     console.log(values, value)
     if (step.value === 2) {
         uploadFile();
+    } else {
+        step.value++;
     }
-    step.value++;
 })
 
 const uuid = self.crypto.randomUUID();
