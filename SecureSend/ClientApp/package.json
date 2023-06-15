@@ -10,6 +10,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "vee-validate": "^4.9.6",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
   },
