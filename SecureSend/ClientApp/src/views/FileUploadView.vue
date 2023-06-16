@@ -34,12 +34,13 @@ const step = ref<number>(0);
 const stepZeroschema = {
     password(value: string) {
         if (value) return true;
-        return false;
+        return 'Password is required.';
     }
 };
 
 const stepOneSchema = {
     date(value: string) {
+        if (new Date(value) <= new Date()) return 'Expiry date must be earlier than today.';
         return true;
     }
 }
