@@ -19,16 +19,19 @@ import PasswordInput from '@/components/FileUploadForm/PasswordInput.vue';
 import { SecureSendService } from '@/services/SecureSendService';
 import AuthenticatedSecretKeyCryptography from '@/utils/AuthenticatedSecretKeyCryptography';
 import splitFile from '@/utils/splitFile';
-import { onMounted } from 'vue';
 import { ref } from 'vue';
-import { useField, useForm } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import DateInput from '@/components/FileUploadForm/DateInput.vue';
 import { computed } from 'vue';
 import FileInput from '@/components/FileUploadForm/FileInput.vue';
 
+interface IMappedFormValues {
+    expiryDate: string;
+    password: string
+}
+
 const salt = crypto.getRandomValues(new Uint8Array(16));
-const keychain = new AuthenticatedSecretKeyCryptography("password", salt);
-const {value} = useField(() => 'files')
+let keychain: AuthenticatedSecretKeyCryptography;
 const step = ref<number>(0);
 
 const stepZeroschema = {
@@ -50,29 +53,38 @@ const currentSchema = computed(() => {
     if (step.value === 1) return stepOneSchema;
 })
 
-const {handleSubmit, meta} = useForm({
-    validationSchema: currentSchema
-})
 
-
-onMounted(async () => {
-    await keychain.start();
-})
-
-const onSubmit = handleSubmit(values => {
-    console.log(values, value)
-    if (step.value === 2) {
-        uploadFile();
-    } else {
-        step.value++;
+const getInitialValues = (): IMappedFormValues => {
+    return {
+        password: '',
+        expiryDate: ''
     }
+}
+
+const {handleSubmit, meta} = useForm({
+    validationSchema: currentSchema,
+    initialValues: getInitialValues(),
+    keepValuesOnUnmount: true
+})
+
+const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
+    if (step.value === 1) {
+        await SecureSendService.createSecureUpload(uuid);    
+    }
+    else if (step.value === 2) {
+        keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
+        await keychain.start();
+        await encryptFile();
+        alert(`Heres your link to share files: ${createDownloadUrl()}`)
+    } 
+    if (step.value < 2) step.value++;
 })
 
 const uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
 
-const files =  ref(new Map<File, number>());
+const files =  ref(new Map<File, number | string>());
 
 const onFilesChange = (event: any) => {
     files.value.clear();
@@ -83,13 +95,9 @@ const onFilesChange = (event: any) => {
     }
 }
 
-const uploadFile = async() => {
-    try {
-        await SecureSendService.createSecureUpload(uuid);
-        await encryptFile();
-    } catch (error) {
-        console.log(error)
-    }
+const createDownloadUrl = () => {
+    const base64Salt = btoa(String.fromCharCode.apply(null, salt as any))
+    return window.location.toString().concat(`${uuid}#${base64Salt}`);
 }
 
 const encryptFile = async () => {
@@ -97,8 +105,14 @@ const encryptFile = async () => {
     const requests: Promise<unknown>[] = [];
     for (const [file] of files.value) {
         const promise = splitFile(file, 64 * 1024, async (chunk: ArrayBuffer, num, totalChunks) => {
-            await SecureSendService.uploadChunk(uuid, num, totalChunks, file.name, chunk);
-            files.value.set(file, Math.ceil(((num + 1) / totalChunks) * 100))
+            try {
+                await SecureSendService.uploadChunk(uuid, num, totalChunks, file.name, chunk);
+                files.value.set(file, Math.ceil(((num + 1) / totalChunks) * 100))
+            } catch (error) {
+                files.value.set(file, 'Error with uploading file')
+                throw error;
+            }
+
         }, async (chunk, num) => await keychain.encrypt(chunk, num));
         requests.push(promise);
     }

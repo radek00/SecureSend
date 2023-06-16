@@ -3,7 +3,7 @@
 defineEmits(['onFielsChange']);
 
 defineProps<{
-    files: Map<File, number>;
+    files: Map<File, number | string>;
 }>();
 
 
