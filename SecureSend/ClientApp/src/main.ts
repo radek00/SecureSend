@@ -6,6 +6,10 @@ import router from './router'
 
 const app = createApp(App)
 
+app.config.errorHandler = (error) => {
+    console.log('global error', error);
+}
+
 app.use(router)
 
 app.mount('#app')
