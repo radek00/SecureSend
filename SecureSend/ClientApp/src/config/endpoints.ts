@@ -1,6 +1,7 @@
+const baseUrl = import.meta.env.BASE_URL;
 const endpoints =  {
-    secureSend: 'api/SecureSend',
-    uploadChunks: 'api/SecureSend/uploadChunks',
+    secureSend: `${baseUrl}api/SecureSend`,
+    uploadChunks: `${baseUrl}api/SecureSend/uploadChunks`,
 
 }
 
