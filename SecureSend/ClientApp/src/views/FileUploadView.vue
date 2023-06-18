@@ -97,7 +97,7 @@ const onFilesChange = (event: any) => {
 
 const createDownloadUrl = () => {
     const base64Salt = btoa(String.fromCharCode.apply(null, salt as any))
-    return window.location.toString().concat(`${uuid}#${base64Salt}`);
+    return window.location.toString().concat(`download/${uuid}#${base64Salt}`);
 }
 
 const encryptFile = async () => {
