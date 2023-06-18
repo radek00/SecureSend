@@ -1,3 +1,3 @@
 export interface ViewSecureUpload {
-    id: Uint8Array;
+    id: string;
 }

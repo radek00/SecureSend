@@ -1,4 +1,4 @@
 export interface SecureFileDto {
-    FileName: string | null;
-    ContentType: string | null;
+    fileName: string | null;
+    contentType: string | null;
 }
