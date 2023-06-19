@@ -18,3 +18,11 @@ self.addEventListener('fetch', (event) => {
     console.log('fetching')
   }
 })
+
+self.addEventListener('message', (event) => {
+  if (event.data.request === 'init') {
+    console.log('download init');
+    map.set(event.data.id, {...event.data})
+    console.log(map)
+  }
+})

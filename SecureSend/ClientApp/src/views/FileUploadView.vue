@@ -31,6 +31,7 @@ interface IMappedFormValues {
 }
 
 const salt = crypto.getRandomValues(new Uint8Array(16));
+console.log(salt);
 let keychain: AuthenticatedSecretKeyCryptography;
 const step = ref<number>(0);
 
