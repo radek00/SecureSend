@@ -8,9 +8,9 @@ export abstract class SecureSendService {
         return await fetchWrapper.post<void>(`${endpoints.secureSend}?uploadId=${uuid}`)
     }
 
-    static uploadChunk = async(id: string, chunkNumber: number, totalChunks: number, name: string, chunk: ArrayBuffer): Promise<void> => {
+    static uploadChunk = async(id: string, chunkNumber: number, totalChunks: number, name: string, chunk: ArrayBuffer, fileType: string): Promise<void> => {
         const formData = new FormData();
-        formData.append('chunk', new Blob([chunk]), name);
+        formData.append('chunk', new Blob([chunk], {type: fileType}), name);
         chunkNumber = +chunkNumber + 1;
         const requestOptions = {
             method: 'POST',
