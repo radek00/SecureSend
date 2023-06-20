@@ -1,6 +1,6 @@
 import AuthenticatedSecretKeyCryptography from "../AuthenticatedSecretKeyCryptography";
 
-export default class EnccryptionTransformer {
+export default class StreamDecryptor {
     private readonly keychain: AuthenticatedSecretKeyCryptography;
 
     constructor(password: string, salt: Uint8Array) {
