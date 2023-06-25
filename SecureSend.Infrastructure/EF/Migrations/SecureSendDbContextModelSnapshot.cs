@@ -28,20 +28,15 @@ namespace SecureSend.Infrastructure.EF.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("ExpiryDate")
+                    b.Property<DateTime?>("_expiryDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("ExpiryDate");
 
-                    b.Property<bool>("IsViewed")
+                    b.Property<bool>("_isViewedl")
                         .HasColumnType("bit")
                         .HasColumnName("IsViewed");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("PasswordHash");
-
-                    b.Property<DateTime>("UploadDate")
+                    b.Property<DateTime>("_uploadDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UploadDate");
 
@@ -52,7 +47,7 @@ namespace SecureSend.Infrastructure.EF.Migrations
 
             modelBuilder.Entity("SecureSend.Domain.Entities.SecureSendUpload", b =>
                 {
-                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "Files", b1 =>
+                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "_files", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -81,7 +76,7 @@ namespace SecureSend.Infrastructure.EF.Migrations
                                 .HasForeignKey("SecureSendUploadId");
                         });
 
-                    b.Navigation("Files");
+                    b.Navigation("_files");
                 });
 #pragma warning restore 612, 618
         }

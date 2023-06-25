@@ -10,9 +10,9 @@ namespace SecureSend.Domain.Factories
 
         }
 
-        public SecureSendUpload CreateSecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl, SecureSendPasswordHash password)
+        public SecureSendUpload CreateSecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl)
         {
-            return new SecureSendUpload(id, uploadDate, expiryDate, isViewedl, password);
+            return new SecureSendUpload(id, uploadDate, expiryDate, isViewedl);
         }
     }
 }
