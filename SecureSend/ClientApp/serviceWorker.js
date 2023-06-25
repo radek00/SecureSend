@@ -22,7 +22,7 @@ const decrypt = async(id, url) => {
   try {
     const fileResponse = await fetch(url);
     const body = fileResponse.body;
-    const decryptedResponse = decryptStream(body, fileData.salt, "password");
+    const decryptedResponse = decryptStream(body, fileData.salt, fileData.password);
     const headers = {
       'Content-Disposition': fileResponse.headers.get('Content-Disposition'),
       'Content-Type': fileResponse.headers.get('Content-Type'),
