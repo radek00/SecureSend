@@ -1,3 +1,4 @@
+import { generateHash } from "./pbkdfHash";
 
 export default class AuthenticatedSecretKeyCryptography {
     public static readonly KEY_LENGTH_IN_BYTES = 16;
@@ -13,6 +14,7 @@ export default class AuthenticatedSecretKeyCryptography {
     private nonceBase!: ArrayBuffer;
     private password: string;
     public seq: number;
+    public hash?: string;
   
     constructor(password: string,salt: Uint8Array, tagLengthInBytes = AuthenticatedSecretKeyCryptography.TAG_LENGTH_IN_BYTES) {
       this.tagLengthInBytes = tagLengthInBytes;
@@ -114,9 +116,10 @@ export default class AuthenticatedSecretKeyCryptography {
     public async deriveKeyMaterial(password: string, salt: Uint8Array): Promise<ArrayBuffer> {
       const encoder = new TextEncoder();
       const keyMaterial = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
-      return crypto.subtle.deriveBits({name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256"}, keyMaterial, 256);
+      const keyBuffer = await crypto.subtle.deriveBits({name: "PBKDF2", salt, iterations: 1e6, hash: "SHA-256"}, keyMaterial, 256);
+      this.hash = generateHash(keyBuffer, this.salt);
+      return keyBuffer;
     }
-
   }
 
 

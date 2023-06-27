@@ -2,11 +2,13 @@
 import endpoints from '@/config/endpoints';
 import type { SecureFileDto } from '@/models/SecureFileDto';
 import type { SecureUploadDto } from '@/models/SecureUploadDto';
+import { verifyHash } from '@/utils/pbkdfHash';
 import { ref } from 'vue';
 
 const props = defineProps<{
     secureUpload: SecureUploadDto;
     salt: string;
+    passwordHash: string;
 }>();
 
 interface IWorkerInit {
@@ -38,14 +40,25 @@ const download = (url: string) => {
     anchor.click()
 }
 
+const isPasswordValid = ref<boolean>();
+
+const verifyPassword = async() => {
+    isPasswordValid.value = await verifyHash(props.passwordHash, password.value);
+}
+
 </script>
 <template>
     <h1>Download files</h1>
-    <input v-model="password" type="password" placeholder="Password">
-    <div>
+
+    <div v-if="isPasswordValid">
         <div v-for="file in secureUpload.files" :key="(file.fileName as string)">
             <p>{{ file.fileName }}</p>
             <a href="#" @click.prevent @click="download(`${endpoints.download}?id=${secureUpload.secureUploadId}&fileName=${file.fileName}`)">Download</a>
         </div>
+    </div>
+    <div v-else>
+        <input v-model="password" name="password" type="password" placeholder="Password">
+        <p v-show="isPasswordValid === false">Invalid password</p>
+        <button @click="verifyPassword()">Unlock</button>
     </div>
 </template>

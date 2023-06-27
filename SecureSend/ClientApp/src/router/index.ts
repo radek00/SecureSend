@@ -21,8 +21,11 @@ const router = createRouter({
       beforeEnter: async (to, form) => {
         try {
           const upload = await SecureSendService.viewSecureUpload({id: to.params.id as string});
-          (to.params.secureUpload as unknown as SecureUploadDto) = upload
-          to.params.salt = to.hash.slice(1);
+          (to.params.secureUpload as unknown as SecureUploadDto) = upload;
+          const keys = to.hash.split('_');
+          console.log(keys);
+          to.params.salt = keys[0].slice(1);
+          to.params.passwordHash = keys[1];
           console.log('to', to)
         } catch (error) {
           return {path: form.path};
