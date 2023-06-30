@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import endpoints from '@/config/endpoints';
-import type { SecureFileDto } from '@/models/SecureFileDto';
 import type { SecureUploadDto } from '@/models/SecureUploadDto';
 import { verifyHash } from '@/utils/pbkdfHash';
 import { ref } from 'vue';
@@ -15,7 +14,6 @@ interface IWorkerInit {
     request: string;
     salt: Uint8Array;
     password: string;
-    files: SecureFileDto[];
     id: string;
 }
 
@@ -24,6 +22,7 @@ const password = ref<string>('')
 const setUpWorker = () => {
     navigator.serviceWorker.controller?.postMessage({
         request: 'init',
+        id: props.secureUpload.secureUploadId,
         salt: props.salt,
         password: password.value,
     } as IWorkerInit)
