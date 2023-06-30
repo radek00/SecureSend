@@ -28,7 +28,7 @@
                 </svg>
             </span>
         </li>
-        <li class="flex items-center w-full">
+        <li class="flex items-center">
             <span class="flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12 shrink-0"
                 :class="{ 'dark:bg-blue-800 bg-blue-100': step === 2, 'dark:bg-gray-700': step !== 2 }">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
