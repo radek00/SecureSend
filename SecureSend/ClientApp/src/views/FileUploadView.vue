@@ -1,17 +1,23 @@
 <template>
-<div v-if="step === 0">
-    <PasswordInput name="password"></PasswordInput>
-</div>
-<div v-if="step === 1">
-    <DateInput name="date"></DateInput>
-</div>
-<div v-if="step === 2">
-    <FileInput :files="files" @on-fiels-change="onFilesChange($event)"></FileInput>
+<div class="w-96 flex flex-col justify-between gap-4 h-[30vh]">
+    <FormStepper :step="step"></FormStepper>
+    <div v-if="step === 0">
+        <PasswordInput name="password"></PasswordInput>
+    </div>
+    <div v-if="step === 1">
+        <DateInput name="date"></DateInput>
+    </div>
+    <div v-if="step === 2">
+        <FileInput :files="files" @on-fiels-change="onFilesChange($event)"></FileInput>
+    </div>
+    <div class="flex justify-between items-center">
+        <StyledButton :type="ButtonType.primary" :disabled="step === 0" @click="step-=1">Back</StyledButton>
+        <StyledButton :type="ButtonType.primary" :disabled="!meta.valid" @click="onSubmit()">
+            {{ step < 2 ? 'Next' : 'Upload' }}
+        </StyledButton>
+    </div>
 </div>
 
-
-
-<button :disabled="!meta.valid" @click="onSubmit()">{{ step < 2 ? 'Next' : 'Upload' }}</button>
 </template>
 
 <script setup lang="ts">
@@ -24,6 +30,9 @@ import { useForm } from 'vee-validate'
 import DateInput from '@/components/FileUploadForm/DateInput.vue';
 import { computed } from 'vue';
 import FileInput from '@/components/FileUploadForm/FileInput.vue';
+import FormStepper from '@/components/FileUploadForm/FormStepper.vue';
+import StyledButton from '@/components/FileUploadForm/StyledButton.vue'
+import {ButtonType} from "@/models/enums/ButtonType";
 
 interface IMappedFormValues {
     expiryDate: string;
