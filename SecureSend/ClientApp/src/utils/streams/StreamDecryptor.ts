@@ -12,23 +12,20 @@ export default class StreamDecryptor {
       if (this.keychain.seq === 0) {
         await this.keychain.start();
       }
-      console.log('transforming')
-      const decryptedChunk = await this.keychain.decrypt(chunk, this.keychain.seq);
-      controller.enqueue(
-        new Uint8Array(decryptedChunk)
-      )
+      console.log("transforming");
+      const decryptedChunk = await this.keychain.decrypt(
+        chunk,
+        this.keychain.seq
+      );
+      controller.enqueue(new Uint8Array(decryptedChunk));
       this.keychain.seq++;
     } catch (error) {
       controller.error(error);
-
     }
-
   }
 
-
-
   async flush(controller: any) {
-    console.log('ece stream ends')
+    console.log("ece stream ends");
     // if (this.prevChunk) {
     //   await this.transformPrevChunk(true, controller);
     // }

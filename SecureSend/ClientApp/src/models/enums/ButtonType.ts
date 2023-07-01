@@ -1,6 +1,6 @@
 export enum ButtonType {
-    primary,
-    cancel,
-    warn,
-    back
+  primary,
+  cancel,
+  warn,
+  back,
 }

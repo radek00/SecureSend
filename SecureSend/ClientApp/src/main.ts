@@ -1,33 +1,36 @@
-import './assets/main.css'
+import "./assets/main.css";
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
-const app = createApp(App)
+const app = createApp(App);
 
 app.config.errorHandler = (error) => {
-    console.log('global error', error);
-}
+  console.log("global error", error);
+};
 
 const registerServiceWorker = async () => {
-    if ("serviceWorker" in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.register("serviceWorker.js", {type: 'module', scope: '/'})
-        if (registration.installing) {
-          console.log("Service worker installing");
-        } else if (registration.waiting) {
-          console.log("Service worker installed");
-        } else if (registration.active) {
-          console.log("Service worker active");
-        }
-      } catch (error) {
-        console.error(`Registration failed with ${error}`);
+  if ("serviceWorker" in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register(
+        "serviceWorker.js",
+        { type: "module", scope: "/" }
+      );
+      if (registration.installing) {
+        console.log("Service worker installing");
+      } else if (registration.waiting) {
+        console.log("Service worker installed");
+      } else if (registration.active) {
+        console.log("Service worker active");
       }
+    } catch (error) {
+      console.error(`Registration failed with ${error}`);
     }
-  };
-registerServiceWorker();  
+  }
+};
+registerServiceWorker();
 
-app.use(router)
+app.use(router);
 
-app.mount('#app')
+app.mount("#app");
