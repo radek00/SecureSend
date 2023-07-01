@@ -1,5 +1,5 @@
 <template>
-<div class="w-96 flex flex-col justify-between gap-4 h-[30vh]">
+<div class=" w-11/12 md:w-3/5 flex flex-col justify-between gap-4 h-[30vh]">
     <FormStepper :step="step"></FormStepper>
     <div v-if="step === 0">
         <PasswordInput name="password"></PasswordInput>
@@ -10,7 +10,7 @@
     <div v-if="step === 2">
         <FileInput :files="files" @on-fiels-change="onFilesChange($event)"></FileInput>
     </div>
-    <div class="flex justify-between items-center">
+    <div class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center">
         <StyledButton :type="ButtonType.primary" :disabled="step === 0" @click="step-=1">Back</StyledButton>
         <StyledButton :type="ButtonType.primary" :disabled="!meta.valid" @click="onSubmit()">
             {{ step < 2 ? 'Next' : 'Upload' }}
