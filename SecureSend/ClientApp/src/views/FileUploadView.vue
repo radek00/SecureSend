@@ -1,5 +1,5 @@
 <template>
-<div class=" w-11/12 md:w-3/5 flex flex-col justify-between gap-4 h-[30vh]">
+<div class=" w-11/12 md:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6  border border-gray-300 rounded-lg shadow dark:bg-gray-800 dark:border-gray-800">
     <FormStepper :step="step"></FormStepper>
     <div v-if="step === 0">
         <PasswordInput name="password"></PasswordInput>
