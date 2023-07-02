@@ -1,3 +1,3 @@
 export interface DeleteSecureUpload {
-    id: Uint8Array;
+  id: Uint8Array;
 }

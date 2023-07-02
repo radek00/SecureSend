@@ -1,3 +1,3 @@
 export interface ViewSecureUpload {
-    id: string;
+  id: string;
 }
