@@ -4,10 +4,14 @@
   >
     <FormStepper :step="step"></FormStepper>
     <div v-if="step === 0">
-      <PasswordInput name="password"></PasswordInput>
+      <SchemaInput
+        name="password"
+        type="password"
+        label="Encryption password"
+      ></SchemaInput>
     </div>
     <div v-if="step === 1">
-      <DateInput name="date"></DateInput>
+      <SchemaInput name="date" type="date" label="Expiry date"></SchemaInput>
     </div>
     <div v-if="step === 2">
       <FileInput
@@ -36,13 +40,12 @@
 </template>
 
 <script setup lang="ts">
-import PasswordInput from "@/components/FileUploadForm/PasswordInput.vue";
+import SchemaInput from "@/components/FileUploadForm/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import AuthenticatedSecretKeyCryptography from "@/utils/AuthenticatedSecretKeyCryptography";
 import splitFile from "@/utils/splitFile";
 import { ref } from "vue";
 import { useForm } from "vee-validate";
-import DateInput from "@/components/FileUploadForm/DateInput.vue";
 import { computed } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
