@@ -31,6 +31,7 @@ namespace SecureSend.Infrastructure
 
             services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(options!.ConnectionString));
 
+            services.AddHostedService<AppInitializer>();
             services.AddHostedService<BackgroundFileService>();
             services.AddHostedService<BackgroundFailedUploadRemoverService>();
             return services;
