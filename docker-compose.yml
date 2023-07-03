@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  securesend:
+    image: chupacabra500/secure_send:latest
+    volumes:
+      - D:\SecureSendDocker:/app/files
+    environment:
+      - SqlServerOptions__ConnectionString=Server=192.168.0.153,1433;Database=SecureSend;Trusted_Connection=False;User ID=SA;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    ports:
+      - 5000:5000
