@@ -26,10 +26,11 @@ namespace SecureSend.Infrastructure
             services.AddScoped<ExceptionMiddleware>();
 
             var options = configuration.GetSection("SqlServerOptions").Get<SqlServerOptions>();
+            var sqlServerConnectionString = $"Server={options!.Server},{options!.Port};Database={options!.Database};Trusted_Connection={options!.TrustedConnection};User ID={options!.UserId};Password={options!.Password};TrustServerCertificate={options!.TrustServerCertificate}";
             services.AddDbContext<SecureSendDbWriteContext>(ctx =>
-                ctx.UseSqlServer(options!.ConnectionString));
+                ctx.UseSqlServer(sqlServerConnectionString));
 
-            services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(options!.ConnectionString));
+            services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(sqlServerConnectionString));
 
             services.AddHostedService<AppInitializer>();
             services.AddHostedService<BackgroundFileService>();
