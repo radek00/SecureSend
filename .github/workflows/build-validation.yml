@@ -2,7 +2,7 @@ name: build
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
 
 env:
   DOTNET_VERSION: '7.x' # The .NET SDK version to use
