@@ -4,24 +4,8 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import mkcert from "vite-plugin-mkcert";
 
-// https://vitejs.dev/config/
-export default defineConfig({
+const baseConfig = {
   plugins: [vue(), mkcert()],
-  build: {
-    rollupOptions: {
-      input: {
-        app: './index.html',
-        serviceWorker: './serviceWorker.js'
-      },
-      output: {
-        entryFileNames: assetInfo => {
-          return assetInfo.name === 'serviceWorker'
-             ? '[name].js'                  // put service worker in root
-             : 'assets/js/[name]-[hash].js' // others in `assets/js/`
-        }
-      },
-    }
-  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -36,8 +20,47 @@ export default defineConfig({
         target: "https://localhost:7109",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, "/api"),
+        rewrite: (path: string) => path.replace(/^\/api/, "/api"),
       },
     },
   },
+};
+
+export default defineConfig(({ mode }): any => {
+  if (mode === "app") {
+    return {
+      ...baseConfig,
+      build: {
+        emptyOutDir: true,
+        rollupOptions: {
+          input: {
+            app: "./index.html",
+          },
+          output: {
+            entryFileNames: () => "assets/js/[name]-[hash].js",
+            inlineDynamicImports: false,
+          },
+        },
+      },
+    };
+  }
+
+  if (mode === "worker") {
+    return {
+      ...baseConfig,
+      build: {
+        emptyOutDir: false,
+        rollupOptions: {
+          input: {
+            serviceWorker: "./serviceWorker.js",
+          },
+          output: {
+            entryFileNames: () => "[name].js",
+            inlineDynamicImports: true,
+          },
+        },
+      },
+    };
+  }
+  return baseConfig;
 });

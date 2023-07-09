@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "vite",
     "debug": "vite --debug",
-    "build": "run-p type-check build-only",
+    "build": "run-s type-check build-app build-worker",
     "preview": "vite preview",
-    "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
-    "prettier": "npx prettier --write ."
+    "prettier": "npx prettier --write .",
+    "build-app": "vite build --mode app",
+    "build-worker": "vite build --mode worker"
   },
   "dependencies": {
     "vee-validate": "^4.9.6",
