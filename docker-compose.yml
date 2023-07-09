@@ -1,0 +1,28 @@
+version: '3.4'
+networks:
+  secureSend:
+services:
+  securesend:
+    image: chupacabra500/secure_send:latest
+    build:
+      dockerfile: ./Dockerfile
+    volumes:
+      - D:\SecureSendDocker:/app/files
+    environment:
+      - SqlServerOptions__Server=db
+      - SqlServerOptions__Port=1433
+    ports:
+      - 5000:5000
+    networks:
+      - secureSend
+    depends_on:
+      - db
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - 1433:1433
+    networks:
+      - secureSend

@@ -14,7 +14,7 @@ const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
     try {
       const registration = await navigator.serviceWorker.register(
-        "serviceWorker.js",
+        `${import.meta.env.BASE_URL}serviceWorker.js`,
         { type: "module", scope: "/" }
       );
       if (registration.installing) {
