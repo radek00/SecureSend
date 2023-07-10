@@ -36,7 +36,7 @@ jobs:
 
       - name: Install npm packages
         run: |
-              cd ./ClientApp
+              cd ./SecureSend/ClientApp
               npm install
 
       - name: Build Vite project
