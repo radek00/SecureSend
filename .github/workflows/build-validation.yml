@@ -38,6 +38,10 @@ jobs:
         working-directory: ./SecureSend/ClientApp
         run: npm install
 
+      - name: Prettier verify
+        working-directory: ./SecureSend/ClientApp
+        run: npm run prettier-verify
+
       - name: Build Vite project
         working-directory: ./SecureSend/ClientApp
         run: npm run build

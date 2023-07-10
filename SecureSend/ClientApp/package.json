@@ -10,7 +10,8 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "prettier": "npx prettier --write .",
     "build-app": "vite build --mode app",
-    "build-worker": "vite build --mode worker"
+    "build-worker": "vite build --mode worker",
+    "prettier-verify": "prettier . --check"
   },
   "dependencies": {
     "vee-validate": "^4.9.6",
