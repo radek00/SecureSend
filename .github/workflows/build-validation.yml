@@ -35,10 +35,10 @@ jobs:
           node-version: 18.x
 
       - name: Install npm packages
-        run: |
-              cd ./SecureSend/ClientApp
-              npm install
+        working-directory: ./SecureSend/ClientApp
+        run: npm install
 
       - name: Build Vite project
+        working-directory: ./SecureSend/ClientApp
         run: npm run build
 
