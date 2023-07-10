@@ -11,7 +11,7 @@
     "prettier": "npx prettier --write .",
     "build-app": "vite build --mode app",
     "build-worker": "vite build --mode worker",
-    "prettier-verify": "prettier . --check"
+    "prettier-verify": "prettier . --check --config ./.prettierrc.json"
   },
   "dependencies": {
     "vee-validate": "^4.9.6",
