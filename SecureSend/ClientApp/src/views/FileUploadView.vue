@@ -134,7 +134,7 @@ const encryptFile = async () => {
   for (const [file] of files.value) {
     const promise = splitFile(
       file,
-      64 * 1024,
+       5 * 1024 * 1024,
       async (chunk: ArrayBuffer, num, totalChunks) => {
         try {
           await SecureSendService.uploadChunk(
