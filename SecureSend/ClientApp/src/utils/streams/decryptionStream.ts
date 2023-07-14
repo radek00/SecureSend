@@ -8,7 +8,7 @@ export default function decryptStream(
 ) {
   console.log("streaming");
   const inputStream = input.pipeThrough(
-    new TransformStream(new StreamSlicer(64 * 1024 + 16))
+    new TransformStream(new StreamSlicer(5 * 1024 * 1024 + 16))
   );
   return inputStream.pipeThrough(
     new TransformStream(new StreamDecryptor(password, salt))
