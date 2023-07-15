@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import UploadIcon from "@/assets/icons/UploadIcon.vue";
 import FileCard from "../FileCard.vue";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
+import CheckIcon from "@/assets/icons/CheckIcon.vue";
 
 defineEmits(["onFielsChange"]);
 
 defineProps<{
-  files: Map<File, number | string>;
+  files: Map<File, number | string | boolean>;
 }>();
 </script>
 
@@ -40,13 +42,32 @@ defineProps<{
       :file-name="key.name"
       :size="key.size"
     >
+      <template #cardMiddle>
+        <LoadingIndicator
+          v-if="value === 100"
+          class="w-8 h-5 mr-2"
+        ></LoadingIndicator>
+        <CheckIcon v-if="value === true"></CheckIcon>
+      </template>
       <template #cardBottom>
-        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2">
           <div
             class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-            :style="{ width: `${value}%` }"
+            :style="{
+              width: `${
+                value === true ? 100 : typeof value === 'number' ? value : 100
+              }%`,
+            }"
           >
-            {{ value }}%
+            {{
+              typeof value === "string"
+                ? value
+                : typeof value === "number"
+                ? value === 100
+                  ? "Finishing upload..."
+                  : `${value}%`
+                : "Upload completed"
+            }}
           </div>
         </div>
       </template>
