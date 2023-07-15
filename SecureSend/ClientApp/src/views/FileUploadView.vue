@@ -24,16 +24,22 @@
     >
       <StyledButton
         :type="ButtonType.primary"
-        :disabled="step === 0"
+        :disabled="step === 0 || isLoading"
         @click="step -= 1"
         >Back</StyledButton
       >
       <StyledButton
         :type="ButtonType.primary"
-        :disabled="!meta.valid"
+        :disabled="!meta.valid || isLoading"
         @click="onSubmit()"
       >
-        {{ step < 2 ? "Next" : "Upload" }}
+        <span class="flex items-center justify-center">
+          {{ step < 2 ? "Next" : "Upload" }}
+          <LoadingIndicator
+            v-if="isLoading && step !== 2"
+            class="w-5 h-5 ml-2"
+          ></LoadingIndicator>
+        </span>
       </StyledButton>
     </div>
   </div>
@@ -59,7 +65,7 @@ import SchemaInput from "@/components/FileUploadForm/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import AuthenticatedSecretKeyCryptography from "@/utils/AuthenticatedSecretKeyCryptography";
 import splitFile from "@/utils/splitFile";
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import { useForm } from "vee-validate";
 import { computed } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
@@ -69,6 +75,8 @@ import { ButtonType } from "@/models/enums/ButtonType";
 import ConfirmModalVue from "@/components/ConfirmModal.vue";
 import { useConfirmDialog } from "@/utils/composables/useConfirmDialog";
 import SimpleInput from "@/components/SimpleInput.vue";
+import { inject } from "vue";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 interface IMappedFormValues {
   expiryDate: string;
@@ -83,6 +91,8 @@ let keychain: AuthenticatedSecretKeyCryptography;
 const step = ref<number>(0);
 
 let downloadUrl: string;
+
+const isLoading = inject<Ref<boolean>>("isLoading");
 
 const stepZeroschema = {
   password(value: string) {
@@ -119,11 +129,15 @@ const { handleSubmit, meta, resetForm } = useForm({
 
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 1) {
+    isLoading!.value = true;
     await SecureSendService.createSecureUpload(uuid);
+    isLoading!.value = false;
   } else if (step.value === 2) {
+    isLoading!.value = true;
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
     await keychain.start();
     await encryptFile();
+    isLoading!.value = false;
     const { data } = await reveal();
     console.log(data);
     if (data) {
@@ -141,7 +155,7 @@ const copyToClipboard = () => navigator.clipboard.writeText(downloadUrl);
 const uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
-const files = ref(new Map<File, number | string>());
+const files = ref(new Map<File, number | string | boolean>());
 
 const onFilesChange = (event: any) => {
   files.value.clear();
@@ -177,7 +191,12 @@ const encryptFile = async () => {
             chunk,
             file.type
           );
-          files.value.set(file, Math.ceil(((num + 1) / totalChunks) * 100));
+          files.value.set(
+            file,
+            num + 1 === totalChunks
+              ? true
+              : Math.ceil(((num + 1) / totalChunks) * 100)
+          );
         } catch (error) {
           files.value.set(file, "Error with uploading file");
           throw error;
