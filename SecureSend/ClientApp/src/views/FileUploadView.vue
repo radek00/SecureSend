@@ -37,6 +37,21 @@
       </StyledButton>
     </div>
   </div>
+  <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
+    <template #header>Share your files</template>
+    <template #body>
+      <SimpleInput
+        :value="createDownloadUrl()"
+        label="Share your files"
+        name="downloadUrl"
+      ></SimpleInput>
+    </template>
+    <template #footer>
+      <StyledButton @click="copyToClipboard()" :type="ButtonType.primary"
+        >Copy to clipboard</StyledButton
+      >
+    </template>
+  </ConfirmModalVue>
 </template>
 
 <script setup lang="ts">
@@ -51,16 +66,23 @@ import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
 import StyledButton from "@/components/FileUploadForm/StyledButton.vue";
 import { ButtonType } from "@/models/enums/ButtonType";
+import ConfirmModalVue from "@/components/ConfirmModal.vue";
+import { useConfirmDialog } from "@/utils/composables/useConfirmDialog";
+import SimpleInput from "@/components/SimpleInput.vue";
 
 interface IMappedFormValues {
   expiryDate: string;
   password: string;
 }
 
+const { isRevealed, reveal, confirm } = useConfirmDialog();
+
 const salt = crypto.getRandomValues(new Uint8Array(16));
 console.log(salt);
 let keychain: AuthenticatedSecretKeyCryptography;
 const step = ref<number>(0);
+
+let downloadUrl: string;
 
 const stepZeroschema = {
   password(value: string) {
@@ -89,7 +111,7 @@ const getInitialValues = (): IMappedFormValues => {
   };
 };
 
-const { handleSubmit, meta } = useForm({
+const { handleSubmit, meta, resetForm } = useForm({
   validationSchema: currentSchema,
   initialValues: getInitialValues(),
   keepValuesOnUnmount: true,
@@ -102,10 +124,19 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
     await keychain.start();
     await encryptFile();
-    alert(`Heres your link to share files: ${createDownloadUrl()}`);
+    const { data } = await reveal();
+    console.log(data);
+    if (data) {
+      resetForm({ values: getInitialValues() });
+      step.value = 0;
+      return;
+    }
+    console.log("dialog closed");
   }
   if (step.value < 2) step.value++;
 });
+
+const copyToClipboard = () => navigator.clipboard.writeText(downloadUrl);
 
 const uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
@@ -123,9 +154,10 @@ const onFilesChange = (event: any) => {
 
 const createDownloadUrl = () => {
   const base64Salt = btoa(String.fromCharCode.apply(null, salt as any));
-  return window.location
+  downloadUrl = window.location
     .toString()
     .concat(`download/${uuid}#${base64Salt}_${keychain.hash}`);
+  return downloadUrl;
 };
 
 const encryptFile = async () => {
