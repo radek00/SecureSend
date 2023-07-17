@@ -3,11 +3,14 @@ import "./assets/main.css";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { useAlert } from "./utils/composables/useAlert";
 
 const app = createApp(App);
 
-app.config.errorHandler = (error) => {
-  console.log("global error", error);
+const { openDanger } = useAlert();
+
+app.config.errorHandler = () => {
+  openDanger("Something went wrong");
 };
 
 const registerServiceWorker = async () => {
