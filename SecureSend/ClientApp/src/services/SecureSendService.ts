@@ -35,7 +35,7 @@ export abstract class SecureSendService {
   static viewSecureUpload = async (
     viewSecureUpload: ViewSecureUpload
   ): Promise<SecureUploadDto> => {
-    return await fetchWrapper.put(
+    return await fetchWrapper.put<SecureUploadDto>(
       `${endpoints.secureSend}?id=${viewSecureUpload.id}`
     );
   };

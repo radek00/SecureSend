@@ -77,6 +77,7 @@ import { useConfirmDialog } from "@/utils/composables/useConfirmDialog";
 import SimpleInput from "@/components/SimpleInput.vue";
 import { inject } from "vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
+import { useAlert } from "@/utils/composables/useAlert";
 
 interface IMappedFormValues {
   expiryDate: string;
@@ -85,10 +86,17 @@ interface IMappedFormValues {
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
-const salt = crypto.getRandomValues(new Uint8Array(16));
-console.log(salt);
+const { openSuccess } = useAlert();
+
+let salt = crypto.getRandomValues(new Uint8Array(16));
 let keychain: AuthenticatedSecretKeyCryptography;
+
 const step = ref<number>(0);
+
+let uuid = self.crypto.randomUUID();
+const uploadStatus = ref<number>();
+
+const files = ref(new Map<File, number | string | boolean>());
 
 let downloadUrl: string;
 
@@ -141,21 +149,25 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
     const { data } = await reveal();
     console.log(data);
     if (data) {
-      resetForm({ values: getInitialValues() });
-      step.value = 0;
+      await formReset();
+      openSuccess("Upload successful");
       return;
     }
-    console.log("dialog closed");
   }
   if (step.value < 2) step.value++;
 });
 
-const copyToClipboard = () => navigator.clipboard.writeText(downloadUrl);
+const formReset = async () => {
+  resetForm({ values: getInitialValues() });
+  step.value = 0;
+  salt = crypto.getRandomValues(new Uint8Array(16));
+  uuid = self.crypto.randomUUID();
+};
 
-const uuid = self.crypto.randomUUID();
-const uploadStatus = ref<number>();
-
-const files = ref(new Map<File, number | string | boolean>());
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(downloadUrl);
+  openSuccess("Link copied to clipboard");
+};
 
 const onFilesChange = (event: any) => {
   files.value.clear();
