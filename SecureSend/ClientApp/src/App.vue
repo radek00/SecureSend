@@ -5,7 +5,7 @@ import { RouterView } from "vue-router";
 <template>
   <div
     id="alert-container"
-    class="absolute h-fit top-1 left-1 flex flex-col"
+    class="absolute z-50 h-fit top-1 left-1 flex flex-col"
   ></div>
   <RouterView />
 </template>
