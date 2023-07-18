@@ -1,5 +1,3 @@
-// This source code is taken from Firefox Send (https://github.com/mozilla/send) and slightly modified.
-
 export default async function splitFile(
   file: File,
   chunkSize: number,
@@ -10,49 +8,23 @@ export default async function splitFile(
   ) => void,
   transformer?: (chunk: Uint8Array, chunkIndex: number) => any
 ) {
-  return new Promise((resolve, reject) => {
-    const fileSize = file.size;
-    const totalChunks = Math.ceil(fileSize / chunkSize);
-    console.log(totalChunks);
-    let offset = 0;
+  const fileSize = file.size;
+  const totalChunks = Math.ceil(fileSize / chunkSize);
+  let offset = 0;
 
-    const readChunk = () => {
-      const r = new FileReader();
-      const blob = file.slice(offset, chunkSize + offset);
-      r.onload = readEventHandler;
-      r.readAsArrayBuffer(blob);
-    };
+  while (offset < fileSize) {
+    const buffer = await file.slice(offset, offset + chunkSize).arrayBuffer();
+    await readEventHandler(buffer);
+  }
 
-    const readEventHandler = async (evt: any) => {
-      if (evt.target.error == null) {
-        const sequenceNumber = offset / chunkSize;
-        offset += evt.target.result.byteLength;
-        let data = new Uint8Array(evt.target.result);
+  async function readEventHandler(buffer: ArrayBuffer) {
+    const sequenceNumber = offset / chunkSize;
+    offset += buffer.byteLength;
+    let data = new Uint8Array(buffer);
 
-        if (transformer) {
-          try {
-            data = await transformer(data, sequenceNumber);
-            await callback(data, sequenceNumber, totalChunks);
-          } catch (error) {
-            reject(error);
-          }
-        }
-      } else {
-        // Read error.
-        return;
-      }
-
-      if (offset >= fileSize) {
-        // Done reading file.
-        resolve(undefined);
-        return;
-      }
-
-      // Off to the next chunk.
-      readChunk();
-    };
-
-    // Let's start reading the first block.
-    readChunk();
-  });
+    if (transformer) {
+      data = await transformer(data, sequenceNumber);
+      await callback(data, sequenceNumber, totalChunks);
+    }
+  }
 }

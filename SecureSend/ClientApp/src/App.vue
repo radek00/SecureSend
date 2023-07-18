@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
 import { RouterView } from "vue-router";
-
-provide("isLoading", ref<boolean>(false));
 </script>
 
 <template>
+  <div
+    id="alert-container"
+    class="absolute z-50 h-fit top-1 left-1 flex flex-col"
+  ></div>
   <RouterView />
-  <!-- <FileUpload></FileUpload> -->
 </template>

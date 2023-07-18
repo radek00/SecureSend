@@ -1,13 +1,21 @@
 import "./assets/main.css";
 
-import { createApp } from "vue";
+import { createApp, inject, ref, type Ref } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { useAlert } from "./utils/composables/useAlert";
 
 const app = createApp(App);
 
-app.config.errorHandler = (error) => {
-  console.log("global error", error);
+const { openDanger } = useAlert();
+
+const isLoading = ref<boolean>(false);
+
+app.provide("isLoading", isLoading);
+
+app.config.errorHandler = () => {
+  isLoading!.value = false;
+  openDanger("Something went wrong");
 };
 
 const registerServiceWorker = async () => {

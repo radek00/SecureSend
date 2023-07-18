@@ -8,7 +8,7 @@ defineEmits(["closeClick"]);
   <div
     tabindex="-1"
     aria-hidden="true"
-    class="absolute h-screen w-screen flex items-center justify-center bg-gray-900/50"
+    class="absolute z-40 h-screen w-screen flex items-center justify-center bg-gray-900/50"
   >
     <div class="relative w-full max-w-2xl max-h-full">
       <!-- Modal content -->
