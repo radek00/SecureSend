@@ -1,32 +1,25 @@
 <template>
   <Transition>
     <div
-      v-if="isShown"
+      v-show="isShown"
       ref="root"
-      :class="`flex items-center p-4 mb-4 text-sm border rounded-lg bg-gray-800 ${textColor}`"
+      :class="`flex items-center gap-2 w-fit p-3 mb-4 text-sm border rounded-lg bg-gray-800 ${textColor}`"
       role="alert"
     >
-      <svg
-        class="flex-shrink-0 inline w-4 h-4 mr-3"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
-        />
-      </svg>
+      <InfoIcon></InfoIcon>
       <span class="sr-only">Info</span>
-      <div>
-        <span class="font-medium">
-          <slot></slot>
-        </span>
-      </div>
-      <button @click="onCloseClick()">
-        <CloseIcon
-          class="ml-2 text-gray-400 border-solid hover:border-b-2 border-gray-400"
-        ></CloseIcon>
+      <span class="font-medium">
+        <slot></slot>
+      </span>
+      <button
+        @click="onCloseClick()"
+        type="button"
+        class="p-1 rounded-lg focus:ring-2 focus:ring-gray-300 inline-flex items-center justify-center h-6 w-6 text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700"
+        data-dismiss-target="#toast-success"
+        aria-label="Close"
+      >
+        <span class="sr-only">Close</span>
+        <CloseIcon class="w-3 h-3"></CloseIcon>
       </button>
     </div>
   </Transition>
@@ -48,6 +41,7 @@
 import { computed, ref, render } from "vue";
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
 import { DialogType } from "../utils/composables/useAlert";
+import InfoIcon from "@/assets/icons/InfoIcon.vue";
 
 defineEmits(["onCloseClick"]);
 
@@ -64,9 +58,12 @@ const isShown = ref<boolean>(false);
 requestAnimationFrame(() => (isShown.value = true));
 
 const onCloseClick = () => {
-  const wrapper = root.value;
-  render(null, wrapper);
-  wrapper.parentElement.remove();
+  isShown.value = false;
+  setTimeout(() => {
+    const wrapper = root.value;
+    render(null, wrapper);
+    wrapper.parentElement.remove();
+  }, 1000);
 };
 
 const props = defineProps<{
