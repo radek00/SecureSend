@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useAlert } from "@/utils/composables/useAlert";
-
-provide("isLoading", ref<boolean>(false));
 
 const { openDanger, openSuccess } = useAlert();
 </script>
