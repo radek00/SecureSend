@@ -137,7 +137,6 @@ const { handleSubmit, meta, resetForm } = useForm({
 
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 1) {
-
   } else if (step.value === 2) {
     isLoading!.value = true;
     await SecureSendService.createSecureUpload(uuid);
