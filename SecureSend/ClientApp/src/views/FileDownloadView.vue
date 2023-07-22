@@ -61,7 +61,7 @@ const isPasswordValidComputed = computed(
     >
       <FileCard
         v-for="file in secureUpload.files"
-        :key="(file.fileName as string)"
+        
         :file-name="file.fileName!"
       >
         <template #cardBottom>
