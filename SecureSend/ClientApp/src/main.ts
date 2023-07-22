@@ -1,6 +1,6 @@
 import "./assets/main.css";
 
-import { createApp, inject, ref, type Ref } from "vue";
+import { createApp, ref } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { useAlert } from "./utils/composables/useAlert";

@@ -23,11 +23,4 @@ export default class StreamDecryptor {
       controller.error(error);
     }
   }
-
-  async flush(controller: any) {
-    console.log("ece stream ends");
-    // if (this.prevChunk) {
-    //   await this.transformPrevChunk(true, controller);
-    // }
-  }
 }

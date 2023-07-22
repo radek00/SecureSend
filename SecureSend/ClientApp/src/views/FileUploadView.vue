@@ -119,7 +119,7 @@ const stepOneSchema = {
 
 const currentSchema = computed(() => {
   if (step.value === 0) return stepZeroschema;
-  if (step.value === 1) return stepOneSchema;
+  return stepOneSchema;
 });
 
 const getInitialValues = (): IMappedFormValues => {
@@ -136,8 +136,7 @@ const { handleSubmit, meta, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
-  if (step.value === 1) {
-  } else if (step.value === 2) {
+  if (step.value === 2) {
     isLoading!.value = true;
     await SecureSendService.createSecureUpload(uuid);
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
