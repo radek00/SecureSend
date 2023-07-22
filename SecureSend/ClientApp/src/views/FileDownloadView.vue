@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StyledButton from "@/components/FileUploadForm/StyledButton.vue";
+import StyledButton from "@/components/StyledButton.vue";
 import endpoints from "@/config/endpoints";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import { ButtonType } from "@/models/enums/ButtonType";
