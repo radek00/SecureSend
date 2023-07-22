@@ -38,7 +38,8 @@ defineProps<{
     class="flex flex-col gap-5 mt-5 w-full justify-between max-h-[300px] overflow-y-auto p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
   >
     <FileCard
-      v-for="[key, value] in files"
+      v-for="([key, value], idx) in files"
+      :key="idx"
       :file-name="key.name"
       :size="key.size"
     >

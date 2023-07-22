@@ -51,6 +51,7 @@ const textColor = computed(() => {
   if (props.type === DialogType.Danger) return "text-red-400 border-red-800";
   if (props.type === DialogType.Success)
     return "text-green-400 border-green-800";
+  return "";
 });
 
 const isShown = ref<boolean>(false);

@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ButtonType } from "@/models/enums/ButtonType";
-const props = defineProps<{
+defineProps<{
   type: ButtonType;
 }>();
 </script>

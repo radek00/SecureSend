@@ -56,7 +56,7 @@
 import PasswordIcon from "@/assets/icons/PasswordIcon.vue";
 import CalendarIcon from "@/assets/icons/CalendarIcon.vue";
 import UploadIconStep from "@/assets/icons/UploadIconStep.vue";
-const props = defineProps<{
+defineProps<{
   step: number;
 }>();
 </script>
