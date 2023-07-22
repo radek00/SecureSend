@@ -36,7 +36,7 @@
         <span class="flex items-center justify-center">
           {{ step < 2 ? "Next" : "Upload" }}
           <LoadingIndicator
-            v-if="isLoading && step !== 2"
+            v-if="isLoading"
             class="w-5 h-5 ml-2"
           ></LoadingIndicator>
         </span>
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import SchemaInput from "@/components/FileUploadForm/SchemaInput.vue";
+import SchemaInput from "@/components/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import AuthenticatedSecretKeyCryptography from "@/utils/AuthenticatedSecretKeyCryptography";
 import splitFile from "@/utils/splitFile";
@@ -70,7 +70,7 @@ import { useForm } from "vee-validate";
 import { computed } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
-import StyledButton from "@/components/FileUploadForm/StyledButton.vue";
+import StyledButton from "@/components/StyledButton.vue";
 import { ButtonType } from "@/models/enums/ButtonType";
 import ConfirmModalVue from "@/components/ConfirmModal.vue";
 import { useConfirmDialog } from "@/utils/composables/useConfirmDialog";
@@ -137,17 +137,15 @@ const { handleSubmit, meta, resetForm } = useForm({
 
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 1) {
-    isLoading!.value = true;
-    await SecureSendService.createSecureUpload(uuid);
-    isLoading!.value = false;
+
   } else if (step.value === 2) {
     isLoading!.value = true;
+    await SecureSendService.createSecureUpload(uuid);
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
     await keychain.start();
     await encryptFile();
     isLoading!.value = false;
     const { data } = await reveal();
-    console.log(data);
     if (data) {
       await formReset();
       openSuccess("Upload successful");
@@ -162,6 +160,7 @@ const formReset = async () => {
   step.value = 0;
   salt = crypto.getRandomValues(new Uint8Array(16));
   uuid = self.crypto.randomUUID();
+  files.value.clear();
 };
 
 const copyToClipboard = () => {
