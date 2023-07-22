@@ -59,11 +59,7 @@ const isPasswordValidComputed = computed(
     <div
       class="flex flex-col gap-5 mt-5 w-full justify-between p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
     >
-      <FileCard
-        v-for="file in secureUpload.files"
-        
-        :file-name="file.fileName!"
-      >
+      <FileCard v-for="file in secureUpload.files" :file-name="file.fileName!">
         <template #cardBottom>
           <a
             class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
