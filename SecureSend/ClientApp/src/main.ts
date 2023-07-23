@@ -22,7 +22,7 @@ const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
     try {
       const registration = await navigator.serviceWorker.register(
-        `${import.meta.env.BASE_URL}serviceWorker.js`,
+        `${import.meta.env.BASE_URL}${import.meta.env.VITE_WORKER}`,
         { type: "module", scope: "/" }
       );
       if (registration.installing) {
