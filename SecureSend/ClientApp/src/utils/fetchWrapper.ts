@@ -12,7 +12,7 @@ function get<T>(url: string): Promise<T> {
   return fetch(url, requestOptions).then(handleResponse<T>);
 }
 
-function post<T>(url: string, body?: Body, options?: any): Promise<T> {
+function post<T>(url: string, body?: Body, options?: RequestInit): Promise<T> {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },

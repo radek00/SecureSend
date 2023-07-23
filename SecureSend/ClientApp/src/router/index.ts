@@ -25,11 +25,11 @@ const router = createRouter({
           });
           (to.params.secureUpload as unknown as SecureUploadDto) = upload;
           const keys = to.hash.split("_");
-          to.params.salt = new Uint8Array(
+          (to.params.salt as unknown as Uint8Array) = new Uint8Array(
             atob(keys[0].slice(1))
               .split("")
               .map((c) => c.charCodeAt(0))
-          ) as any;
+          );
           to.params.passwordHash = keys[1];
         } catch (error) {
           return { path: form.path };

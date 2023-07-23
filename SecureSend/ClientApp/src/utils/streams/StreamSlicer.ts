@@ -11,13 +11,16 @@ export default class StreamSlicer {
     this.offset = 0;
   }
 
-  public send(buf: any, controller: any) {
+  public send(buf: Uint8Array, controller: TransformStreamDefaultController) {
     controller.enqueue(buf);
     this.partialChunk = new Uint8Array(this.chunkSize);
     this.offset = 0;
   }
 
-  public transform(chunk: Uint8Array, controller: any) {
+  public transform(
+    chunk: Uint8Array,
+    controller: TransformStreamDefaultController
+  ) {
     let i = 0;
 
     if (this.offset > 0) {
@@ -46,7 +49,7 @@ export default class StreamSlicer {
     }
   }
 
-  public flush(controller: any) {
+  public flush(controller: TransformStreamDefaultController) {
     if (this.offset > 0) {
       controller.enqueue(this.partialChunk.slice(0, this.offset));
     }

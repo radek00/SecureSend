@@ -2,11 +2,11 @@ export default async function splitFile(
   file: File,
   chunkSize: number,
   callback: (
-    chunk: Uint8Array,
+    chunk: ArrayBuffer,
     sequenceNumber: number,
     totalChunks: number
-  ) => void,
-  transformer?: (chunk: Uint8Array, chunkIndex: number) => any
+  ) => Promise<void>,
+  transformer: (chunk: Uint8Array, chunkIndex: number) => Promise<ArrayBuffer>
 ) {
   const fileSize = file.size;
   const totalChunks = Math.ceil(fileSize / chunkSize);
@@ -20,11 +20,7 @@ export default async function splitFile(
   async function readEventHandler(buffer: ArrayBuffer) {
     const sequenceNumber = offset / chunkSize;
     offset += buffer.byteLength;
-    let data = new Uint8Array(buffer);
-
-    if (transformer) {
-      data = await transformer(data, sequenceNumber);
-      await callback(data, sequenceNumber, totalChunks);
-    }
+    const data = await transformer(new Uint8Array(buffer), sequenceNumber);
+    await callback(data, sequenceNumber, totalChunks);
   }
 }
