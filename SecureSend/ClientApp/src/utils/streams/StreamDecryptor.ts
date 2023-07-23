@@ -12,7 +12,6 @@ export default class StreamDecryptor {
       if (this.keychain.seq === 0) {
         await this.keychain.start();
       }
-      console.log("transforming");
       const decryptedChunk = await this.keychain.decrypt(
         chunk,
         this.keychain.seq

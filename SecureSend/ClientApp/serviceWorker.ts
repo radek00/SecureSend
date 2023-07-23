@@ -7,17 +7,14 @@ import decryptStream from "./src/utils/streams/decryptionStream";
 const map = new Map();
 
 self.addEventListener("install", () => {
-  console.log("sw installing");
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("sw active");
   event.waitUntil(self.clients.claim());
 });
 
-const decrypt = async (id, url) => {
-  console.log(id, url);
+const decrypt = async (id: string, url: string) => {
   const fileData = map.get(id);
 
   if (!fileData) return new Response(null, { status: 400 });
@@ -46,10 +43,9 @@ const decrypt = async (id, url) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (new URL(event.request.url).pathname === endpoints.download) {
-    console.log("fetching", event.request);
     event.respondWith(
       decrypt(
-        new URL(event.request.url).searchParams.get("id"),
+        new URL(event.request.url).searchParams.get("id")!,
         event.request.url
       )
     );
@@ -58,8 +54,6 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data.request === "init") {
-    console.log("download init");
     map.set(event.data.id, { ...event.data });
-    console.log(map);
   }
 });

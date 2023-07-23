@@ -18,7 +18,6 @@ export default class StreamSlicer {
   }
 
   public transform(chunk: Uint8Array, controller: any) {
-    console.log("slicing");
     let i = 0;
 
     if (this.offset > 0) {
