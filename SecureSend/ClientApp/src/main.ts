@@ -25,12 +25,15 @@ const registerServiceWorker = async () => {
         `${import.meta.env.BASE_URL}${import.meta.env.VITE_WORKER}`,
         { type: "module", scope: "/" }
       );
-      if (registration.installing) {
-        console.log("Service worker installing");
-      } else if (registration.waiting) {
-        console.log("Service worker installed");
-      } else if (registration.active) {
-        console.log("Service worker active");
+      const devMode = import.meta.env.DEV;
+      if (devMode) {
+        if (registration.installing) {
+          console.log("Service worker installing");
+        } else if (registration.waiting) {
+          console.log("Service worker installed");
+        } else if (registration.active) {
+          console.log("Service worker active");
+        }
       }
     } catch (error) {
       console.error(`Registration failed with ${error}`);
