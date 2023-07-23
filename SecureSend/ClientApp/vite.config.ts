@@ -6,6 +6,8 @@ import mkcert from "vite-plugin-mkcert";
 
 const baseConfig = {
   plugins: [vue(), mkcert()],
+  envDir: "./environment",
+  base: "/",
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -27,7 +29,7 @@ const baseConfig = {
 };
 
 export default defineConfig(({ mode }): any => {
-  if (mode === "app") {
+  if (mode === "production") {
     return {
       ...baseConfig,
       build: {
@@ -52,7 +54,7 @@ export default defineConfig(({ mode }): any => {
         emptyOutDir: false,
         rollupOptions: {
           input: {
-            serviceWorker: "./serviceWorker.js",
+            serviceWorker: "./serviceWorker.ts",
           },
           output: {
             entryFileNames: () => "[name].js",
