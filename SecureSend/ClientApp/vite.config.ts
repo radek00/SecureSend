@@ -28,8 +28,8 @@ const baseConfig: UserConfig = {
   },
 };
 
-export default defineConfig(({ mode }: UserConfig) => {
-  if (mode === "production") {
+export default defineConfig((config: UserConfig): UserConfig => {
+  if (config.mode === "production") {
     return {
       ...baseConfig,
       build: {
@@ -47,7 +47,7 @@ export default defineConfig(({ mode }: UserConfig) => {
     };
   }
 
-  if (mode === "worker") {
+  if (config.mode === "worker") {
     return {
       ...baseConfig,
       build: {
