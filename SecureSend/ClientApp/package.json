@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "prettier": "npx prettier --write .",
-    "build-app": "vite build --mode app",
+    "build-app": "vite build",
     "build-worker": "vite build --mode worker",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "prettier-verify": "prettier . --check --config ./.prettierrc.json"

@@ -1,4 +1,6 @@
 version: '3.4'
+volumes:
+  secureSend:
 networks:
   secureSend:
 services:
@@ -7,7 +9,7 @@ services:
     build:
       dockerfile: ./Dockerfile
     volumes:
-      - D:\SecureSendDocker:/app/files
+      - secureSend:/app/files
     environment:
       - SqlServerOptions__Server=db
       - SqlServerOptions__Port=1433

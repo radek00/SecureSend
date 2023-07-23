@@ -1,11 +1,13 @@
 import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from "vite";
+import { defineConfig, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import mkcert from "vite-plugin-mkcert";
 
-const baseConfig = {
+const baseConfig: UserConfig = {
   plugins: [vue(), mkcert()],
+  envDir: "./environment",
+  base: "/",
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -26,8 +28,8 @@ const baseConfig = {
   },
 };
 
-export default defineConfig(({ mode }): any => {
-  if (mode === "app") {
+export default defineConfig(({ mode }: UserConfig) => {
+  if (mode === "production") {
     return {
       ...baseConfig,
       build: {
@@ -52,7 +54,7 @@ export default defineConfig(({ mode }): any => {
         emptyOutDir: false,
         rollupOptions: {
           input: {
-            serviceWorker: "./serviceWorker.js",
+            serviceWorker: "./serviceWorker.ts",
           },
           output: {
             entryFileNames: () => "[name].js",

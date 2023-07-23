@@ -6,7 +6,6 @@ export default function decryptStream(
   salt: Uint8Array,
   password: string
 ) {
-  console.log("streaming");
   const inputStream = input.pipeThrough(
     new TransformStream(new StreamSlicer(5 * 1024 * 1024 + 16))
   );

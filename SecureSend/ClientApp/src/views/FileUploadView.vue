@@ -16,7 +16,7 @@
     <div v-if="step === 2">
       <FileInput
         :files="files"
-        @on-fiels-change="onFilesChange($event)"
+        @on-fiels-change="onFilesChange($event.target)"
       ></FileInput>
     </div>
     <div
@@ -166,17 +166,19 @@ const copyToClipboard = () => {
   openSuccess("Link copied to clipboard");
 };
 
-const onFilesChange = (event: any) => {
+const onFilesChange = (event: HTMLInputElement) => {
   files.value.clear();
-  for (let i = 0; i < event.target.files.length; i++) {
-    const file = event.target.files[i];
+  if (event.files) {
+    for (let i = 0; i < event.files.length; i++) {
+      const file = event.files[i];
 
-    files.value.set(file, 0);
+      files.value.set(file, 0);
+    }
   }
 };
 
 const createDownloadUrl = () => {
-  const base64Salt = btoa(String.fromCharCode.apply(null, salt as any));
+  const base64Salt = btoa(String.fromCharCode(...salt));
   downloadUrl = window.location
     .toString()
     .concat(`download/${uuid}#${base64Salt}_${keychain.hash}`);
