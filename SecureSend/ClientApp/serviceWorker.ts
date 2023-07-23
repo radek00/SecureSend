@@ -1,5 +1,8 @@
-import endpoints from "@/config/endpoints.ts";
-import decryptStream from "@/utils/streams/decryptionStream.ts";
+/// <reference lib="WebWorker" />
+declare const self: ServiceWorkerGlobalScope;
+
+import endpoints from "./src/config/endpoints";
+import decryptStream from "./src/utils/streams/decryptionStream";
 
 const map = new Map();
 
@@ -21,16 +24,18 @@ const decrypt = async (id, url) => {
 
   try {
     const fileResponse = await fetch(url);
-    const body = fileResponse.body;
+    const body = fileResponse.body!;
     const decryptedResponse = decryptStream(
       body,
       fileData.salt,
       fileData.password
     );
     const headers = {
-      "Content-Disposition": fileResponse.headers.get("Content-Disposition"),
-      "Content-Type": fileResponse.headers.get("Content-Type"),
-      "Content-Length": fileResponse.headers.get("Content-Length"),
+      "Content-Disposition":
+        fileResponse.headers.get("Content-Disposition") ?? "attachment",
+      "Content-Type":
+        fileResponse.headers.get("Content-Type") ?? "application/octet-stream",
+      "Content-Length": fileResponse.headers.get("Content-Length")!,
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {

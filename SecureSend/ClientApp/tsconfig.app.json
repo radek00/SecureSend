@@ -9,6 +9,6 @@
       "@/*": ["./src/*"]
     },
     "moduleResolution": "node",
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM", "WebWorker"]
   }
 }
