@@ -16,7 +16,7 @@
     <div v-if="step === 2">
       <FileInput
         :files="files"
-        @on-fiels-change="onFilesChange($event.target)"
+        @on-fiels-change="(value) => onFilesChange(value)"
       ></FileInput>
     </div>
     <div
@@ -166,11 +166,11 @@ const copyToClipboard = () => {
   openSuccess("Link copied to clipboard");
 };
 
-const onFilesChange = (event: HTMLInputElement) => {
+const onFilesChange = (formFiles: File[]) => {
   files.value.clear();
-  if (event.files) {
-    for (let i = 0; i < event.files.length; i++) {
-      const file = event.files[i];
+  if (formFiles) {
+    for (let i = 0; i < formFiles.length; i++) {
+      const file = formFiles[i];
 
       files.value.set(file, 0);
     }
