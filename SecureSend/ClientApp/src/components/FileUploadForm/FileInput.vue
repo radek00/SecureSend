@@ -18,7 +18,7 @@ const onDrop = (files: File[] | null) => {
   emit("onFielsChange", files);
 };
 
-const { isOverDropZone } = useDropZone(fileDropZone, {onDrop});
+const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
 </script>
 
 <template>
@@ -33,8 +33,11 @@ const { isOverDropZone } = useDropZone(fileDropZone, {onDrop});
     >
       <div class="flex flex-col items-center justify-center pt-5 pb-6">
         <UploadIcon></UploadIcon>
-        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+        <p v-if="!isOverDropZone" class="mb-2 text-sm text-gray-400">
           <span class="font-semibold">Click to upload</span> or drag and drop
+        </p>
+        <p v-else class="mb-2 text-sm text-gray-400">
+          <span class="font-semibold">Drop files to upload</span>
         </p>
       </div>
       <input
