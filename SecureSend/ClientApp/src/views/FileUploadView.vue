@@ -2,25 +2,39 @@
   <div
     class="w-11/12 md:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-800 dark:border-gray-800"
   >
-    <FormStepper :step="step"></FormStepper>
-    <div v-if="step === 0">
-      <SchemaInput
-        name="password"
-        type="password"
-        label="Encryption password"
-      ></SchemaInput>
-    </div>
-    <div v-if="step === 1">
-      <SchemaInput name="date" type="date" label="Expiry date"></SchemaInput>
-    </div>
-    <div v-if="step === 2">
-      <FileInput
-        :files="files"
-        @on-fiels-change="(value) => onFilesChange(value)"
-      ></FileInput>
+    <FormStepper class="px-[10px]" :step="step"></FormStepper>
+    <div
+      class="flex overflow-hidden items-center h-[100px] transition-height duration-500"
+      :class="{ 'h-[100px]': step !== 2, 'h-[300px]': step === 2 }"
+    >
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <SchemaInput
+          name="password"
+          type="password"
+          label="Encryption password"
+        ></SchemaInput>
+      </div>
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <SchemaInput name="date" type="date" label="Expiry date"></SchemaInput>
+      </div>
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <FileInput
+          :files="files"
+          @on-fiels-change="(value) => onFilesChange(value)"
+        ></FileInput>
+      </div>
     </div>
     <div
-      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center"
+      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center px-[10px]"
     >
       <StyledButton
         :type="ButtonType.primary"
@@ -83,6 +97,8 @@ interface IMappedFormValues {
   expiryDate: string;
   password: string;
 }
+
+const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
