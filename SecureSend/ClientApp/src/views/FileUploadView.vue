@@ -21,7 +21,7 @@
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
         :style="{ transform }"
       >
-        <SchemaInput name="date" type="date" label="Expiry date"></SchemaInput>
+        <SchemaInput name="expiryDate" type="date" label="Expiry date"></SchemaInput>
       </div>
       <div
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
@@ -126,7 +126,7 @@ const stepZeroschema = {
 };
 
 const stepOneSchema = {
-  date(value: string) {
+  expiryDate(value: string) {
     if (new Date(value) <= new Date())
       return "Expiry date must be earlier than today.";
     return true;
@@ -154,7 +154,7 @@ const { handleSubmit, meta, resetForm } = useForm({
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 2) {
     isLoading!.value = true;
-    await SecureSendService.createSecureUpload(uuid);
+    await SecureSendService.createSecureUpload(uuid, values.expiryDate);
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
     await keychain.start();
     await encryptFile();
