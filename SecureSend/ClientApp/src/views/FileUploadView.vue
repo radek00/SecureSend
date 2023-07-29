@@ -2,25 +2,49 @@
   <div
     class="w-11/12 md:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-800 dark:border-gray-800"
   >
-    <FormStepper :step="step"></FormStepper>
-    <div v-if="step === 0">
-      <SchemaInput
-        name="password"
-        type="password"
-        label="Encryption password"
-      ></SchemaInput>
-    </div>
-    <div v-if="step === 1">
-      <SchemaInput name="date" type="date" label="Expiry date"></SchemaInput>
-    </div>
-    <div v-if="step === 2">
-      <FileInput
-        :files="files"
-        @on-fiels-change="(value) => onFilesChange(value)"
-      ></FileInput>
+    <FormStepper class="px-[10px]" :step="step"></FormStepper>
+    <div
+      class="flex overflow-hidden items-center h-[100px] transition-height duration-500"
+      :class="{ 'h-[100px]': step !== 2, 'h-[300px]': step === 2 }"
+    >
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <SchemaInput
+          name="password"
+          type="password"
+          label="Encryption password"
+        ></SchemaInput>
+      </div>
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <SchemaInput
+          name="expiryDate"
+          type="date"
+          label="Expiry date"
+        ></SchemaInput>
+      </div>
+      <div
+        class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+        :style="{ transform }"
+      >
+        <FileInput
+          :files="files"
+          @on-fiels-change="(value) => onFilesChange(value)"
+          @on-file-remove="
+            (value) => {
+              files.delete(value);
+              fileKeys.delete(value.name);
+            }
+          "
+        ></FileInput>
+      </div>
     </div>
     <div
-      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center"
+      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center px-[10px]"
     >
       <StyledButton
         :type="ButtonType.primary"
@@ -84,6 +108,8 @@ interface IMappedFormValues {
   password: string;
 }
 
+const transform = computed(() => `translateX(-${step.value * 100}%)`);
+
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { openSuccess } = useAlert();
@@ -97,6 +123,7 @@ let uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
 const files = ref(new Map<File, number | string | boolean>());
+const fileKeys = new Map<string, boolean>();
 
 let downloadUrl: string;
 
@@ -110,7 +137,7 @@ const stepZeroschema = {
 };
 
 const stepOneSchema = {
-  date(value: string) {
+  expiryDate(value: string) {
     if (new Date(value) <= new Date())
       return "Expiry date must be earlier than today.";
     return true;
@@ -138,7 +165,7 @@ const { handleSubmit, meta, resetForm } = useForm({
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 2) {
     isLoading!.value = true;
-    await SecureSendService.createSecureUpload(uuid);
+    await SecureSendService.createSecureUpload(uuid, values.expiryDate);
     keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
     await keychain.start();
     await encryptFile();
@@ -166,13 +193,14 @@ const copyToClipboard = () => {
   openSuccess("Link copied to clipboard");
 };
 
-const onFilesChange = (formFiles: File[]) => {
-  files.value.clear();
+const onFilesChange = (formFiles: File[] | null) => {
   if (formFiles) {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
-
-      files.value.set(file, 0);
+      if (!fileKeys.has(file.name)) {
+        files.value.set(file, 0);
+        fileKeys.set(file.name, true);
+      }
     }
   }
 };
