@@ -21,7 +21,11 @@
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
         :style="{ transform }"
       >
-        <SchemaInput name="expiryDate" type="date" label="Expiry date"></SchemaInput>
+        <SchemaInput
+          name="expiryDate"
+          type="date"
+          label="Expiry date"
+        ></SchemaInput>
       </div>
       <div
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
@@ -30,6 +34,7 @@
         <FileInput
           :files="files"
           @on-fiels-change="(value) => onFilesChange(value)"
+          @on-file-remove="(value) => files.delete(value)"
         ></FileInput>
       </div>
     </div>
@@ -182,7 +187,7 @@ const copyToClipboard = () => {
   openSuccess("Link copied to clipboard");
 };
 
-const onFilesChange = (formFiles: File[]) => {
+const onFilesChange = (formFiles: File[] | null) => {
   files.value.clear();
   if (formFiles) {
     for (let i = 0; i < formFiles.length; i++) {

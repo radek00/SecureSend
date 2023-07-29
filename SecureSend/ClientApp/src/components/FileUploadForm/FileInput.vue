@@ -5,8 +5,12 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import CheckIcon from "@/assets/icons/CheckIcon.vue";
 import { ref } from "vue";
 import { useDropZone } from "@/utils/composables/useDropZone";
+import TrashIcon from "@/assets/icons/TrashIcon.vue";
 
-const emit = defineEmits(["onFielsChange"]);
+const emit = defineEmits<{
+  onFielsChange: [files: File[] | null];
+  onFileRemove: [file: File];
+}>();
 
 defineProps<{
   files: Map<File, number | string | boolean>;
@@ -54,7 +58,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
 
   <div
     v-else
-    class="flex flex-col gap-5 mt-5 w-full justify-between max-h-[300px] overflow-y-auto p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
+    class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
   >
     <FileCard
       v-for="([key, value], idx) in files"
@@ -63,6 +67,15 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       :size="key.size"
     >
       <template #cardMiddle>
+        <button
+          @click="emit('onFileRemove', key)"
+          type="button"
+          class="m-0 text-blue-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500"
+        >
+          <TrashIcon class="w-5 h-3"></TrashIcon>
+          <span class="sr-only">Remove file</span>
+        </button>
+
         <LoadingIndicator
           v-if="value === 100"
           class="w-8 h-5 mr-2"

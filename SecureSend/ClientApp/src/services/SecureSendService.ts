@@ -4,7 +4,10 @@ import type { ViewSecureUpload } from "@/models/ViewSecureUpload";
 import { fetchWrapper } from "@/utils/fetchWrapper";
 
 export abstract class SecureSendService {
-  static createSecureUpload = async (uuid: string, expiryDate: string): Promise<void> => {
+  static createSecureUpload = async (
+    uuid: string,
+    expiryDate: string
+  ): Promise<void> => {
     return await fetchWrapper.post<void>(
       `${endpoints.secureSend}?uploadId=${uuid}&expiryDate=${expiryDate}`
     );
