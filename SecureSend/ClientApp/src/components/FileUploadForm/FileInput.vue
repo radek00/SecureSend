@@ -56,56 +56,57 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       />
     </label>
   </div>
-
   <div
     v-else
     class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
   >
-    <FileCard
-      v-for="([key, value], idx) in files"
-      :key="idx"
-      :file-name="key.name"
-      :size="key.size"
-    >
-      <template #cardMiddle>
-        <button
-          @click="emit('onFileRemove', key)"
-          type="button"
-          class="m-0 text-blue-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500"
-        >
-          <TrashIcon class="w-5 h-3"></TrashIcon>
-          <span class="sr-only">Remove file</span>
-        </button>
-
-        <LoadingIndicator
-          v-if="value === 100"
-          class="w-8 h-5 mr-2"
-        ></LoadingIndicator>
-        <CheckIcon v-if="value === true"></CheckIcon>
-      </template>
-      <template #cardBottom>
-        <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2">
-          <div
-            class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-            :style="{
-              width: `${
-                value === true ? 100 : typeof value === 'number' ? value : 100
-              }%`,
-            }"
+    <TransitionGroup name="list">
+      <FileCard
+        v-for="([key, value], idx) in files"
+        :key="idx"
+        :file-name="key.name"
+        :size="key.size"
+      >
+        <template #cardMiddle>
+          <button
+            @click="emit('onFileRemove', key)"
+            type="button"
+            class="m-0 text-blue-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500"
           >
-            {{
-              typeof value === "string"
-                ? value
-                : typeof value === "number"
-                ? value === 100
-                  ? "Finishing upload..."
-                  : `${value}%`
-                : "Upload completed"
-            }}
+            <TrashIcon class="w-5 h-3"></TrashIcon>
+            <span class="sr-only">Remove file</span>
+          </button>
+
+          <LoadingIndicator
+            v-if="value === 100"
+            class="w-8 h-5 mr-2"
+          ></LoadingIndicator>
+          <CheckIcon v-if="value === true"></CheckIcon>
+        </template>
+        <template #cardBottom>
+          <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2">
+            <div
+              class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              :style="{
+                width: `${
+                  value === true ? 100 : typeof value === 'number' ? value : 100
+                }%`,
+              }"
+            >
+              {{
+                typeof value === "string"
+                  ? value
+                  : typeof value === "number"
+                  ? value === 100
+                    ? "Finishing upload..."
+                    : `${value}%`
+                  : "Upload completed"
+              }}
+            </div>
           </div>
-        </div>
-      </template>
-    </FileCard>
+        </template>
+      </FileCard>
+    </TransitionGroup>
     <label
       for="add-more-files"
       type="button"
@@ -125,3 +126,15 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
     />
   </div>
 </template>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>
