@@ -34,7 +34,12 @@
         <FileInput
           :files="files"
           @on-fiels-change="(value) => onFilesChange(value)"
-          @on-file-remove="(value) => files.delete(value)"
+          @on-file-remove="
+            (value) => {
+              files.delete(value);
+              fileKeys.delete(value.name);
+            }
+          "
         ></FileInput>
       </div>
     </div>
@@ -118,6 +123,7 @@ let uuid = self.crypto.randomUUID();
 const uploadStatus = ref<number>();
 
 const files = ref(new Map<File, number | string | boolean>());
+const fileKeys = new Map<string, boolean>();
 
 let downloadUrl: string;
 
@@ -188,12 +194,13 @@ const copyToClipboard = () => {
 };
 
 const onFilesChange = (formFiles: File[] | null) => {
-  files.value.clear();
   if (formFiles) {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
-
-      files.value.set(file, 0);
+      if (!fileKeys.has(file.name)) {
+        files.value.set(file, 0);
+        fileKeys.set(file.name, true);
+      }
     }
   }
 };

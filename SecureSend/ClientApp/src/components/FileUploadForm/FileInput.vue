@@ -6,6 +6,7 @@ import CheckIcon from "@/assets/icons/CheckIcon.vue";
 import { ref } from "vue";
 import { useDropZone } from "@/utils/composables/useDropZone";
 import TrashIcon from "@/assets/icons/TrashIcon.vue";
+import PlusIcon from "@/assets/icons/PlusIcon.vue";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
@@ -105,5 +106,22 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
         </div>
       </template>
     </FileCard>
+    <label
+      for="add-more-files"
+      type="button"
+      class="w-[fit-content] text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500"
+    >
+      <PlusIcon class="w-4 h-4"></PlusIcon>
+      <span class="ml-2">Add more files</span>
+    </label>
+    <input
+      @change="
+        $emit('onFielsChange', ($event.target as HTMLInputElement).files)
+      "
+      id="add-more-files"
+      type="file"
+      multiple
+      class="hidden"
+    />
   </div>
 </template>
