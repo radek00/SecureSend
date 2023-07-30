@@ -50,12 +50,11 @@ function _delete<T>(url: string): Promise<T> {
 
 // helper functions
 
-function handleResponse<T>(response: Response): Promise<T> {
+async function handleResponse<T>(response: Response): Promise<T> {
   return response.text().then((text) => {
     const data = text && JSON.parse(text);
 
     if (!response.ok) {
-      let error;
       if (data) {
         if ((data as IErrorResponse).ErrorCode === ErrorTypes.upload_expired)
           return Promise.reject(new UploadExpiredError(data.Message));
@@ -65,7 +64,7 @@ function handleResponse<T>(response: Response): Promise<T> {
         )
           return Promise.reject(new UploadDoesNotExistError(data.Message));
       } else {
-        error = new Error(response.statusText);
+        return Promise.reject(new Error(response.statusText));
       }
       return Promise.reject(error);
     }
