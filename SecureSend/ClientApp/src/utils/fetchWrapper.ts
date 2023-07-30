@@ -63,10 +63,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
           ErrorTypes.upload_does_not_exist
         )
           return Promise.reject(new UploadDoesNotExistError(data.Message));
-      } else {
-        return Promise.reject(new Error(response.statusText));
       }
-      return Promise.reject(error);
+      return Promise.reject(new Error(response.statusText));
     }
 
     return data;
