@@ -1,10 +1,7 @@
-import type { SecureUploadDto } from "@/models/SecureUploadDto";
-import {
-  UploadDoesNotExistError,
-  UploadExpiredError,
-} from "@/models/errors/ResponseErrors";
-import { SecureSendService } from "@/services/SecureSendService";
-import { createRouter, createWebHistory } from "vue-router";
+import type {SecureUploadDto} from "@/models/SecureUploadDto";
+import { UploadExpiredError } from "@/models/errors/ResponseErrors";
+import {SecureSendService} from "@/services/SecureSendService";
+import {createRouter, createWebHistory} from "vue-router";
 
 const FileUploadView = () => import("@/views/FileUploadView.vue");
 const FileDownloadView = () => import("@/views/FileDownloadView.vue");
@@ -31,10 +28,9 @@ const router = createRouter({
       props: true,
       beforeEnter: async (to) => {
         try {
-          const upload = await SecureSendService.viewSecureUpload({
+          (to.params.secureUpload as unknown as SecureUploadDto) = await SecureSendService.viewSecureUpload({
             id: to.params.id as string,
           });
-          (to.params.secureUpload as unknown as SecureUploadDto) = upload;
           const keys = to.hash.split("_");
           (to.params.salt as unknown as Uint8Array) = new Uint8Array(
             atob(keys[0].slice(1))
