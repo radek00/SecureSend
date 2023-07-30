@@ -55,7 +55,6 @@ function handleResponse<T>(response: Response): Promise<T> {
     const data = text && JSON.parse(text);
 
     if (!response.ok) {
-      console.log("data", data);
       let error;
       if (data) {
         if ((data as IErrorResponse).ErrorCode === ErrorTypes.upload_expired)
