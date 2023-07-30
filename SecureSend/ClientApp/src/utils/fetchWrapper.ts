@@ -1,3 +1,13 @@
+import { ErrorTypes } from "@/models/enums/ErrorTypes";
+import {
+  UploadDoesNotExistError,
+  UploadExpiredError,
+} from "@/models/errors/ResponseErrors";
+
+interface IErrorResponse {
+  Message: string;
+  ErrorCode: ErrorTypes;
+}
 export const fetchWrapper = {
   get,
   post,
@@ -40,13 +50,21 @@ function _delete<T>(url: string): Promise<T> {
 
 // helper functions
 
-function handleResponse<T>(response: Response): Promise<T> {
+async function handleResponse<T>(response: Response): Promise<T> {
   return response.text().then((text) => {
     const data = text && JSON.parse(text);
 
     if (!response.ok) {
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(new Error(error));
+      if (data) {
+        if ((data as IErrorResponse).ErrorCode === ErrorTypes.upload_expired)
+          return Promise.reject(new UploadExpiredError(data.Message));
+        if (
+          (data as IErrorResponse).ErrorCode ===
+          ErrorTypes.upload_does_not_exist
+        )
+          return Promise.reject(new UploadDoesNotExistError(data.Message));
+      }
+      return Promise.reject(new Error(response.statusText));
     }
 
     return data;
