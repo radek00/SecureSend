@@ -51,7 +51,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SecureSend.Infrastructure\SecureSend.Infrastructure.csproj" />
+    <ProjectReference Include="..\SecureSend.PostgresMigrations\SecureSend.PostgresMigrations.csproj" />
+    <ProjectReference Include="..\SecureSend.SqlServerMigrations\SecureSend.SqlServerMigrations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
