@@ -5,7 +5,7 @@ using SecureSend.Domain.ReadModels;
 
 namespace SecureSend.Infrastructure.EF.Context
 {
-    internal sealed class SecureSendDbReadContext: DbContext
+    public sealed class SecureSendDbReadContext: DbContext
     {
         public DbSet<SecureUploadsReadModel> SecureSendUploads { get; set; }
         public DbSet<UploadedFilesReadModel> UploadedFiles { get; set; }
