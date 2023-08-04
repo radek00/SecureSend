@@ -2,45 +2,42 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SecureSend.Infrastructure.EF.Context;
 
 #nullable disable
 
-namespace SecureSend.Infrastructure.EF.Migrations
+namespace SecureSend.PostgresMigrations.Migrations
 {
     [DbContext(typeof(SecureSendDbWriteContext))]
-    [Migration("20230515212913_InitialCreate")]
-    partial class InitialCreate
+    partial class SecureSendDbWriteContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("upload")
                 .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("SecureSend.Domain.Entities.SecureSendUpload", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("_expiryDate")
-                        .HasColumnType("datetime2")
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("ExpiryDate");
 
-                    b.Property<bool>("_isViewedl")
-                        .HasColumnType("bit")
+                    b.Property<bool>("IsViewed")
+                        .HasColumnType("boolean")
                         .HasColumnName("IsViewed");
 
-                    b.Property<DateTime>("_uploadDate")
-                        .HasColumnType("datetime2")
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("UploadDate");
 
                     b.HasKey("Id");
@@ -50,24 +47,24 @@ namespace SecureSend.Infrastructure.EF.Migrations
 
             modelBuilder.Entity("SecureSend.Domain.Entities.SecureSendUpload", b =>
                 {
-                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "_files", b1 =>
+                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "Files", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
+                                .HasColumnType("integer");
 
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("ContentType")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnType("text");
 
                             b1.Property<string>("FileName")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnType("text");
 
                             b1.Property<Guid>("SecureSendUploadId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.HasKey("Id");
 
@@ -79,7 +76,7 @@ namespace SecureSend.Infrastructure.EF.Migrations
                                 .HasForeignKey("SecureSendUploadId");
                         });
 
-                    b.Navigation("_files");
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,7 +4,7 @@ using SecureSend.Infrastructure.EF.Config;
 
 namespace SecureSend.Infrastructure.EF.Context
 {
-    internal sealed class SecureSendDbWriteContext: DbContext
+    public sealed class SecureSendDbWriteContext: DbContext
     {
         public DbSet<SecureSendUpload> SecureSendUploads { get; set; }
 

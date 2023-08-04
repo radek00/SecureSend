@@ -13,6 +13,11 @@ using SecureSend.Infrastructure.Services;
 
 namespace SecureSend.Infrastructure
 {
+    internal enum Databases
+    {
+        SqlServer,
+        Postgres
+    }
     public static class Extensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
@@ -25,12 +30,31 @@ namespace SecureSend.Infrastructure
 
             services.AddScoped<ExceptionMiddleware>();
 
-            var options = configuration.GetSection("SqlServerOptions").Get<SqlServerOptions>();
-            var sqlServerConnectionString = $"Server={options!.Server},{options!.Port};Database={options!.Database};Trusted_Connection={options!.TrustedConnection};User ID={options!.UserId};Password={options!.Password};TrustServerCertificate={options!.TrustServerCertificate}";
-            services.AddDbContext<SecureSendDbWriteContext>(ctx =>
-                ctx.UseSqlServer(sqlServerConnectionString));
+            var database = configuration.GetSection(("Database")).Get<Databases>();
 
-            services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(sqlServerConnectionString));
+            if (database == Databases.SqlServer)
+            {
+                var options = configuration.GetSection("SqlServerOptions").Get<SqlServerOptions>();
+                var sqlServerConnectionString = $"Server={options!.Server},{options!.Port};Database={options!.Database};Trusted_Connection={options!.TrustedConnection};User ID={options!.UserId};Password={options!.Password};TrustServerCertificate={options!.TrustServerCertificate}";
+                services.AddDbContext<SecureSendDbWriteContext>(ctx =>
+                    ctx.UseSqlServer(sqlServerConnectionString,
+                        x => x.MigrationsAssembly("SecureSend.SqlServerMigrations")));
+
+                services.AddDbContext<SecureSendDbReadContext>(ctx => ctx.UseSqlServer(sqlServerConnectionString,
+                    x => x.MigrationsAssembly("SecureSend.SqlServerMigrations")));
+                
+            }
+            else if (database == Databases.Postgres)
+            {
+                var options = configuration.GetSection("PostgresOptions").Get<PostgresOptions>();
+                var connectionString =
+                    $"User ID={options!.UserId};Password={options.Password};Host={options.Host};Port={options.Port};Database={options.Database}";
+                services.AddDbContext<SecureSendDbWriteContext>(ctx =>
+                    ctx.UseNpgsql(connectionString, x => x.MigrationsAssembly("SecureSend.PostgresMigrations")));
+                services.AddDbContext<SecureSendDbReadContext>(ctx =>
+                    ctx.UseNpgsql(connectionString, x => x.MigrationsAssembly("SecureSend.PostgresMigrations")));
+            }
+            
 
             services.AddHostedService<AppInitializer>();
             services.AddHostedService<BackgroundFileService>();

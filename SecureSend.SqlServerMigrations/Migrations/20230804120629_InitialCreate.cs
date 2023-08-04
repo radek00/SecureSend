@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SecureSend.Infrastructure.EF.Migrations
+namespace SecureSend.SqlServerMigration.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -20,9 +20,9 @@ namespace SecureSend.Infrastructure.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsViewed = table.Column<bool>(type: "bit", nullable: false),
-                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IsViewed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

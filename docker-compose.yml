@@ -11,20 +11,43 @@ services:
     volumes:
       - secureSend:/app/files
     environment:
-      - SqlServerOptions__Server=db
-      - SqlServerOptions__Port=1433
+    #db provider
+      - Database=Postgres
+    #postgres options
+      - PostgresOptions__Host=db
+      - PostgresOptions__Password=example
+      - PostgresOptions__UserId=postgres
+      - PostgresOptions__Database=SecureSend
+
+    #sql server options
+      # - SqlServerOptions__Server=db
+      # - SqlServerOptions__Port=1433
+      # - SqlServerOptions__Database=SecureSend
+      # - SqlServerOptions__TrustedConnection=False
+      # - SqlServerOptions__UserId=SA
+      # - SqlServerOptions__Password=YourStrong@Passw0rd
+      # - SqlServerOptions__TrustServerCertificate=True
     ports:
       - 5000:5000
     networks:
       - secureSend
     depends_on:
       - db
+  # db:
+  #   image: "mcr.microsoft.com/mssql/server"
+  #   environment:
+  #     SA_PASSWORD: "YourStrong@Passw0rd"
+  #     ACCEPT_EULA: "Y"
+  #   ports:
+  #     - 1433:1433
+  #   networks:
+  #     - secureSend
   db:
-    image: "mcr.microsoft.com/mssql/server"
+    image: postgres
+    restart: always
     environment:
-      SA_PASSWORD: "YourStrong@Passw0rd"
-      ACCEPT_EULA: "Y"
+      POSTGRES_PASSWORD: example
     ports:
-      - 1433:1433
+      - 5432:5432
     networks:
       - secureSend

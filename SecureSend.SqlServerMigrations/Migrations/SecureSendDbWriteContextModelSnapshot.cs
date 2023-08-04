@@ -8,10 +8,10 @@ using SecureSend.Infrastructure.EF.Context;
 
 #nullable disable
 
-namespace SecureSend.Infrastructure.EF.Migrations
+namespace SecureSend.SqlServerMigration.Migrations
 {
     [DbContext(typeof(SecureSendDbWriteContext))]
-    partial class SecureSendDbContextModelSnapshot : ModelSnapshot
+    partial class SecureSendDbWriteContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -28,15 +28,15 @@ namespace SecureSend.Infrastructure.EF.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("_expiryDate")
+                    b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("ExpiryDate");
 
-                    b.Property<bool>("_isViewedl")
+                    b.Property<bool>("IsViewed")
                         .HasColumnType("bit")
                         .HasColumnName("IsViewed");
 
-                    b.Property<DateTime>("_uploadDate")
+                    b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UploadDate");
 
@@ -47,7 +47,7 @@ namespace SecureSend.Infrastructure.EF.Migrations
 
             modelBuilder.Entity("SecureSend.Domain.Entities.SecureSendUpload", b =>
                 {
-                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "_files", b1 =>
+                    b.OwnsMany("SecureSend.Domain.ValueObjects.SecureSendFile", "Files", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -76,7 +76,7 @@ namespace SecureSend.Infrastructure.EF.Migrations
                                 .HasForeignKey("SecureSendUploadId");
                         });
 
-                    b.Navigation("_files");
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }
