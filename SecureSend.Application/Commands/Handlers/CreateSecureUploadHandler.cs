@@ -7,7 +7,7 @@ using SecureSend.Domain.ValueObjects;
 
 namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class CreateSecureUploadHandler: ICommandHandler<CreateSecureUpload, Unit>
+    public sealed class CreateSecureUploadHandler: ICommandHandler<CreateSecureUpload, Unit>
     {
         private readonly ISecureSendUploadRepository _secureSendUploadRepository;
         private readonly ISecureSendUploadFactory _secureSendUploadFactory;
