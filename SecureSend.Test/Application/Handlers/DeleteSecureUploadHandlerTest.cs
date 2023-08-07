@@ -29,8 +29,8 @@ public class DeleteSecureUploadHandlerTest
     public async void Handle_Succeeds()
     {
         var command = new DeleteSecureUpload(Guid.NewGuid());
-        _repository.Setup(x => x.GetAsync(command.id, new CancellationToken())).ReturnsAsync(new SecureSendUpload());
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>())).ReturnsAsync(new SecureSendUpload());
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.Null(exception);
     }
     
@@ -38,11 +38,11 @@ public class DeleteSecureUploadHandlerTest
     public async void Handle_Throws_UploadDoesNotExistException()
     {
         var command = new DeleteSecureUpload(Guid.NewGuid());
-        _repository.Setup(x => x.GetAsync(command.id, new CancellationToken()))
+        _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((SecureSendUpload)null);
         
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<UploadDoesNotExistException>(exception);
 

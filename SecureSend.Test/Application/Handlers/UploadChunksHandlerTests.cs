@@ -39,12 +39,12 @@ public class UploadChunksHandlerTests
     public async void Handle_Succeeds()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object);
-        _repository.Setup(x => x.GetAsync(command.uploadId, new CancellationToken()))
+        _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
         _fileService.Setup(x => x.GetChunksList(command.uploadId, It.IsAny<string>()))
             .Returns(new List<string> { "1", "2", "3", "4", "5" });
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.Null(exception);
         Assert.Single(upload.Files);
     }
@@ -53,11 +53,11 @@ public class UploadChunksHandlerTests
     public async void Handle_Throws_UploadDoesNotExistException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object);
-        _repository.Setup(x => x.GetAsync(command.uploadId, new CancellationToken()))
+        _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(default(SecureSendUpload));
         
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<UploadDoesNotExistException>(exception);
 
@@ -67,12 +67,12 @@ public class UploadChunksHandlerTests
     public async void Handle_Throws_InvalidChunkCountException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object);
-        _repository.Setup(x => x.GetAsync(command.uploadId, new CancellationToken()))
+        _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
         _fileService.Setup(x => x.GetChunksList(It.IsAny<Guid>(), It.IsAny<string>()))
             .Returns(new List<string> { "1", "2" });
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<InvalidChunkCountException>(exception);
 

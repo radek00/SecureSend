@@ -35,22 +35,22 @@ public class CreateSecureUploadHandlerTests
     public async void Handle_Succeeds()
     {
         var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5));
-        _secureUploadReadService.Setup(x => x.GetUploadId(command.uploadId, new CancellationToken()))
+        _secureUploadReadService.Setup(x => x.GetUploadId(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => Guid.Empty);
         
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.Null(exception);
     }
     [Fact]
     public async void Handle_Throws_UploadAlreadyExistsException()
     {
         var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5));
-        _secureUploadReadService.Setup(x => x.GetUploadId(command.uploadId, new CancellationToken()))
+        _secureUploadReadService.Setup(x => x.GetUploadId(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => Guid.NewGuid());
         
 
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, new CancellationToken()));
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<UploadAlreadyExistsException>(exception);
 
