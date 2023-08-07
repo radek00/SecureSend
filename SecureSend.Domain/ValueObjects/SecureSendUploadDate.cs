@@ -11,7 +11,7 @@
 
         public static implicit operator DateTime(SecureSendUploadDate secureSendUploadDate) => secureSendUploadDate.Value;
 
-        //public static implicit operator SecureSendUploadDate(DateTime secureSendUploadDate) => new();
+        public static implicit operator SecureSendUploadDate(DateTime secureSendUploadDate) => new();
 
     }
 }
