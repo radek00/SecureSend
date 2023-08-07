@@ -5,7 +5,7 @@ using SecureSend.Domain.Repositories;
 
 namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class DeleteSecureUploadHandler : ICommandHandler<DeleteSecureUpload, Unit>
+    public sealed class DeleteSecureUploadHandler : ICommandHandler<DeleteSecureUpload, Unit>
     {
         private readonly ISecureSendUploadRepository _repository;
         private readonly IFileService _fileService;
