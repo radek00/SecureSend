@@ -4,7 +4,7 @@ using SecureSend.Domain.Repositories;
 
 namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class ViewSecureUploadHandler : ICommandHandler<ViewSecureUpload, SecureUploadDto>
+    public sealed class ViewSecureUploadHandler : ICommandHandler<ViewSecureUpload, SecureUploadDto>
     {
         private readonly ISecureSendUploadRepository _repository;
 
