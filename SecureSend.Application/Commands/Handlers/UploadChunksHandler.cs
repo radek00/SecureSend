@@ -7,7 +7,7 @@ using SecureSend.Domain.ValueObjects;
 
 namespace SecureSend.Application.Commands.Handlers
 {
-    internal sealed class UploadChunksHandler : IRequestHandler<UploadChunks, Unit>
+    public sealed class UploadChunksHandler : ICommandHandler<UploadChunks, Unit>
     {
         private readonly IFileService _fileService;
         private readonly ISecureSendUploadRepository _repository;
