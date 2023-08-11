@@ -31,6 +31,12 @@ namespace SecureSend.Domain.Entities
             Files.Add(file);
         }
 
+        public void RemoveFile(string fileName)
+        {
+            var existingFile = Files.FirstOrDefault(f => f.FileName == fileName);
+            if (existingFile is not null) Files.Remove(existingFile);
+        }
+
         public void AddMultipleFiles(IEnumerable<SecureSendFile> files)
         {
             foreach (var file in files) AddFile(file);

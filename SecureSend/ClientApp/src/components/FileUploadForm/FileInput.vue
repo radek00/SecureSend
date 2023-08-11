@@ -7,14 +7,19 @@ import { ref } from "vue";
 import { useDropZone } from "@/utils/composables/useDropZone";
 import TrashIcon from "@/assets/icons/TrashIcon.vue";
 import PlusIcon from "@/assets/icons/PlusIcon.vue";
+import { UploadStatus } from "@/models/enums/UploadStatus";
+import { inject } from "vue";
+import CloseIcon from "@/assets/icons/CloseIcon.vue";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
   onFileRemove: [file: File];
+  onCancel: [file: string];
 }>();
 
 defineProps<{
   files: Map<File, number | string | boolean>;
+  isUploadSetup: boolean;
 }>();
 
 const fileDropZone = ref<HTMLElement>();
@@ -22,6 +27,8 @@ const fileDropZone = ref<HTMLElement>();
 const onDrop = (files: File[] | null) => {
   emit("onFielsChange", files);
 };
+
+const isLoading = inject<boolean>("isLoading");
 
 const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
 </script>
@@ -58,7 +65,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
   </div>
   <div
     v-else
-    class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
+    class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
   >
     <TransitionGroup name="list">
       <FileCard
@@ -69,12 +76,23 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       >
         <template #cardMiddle>
           <button
+            v-if="!isLoading && value !== true"
             @click="emit('onFileRemove', key)"
             type="button"
-            class="m-0 text-blue-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500"
+            class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
           >
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
+          </button>
+          <button
+            v-if="isLoading"
+            @click="emit('onCancel', key.name)"
+            type="button"
+            :disabled="!isUploadSetup"
+            class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+          >
+            <CloseIcon class="w-5 h-3"></CloseIcon>
+            <span class="sr-only">Cancel</span>
           </button>
 
           <LoadingIndicator
@@ -84,7 +102,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           <CheckIcon v-if="value === true"></CheckIcon>
         </template>
         <template #cardBottom>
-          <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700 mt-2">
+          <div class="w-full rounded-full bg-gray-700 mt-2">
             <div
               class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
               :style="{
@@ -98,9 +116,9 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
                   ? value
                   : typeof value === "number"
                   ? value === 100
-                    ? "Finishing upload..."
+                    ? UploadStatus.finishing
                     : `${value}%`
-                  : "Upload completed"
+                  : UploadStatus.completed
               }}
             </div>
           </div>
@@ -110,7 +128,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
     <label
       for="add-more-files"
       type="button"
-      class="w-[fit-content] text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500"
+      class="w-[fit-content] text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center border-blue-500 text-blue-500 hover:text-white focus:ring-blue-800 hover:bg-blue-500"
     >
       <PlusIcon class="w-4 h-4"></PlusIcon>
       <span class="ml-2">Add more files</span>

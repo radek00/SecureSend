@@ -12,6 +12,7 @@ namespace SecureSend.Application.Services
         Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId);
 
         void RemoveUpload(Guid uploadId);
+        void RemoveFileFromUpload(Guid uploadId, string fileName);
 
     }
 }

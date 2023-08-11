@@ -89,5 +89,12 @@ namespace SecureSend.Infrastructure.Services
 
             if (directory != null) Directory.Delete(directory.FullName, true);
         }
+
+        public void RemoveFileFromUpload(Guid uploadId, string fileName)
+        {
+            var fileDir = GetDirectory(uploadId)?.GetDirectories()
+                .FirstOrDefault(x => x.Name == Path.GetFileNameWithoutExtension(fileName));
+            if (fileDir is not null) Directory.Delete(fileDir.FullName, true);
+        }
     }
 }
