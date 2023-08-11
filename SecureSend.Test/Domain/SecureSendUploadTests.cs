@@ -53,4 +53,14 @@ public class SecureSendUploadTests
         Assert.NotNull(exception);
         Assert.IsType<FileAlreadyExistsException>(exception);
     }
+    
+    [Fact]
+    public void RemoveFile_Succeeds()
+    {
+
+        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream"));
+        Assert.Single(upload.Files);
+        upload.RemoveFile("test_file");
+        Assert.Empty(upload.Files);
+    }
 }
