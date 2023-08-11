@@ -33,7 +33,9 @@
       >
         <FileInput
           :files="files"
+          :is-upload-setup="isUploadSetup"
           @on-fiels-change="(value) => onFilesChange(value)"
+          @on-cancel="(value) => onCancel(value)"
           @on-file-remove="
             (value) => {
               files.delete(value);
@@ -48,7 +50,7 @@
     >
       <StyledButton
         :type="ButtonType.primary"
-        :disabled="step === 0 || isLoading"
+        :disabled="step === 0 || isLoading || isUploadSetup"
         @click="step -= 1"
         >Back</StyledButton
       >
@@ -102,6 +104,7 @@ import SimpleInput from "@/components/SimpleInput.vue";
 import { inject } from "vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
+import { UploadStatus } from "@/models/enums/UploadStatus";
 
 interface IMappedFormValues {
   expiryDate: string;
@@ -112,7 +115,7 @@ const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
-const { openSuccess } = useAlert();
+const { openSuccess, openDanger } = useAlert();
 
 let salt = crypto.getRandomValues(new Uint8Array(16));
 let keychain: AuthenticatedSecretKeyCryptography;
@@ -120,14 +123,16 @@ let keychain: AuthenticatedSecretKeyCryptography;
 const step = ref<number>(0);
 
 let uuid = self.crypto.randomUUID();
-const uploadStatus = ref<number>();
 
 const files = ref(new Map<File, number | string | boolean>());
 const fileKeys = new Map<string, boolean>();
+const controllers = new Map<string, AbortController>();
 
 let downloadUrl: string;
 
 const isLoading = inject<Ref<boolean>>("isLoading");
+
+const isUploadSetup = ref<boolean>(false);
 
 const stepZeroschema = {
   password(value: string) {
@@ -165,16 +170,31 @@ const { handleSubmit, meta, resetForm } = useForm({
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 2) {
     isLoading!.value = true;
-    await SecureSendService.createSecureUpload(uuid, values.expiryDate);
-    keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
-    await keychain.start();
-    await encryptFile();
-    isLoading!.value = false;
-    const { data } = await reveal();
-    if (data) {
-      await formReset();
-      openSuccess("Upload successful");
-      return;
+    if (!isUploadSetup.value) {
+      await SecureSendService.createSecureUpload(uuid, values.expiryDate);
+      keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
+      await keychain.start();
+      isUploadSetup.value = true;
+    }
+    try {
+      await encryptFile();
+      isLoading!.value = false;
+      if ([...files.value.values()].find((file) => file === true)) {
+        const { data } = await reveal();
+        if (data) {
+          await formReset();
+          openSuccess("Upload successful");
+          return;
+        }
+      } else {
+        openDanger("At least one file has to be uploaded to share files.");
+        fileKeys.clear();
+        files.value.clear();
+        controllers.clear();
+      }
+    } catch (error) {
+      openDanger("Upload failed, try again.");
+      formReset();
     }
   }
   if (step.value < 2) step.value++;
@@ -186,6 +206,10 @@ const formReset = async () => {
   salt = crypto.getRandomValues(new Uint8Array(16));
   uuid = self.crypto.randomUUID();
   files.value.clear();
+  fileKeys.clear();
+  controllers.clear();
+  isUploadSetup.value = false;
+  isLoading!.value = false;
 };
 
 const copyToClipboard = () => {
@@ -214,7 +238,6 @@ const createDownloadUrl = () => {
 };
 
 const encryptFile = async () => {
-  uploadStatus.value = 0;
   const requests: Promise<unknown>[] = [];
   for (const [file] of files.value) {
     const promise = splitFile(
@@ -222,13 +245,18 @@ const encryptFile = async () => {
       5 * 1024 * 1024,
       async (chunk: ArrayBuffer, num, totalChunks) => {
         try {
+          if (!controllers.has(file.name)) {
+            const controller = new AbortController();
+            controllers.set(file.name, controller);
+          }
           await SecureSendService.uploadChunk(
             uuid,
             num,
             totalChunks,
             file.name,
             chunk,
-            file.type
+            file.type,
+            controllers.get(file.name)?.signal
           );
           files.value.set(
             file,
@@ -236,8 +264,12 @@ const encryptFile = async () => {
               ? true
               : Math.ceil(((num + 1) / totalChunks) * 100)
           );
-        } catch (error) {
-          files.value.set(file, "Error with uploading file");
+        } catch (error: any) {
+          if (error.code === DOMException.ABORT_ERR) {
+            files.value.set(file, UploadStatus.cancelled);
+          } else {
+            files.value.set(file, UploadStatus.error);
+          }
           throw error;
         }
       },
@@ -245,6 +277,23 @@ const encryptFile = async () => {
     );
     requests.push(promise);
   }
-  await Promise.all(requests);
+  const results = await Promise.allSettled(requests);
+  if (
+    results.find(
+      (promise) =>
+        promise.status === "rejected" &&
+        !(promise.reason instanceof DOMException)
+    )
+  ) {
+    console.log("abort", results);
+    throw new Error("Upload error");
+  }
+};
+
+const onCancel = async (name: string) => {
+  const controller = controllers.get(name);
+  console.log(controller);
+  controller?.abort();
+  await SecureSendService.cancelUpload({ id: uuid, fileName: name });
 };
 </script>
