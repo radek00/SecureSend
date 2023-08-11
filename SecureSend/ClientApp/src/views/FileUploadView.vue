@@ -285,14 +285,12 @@ const encryptFile = async () => {
         !(promise.reason instanceof DOMException)
     )
   ) {
-    console.log("abort", results);
     throw new Error("Upload error");
   }
 };
 
 const onCancel = async (name: string) => {
   const controller = controllers.get(name);
-  console.log(controller);
   controller?.abort();
   await SecureSendService.cancelUpload({ id: uuid, fileName: name });
 };
