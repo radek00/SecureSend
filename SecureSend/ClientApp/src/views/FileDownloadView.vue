@@ -53,11 +53,9 @@ const isPasswordValidComputed = computed(
 </script>
 <template>
   <div class="w-11/12 md:w-6/12" v-if="isPasswordValid">
-    <h1 class="text-4xl text-gray-900 dark:text-white text-center">
-      Download files
-    </h1>
+    <h1 class="text-4xl text-white text-center">Download files</h1>
     <div
-      class="flex flex-col gap-5 mt-5 w-full justify-between p-6 border border-gray-300 rounded-lg shadow dark:bg-gray-700 dark:border-gray-600"
+      class="flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
     >
       <FileCard
         v-for="file in secureUpload.files"
@@ -66,7 +64,7 @@ const isPasswordValidComputed = computed(
       >
         <template #cardBottom>
           <a
-            class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            class="font-medium text-blue-500 hover:underline"
             href="#"
             @click.prevent
             @click="
@@ -87,15 +85,15 @@ const isPasswordValidComputed = computed(
   >
     <a
       href="#"
-      class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+      class="flex items-center mb-6 text-2xl font-semibold text-white"
     >
       SecureSend
     </a>
     <div
-      class="w-full p-6 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8"
+      class="w-full p-6 rounded-lg shadow border md:mt-0 sm:max-w-md bg-gray-800 border-gray-700 sm:p-8"
     >
       <h2
-        class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
+        class="mb-1 text-xl font-bold leading-tight tracking-tight md:text-2xl text-white"
       >
         Unlock your files
       </h2>

@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="w-auto p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-  >
+  <div class="w-auto p-6 borde rounded-lg shadow bg-gray-800 border-gray-700">
     <div class="flex w-full gap-4 items-center">
       <div>
         <FileIcon></FileIcon>

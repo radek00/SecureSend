@@ -15,7 +15,7 @@ defineEmits(["closeClick"]);
       <div class="relative rounded-lg shadow bg-gray-700">
         <!-- Modal header -->
         <div
-          class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600"
+          class="flex items-start justify-between p-4 border-b rounded-t border-gray-600"
         >
           <h3 class="text-xl font-semibold text-white">
             <slot name="header"></slot>
