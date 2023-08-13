@@ -41,7 +41,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
   >
     <label
       for="dropzone-file"
-      class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+      class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer hover:bg-bray-800 bg-gray-700 border-gray-600 hover:border-gray-500 hover:bg-gray-600"
     >
       <div class="flex flex-col items-center justify-center pt-5 pb-6">
         <UploadIcon></UploadIcon>
