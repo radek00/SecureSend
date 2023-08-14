@@ -11,11 +11,12 @@ import { UploadStatus } from "@/models/enums/UploadStatus";
 import { inject } from "vue";
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
 import PauseIcon from "@/assets/icons/PauseIcon.vue";
+import PlayIcon from "@/assets/icons/PlayIcon.vue";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
   onFileRemove: [file: File];
-  onCancel: [file: string];
+  onCancel: [file: File];
   onPause: [file: File];
   onResume: [file: File];
 }>();
@@ -89,7 +90,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           </button>
           <div v-if="isLoading" class="flex gap-1 justify-between">
             <button
-              @click="emit('onCancel', key.name)"
+              @click="emit('onCancel', key)"
               type="button"
               :disabled="!isUploadSetup"
               class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
@@ -114,7 +115,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               :disabled="!isUploadSetup"
               class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
             >
-              <PauseIcon class="w-5 h-3"></PauseIcon>
+              <PlayIcon class="w-5 h-3"></PlayIcon>
               <span class="sr-only">Resume</span>
             </button>
           </div>
