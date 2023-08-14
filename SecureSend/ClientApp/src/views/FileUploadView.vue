@@ -310,14 +310,16 @@ const encryptFile = async () => {
   }
 };
 
-const onCancel = async (name: string) => {
-  const controller = controllers.get(name);
-  controller?.abort(UploadStatus.cancelled);
-  await SecureSendService.cancelUpload({ id: uuid, fileName: name });
+const onCancel = async (fileObj: File) => {
+  const controller = controllers.get(fileObj.name);
+  if (controller) {
+    controller.abort(UploadStatus.cancelled);
+    onResume(fileObj);
+    await SecureSendService.cancelUpload({ id: uuid, fileName: fileObj.name });
+  }
 };
 
 const onPause = (fileObj: File) => {
-  console.log(files.value.get(fileObj));
   const controller = controllers.get(fileObj.name);
   controller?.signal.dispatchEvent(
     new CustomEvent("pause", { detail: { file: fileObj } })
