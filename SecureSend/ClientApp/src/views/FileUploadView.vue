@@ -36,6 +36,8 @@
           :is-upload-setup="isUploadSetup"
           @on-fiels-change="(value) => onFilesChange(value)"
           @on-cancel="(value) => onCancel(value)"
+          @on-pause="(value) => onPause(value)"
+          @on-resume="(value) => onResume(value)"
           @on-file-remove="
             (value) => {
               files.delete(value);
@@ -126,6 +128,7 @@ let uuid = self.crypto.randomUUID();
 
 const files = ref(new Map<File, number | string | boolean>());
 const fileKeys = new Map<string, boolean>();
+const pausedFiles = new Map<File, boolean | ((value?: string) => void)>();
 const controllers = new Map<string, AbortController>();
 
 let downloadUrl: string;
@@ -207,9 +210,13 @@ const formReset = async () => {
   uuid = self.crypto.randomUUID();
   files.value.clear();
   fileKeys.clear();
+  [...controllers.values()].forEach((con) =>
+    con.signal.removeEventListener("pause", pauseEventListener)
+  );
   controllers.clear();
   isUploadSetup.value = false;
   isLoading!.value = false;
+  pausedFiles.clear();
 };
 
 const copyToClipboard = () => {
@@ -237,6 +244,10 @@ const createDownloadUrl = () => {
   return downloadUrl;
 };
 
+const pauseEventListener = (event: any) => {
+  pausedFiles.set(event.detail.file, true);
+};
+
 const encryptFile = async () => {
   const requests: Promise<unknown>[] = [];
   for (const [file] of files.value) {
@@ -247,7 +258,15 @@ const encryptFile = async () => {
         try {
           if (!controllers.has(file.name)) {
             const controller = new AbortController();
+            controller.signal.addEventListener("pause", pauseEventListener);
             controllers.set(file.name, controller);
+          }
+          if (pausedFiles.get(file)) {
+            files.value.set(file, UploadStatus.paused);
+            const promise = new Promise((res) => {
+              pausedFiles.set(file, res);
+            });
+            await promise;
           }
           await SecureSendService.uploadChunk(
             uuid,
@@ -265,8 +284,10 @@ const encryptFile = async () => {
               : Math.ceil(((num + 1) / totalChunks) * 100)
           );
         } catch (error: any) {
-          if (error.code === DOMException.ABORT_ERR) {
+          if (error === UploadStatus.cancelled) {
             files.value.set(file, UploadStatus.cancelled);
+          } else if (error === UploadStatus.paused) {
+            files.value.set(file, UploadStatus.paused);
           } else {
             files.value.set(file, UploadStatus.error);
           }
@@ -282,7 +303,7 @@ const encryptFile = async () => {
     results.find(
       (promise) =>
         promise.status === "rejected" &&
-        !(promise.reason instanceof DOMException)
+        promise.reason !== UploadStatus.cancelled
     )
   ) {
     throw new Error("Upload error");
@@ -291,7 +312,23 @@ const encryptFile = async () => {
 
 const onCancel = async (name: string) => {
   const controller = controllers.get(name);
-  controller?.abort();
+  controller?.abort(UploadStatus.cancelled);
   await SecureSendService.cancelUpload({ id: uuid, fileName: name });
+};
+
+const onPause = (fileObj: File) => {
+  console.log(files.value.get(fileObj));
+  const controller = controllers.get(fileObj.name);
+  controller?.signal.dispatchEvent(
+    new CustomEvent("pause", { detail: { file: fileObj } })
+  );
+};
+
+const onResume = (fileObj: File) => {
+  const resolve = pausedFiles.get(fileObj);
+  if (resolve && typeof resolve == "function") {
+    resolve();
+    pausedFiles.set(fileObj, false);
+  }
 };
 </script>
