@@ -25,7 +25,6 @@ export function useDropZone(
     return (files.value = list.length === 0 ? null : list);
   };
   const registerListeners = () => {
-    console.log("registering");
     target.value?.addEventListener("dragenter", (event) => {
       event.preventDefault();
       counter += 1;

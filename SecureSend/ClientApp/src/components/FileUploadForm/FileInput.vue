@@ -10,11 +10,15 @@ import PlusIcon from "@/assets/icons/PlusIcon.vue";
 import { UploadStatus } from "@/models/enums/UploadStatus";
 import { inject } from "vue";
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
+import PauseIcon from "@/assets/icons/PauseIcon.vue";
+import PlayIcon from "@/assets/icons/PlayIcon.vue";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
   onFileRemove: [file: File];
-  onCancel: [file: string];
+  onCancel: [file: File];
+  onPause: [file: File];
+  onResume: [file: File];
 }>();
 
 defineProps<{
@@ -84,16 +88,37 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
           </button>
-          <button
-            v-if="isLoading"
-            @click="emit('onCancel', key.name)"
-            type="button"
-            :disabled="!isUploadSetup"
-            class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
-          >
-            <CloseIcon class="w-5 h-3"></CloseIcon>
-            <span class="sr-only">Cancel</span>
-          </button>
+          <div v-if="isLoading" class="flex gap-1 justify-between">
+            <button
+              @click="emit('onCancel', key)"
+              type="button"
+              :disabled="!isUploadSetup"
+              class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+            >
+              <CloseIcon class="w-5 h-3"></CloseIcon>
+              <span class="sr-only">Cancel</span>
+            </button>
+            <button
+              v-if="value !== UploadStatus.paused"
+              @click="emit('onPause', key)"
+              type="button"
+              :disabled="!isUploadSetup"
+              class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+            >
+              <PauseIcon class="w-5 h-3"></PauseIcon>
+              <span class="sr-only">Pause</span>
+            </button>
+            <button
+              v-if="value === UploadStatus.paused"
+              @click="emit('onResume', key)"
+              type="button"
+              :disabled="!isUploadSetup"
+              class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+            >
+              <PlayIcon class="w-5 h-3"></PlayIcon>
+              <span class="sr-only">Resume</span>
+            </button>
+          </div>
 
           <LoadingIndicator
             v-if="value === 100"
@@ -128,7 +153,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
     <label
       for="add-more-files"
       type="button"
-      class="w-[fit-content] text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center border-blue-500 text-blue-500 hover:text-white focus:ring-blue-800 hover:bg-blue-500"
+      class="w-[fit-content] text-blue-600 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
     >
       <PlusIcon class="w-4 h-4"></PlusIcon>
       <span class="ml-2">Add more files</span>
