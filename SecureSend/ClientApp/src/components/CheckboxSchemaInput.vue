@@ -4,7 +4,8 @@ import SimpleCheckboxInput from "@/components/SimpleCheckboxInput.vue";
 
 const props = defineProps<{
   name: string;
-  checkedValue: unknown;
+  checkedValue?: unknown;
+  uncheckedValue?: unknown;
 }>();
 
 const { errorMessage, value, meta, handleChange } = useField(
@@ -12,16 +13,16 @@ const { errorMessage, value, meta, handleChange } = useField(
   undefined,
   {
     type: "checkbox",
-    checkedValue: props.checkedValue,
+    checkedValue: props.checkedValue ?? true,
+    uncheckedValue: props.uncheckedValue ?? false
   }
 );
 </script>
 <template>
   <div class="mb-6">
     <SimpleCheckboxInput
-      @change="handleChange(checkedValue)"
       :value="value"
-      v-model="value"
+      @update:model-value="() => handleChange(checkedValue)"
       :name="name"
       v-bind="$attrs"
       :errorMessage="errorMessage"

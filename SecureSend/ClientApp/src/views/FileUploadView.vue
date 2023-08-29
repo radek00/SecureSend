@@ -4,7 +4,7 @@
   >
     <FormStepper class="px-[10px]" :step="step"></FormStepper>
     <div
-      class="flex overflow-hidden items-center h-[100px] transition-height duration-500"
+      class="flex overflow-hidden items-center h-[150px] transition-height duration-500"
       :class="{ 'h-[100px]': step !== 2, 'h-[300px]': step === 2 }"
     >
       <div
@@ -15,7 +15,13 @@
           name="password"
           type="password"
           label="Encryption password"
+          :disabled="!values.isPasswordRequired"
         ></SchemaInput>
+        <CheckboxSchemaInput
+          name="isPasswordRequired"
+          :checked-value="true"
+          label="Password required"
+        ></CheckboxSchemaInput>
       </div>
       <div
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
@@ -107,10 +113,12 @@ import { inject } from "vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
 import { UploadStatus } from "@/models/enums/UploadStatus";
+import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 
 interface IMappedFormValues {
   expiryDate: string;
   password: string;
+  isPasswordRequired: boolean;
 }
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
@@ -139,7 +147,7 @@ const isUploadSetup = ref<boolean>(false);
 
 const stepZeroschema = {
   password(value: string) {
-    if (value) return true;
+    if (values.isPasswordRequired && value) return true;
     return "Password is required.";
   },
 };
@@ -161,10 +169,11 @@ const getInitialValues = (): IMappedFormValues => {
   return {
     password: "",
     expiryDate: "",
+    isPasswordRequired: false,
   };
 };
 
-const { handleSubmit, meta, resetForm } = useForm({
+const { handleSubmit, meta, resetForm, values } = useForm({
   validationSchema: currentSchema,
   initialValues: getInitialValues(),
   keepValuesOnUnmount: true,
@@ -185,7 +194,7 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
       if ([...files.value.values()].find((file) => file === true)) {
         const { data } = await reveal();
         if (data) {
-          await formReset();
+          formReset();
           openSuccess("Upload successful");
           return;
         }
@@ -203,7 +212,7 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value < 2) step.value++;
 });
 
-const formReset = async () => {
+const formReset = () => {
   resetForm({ values: getInitialValues() });
   step.value = 0;
   salt = crypto.getRandomValues(new Uint8Array(16));
