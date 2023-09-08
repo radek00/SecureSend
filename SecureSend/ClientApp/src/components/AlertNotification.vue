@@ -58,7 +58,7 @@ const isShown = ref<boolean>(false);
 
 requestAnimationFrame(() => (isShown.value = true));
 
-const timeout = setTimeout(() => onCloseClick(), 30000);
+const timeout = setTimeout(() => onCloseClick(), 5000);
 
 const onCloseClick = () => {
   clearInterval(timeout);
