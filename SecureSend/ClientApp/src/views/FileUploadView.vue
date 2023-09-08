@@ -147,7 +147,8 @@ const isUploadSetup = ref<boolean>(false);
 
 const stepZeroschema = {
   password(value: string) {
-    if (values.isPasswordRequired && value) return true;
+    if (!values.isPasswordRequired) return true;
+    if (value) return true;
     return "Password is required.";
   },
 };
@@ -184,7 +185,7 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
       await SecureSendService.createSecureUpload(uuid, values.expiryDate);
-      keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
+      keychain = new AuthenticatedSecretKeyCryptography(salt, values.password ? values.password : undefined);
       await keychain.start();
       isUploadSetup.value = true;
     }
@@ -247,9 +248,10 @@ const onFilesChange = (formFiles: File[] | null) => {
 
 const createDownloadUrl = () => {
   const base64Salt = btoa(String.fromCharCode(...salt));
+  const key = keychain.hash ?? btoa(String.fromCharCode(...keychain.getMasterKey()))
   downloadUrl = window.location
     .toString()
-    .concat(`download/${uuid}#${base64Salt}_${keychain.hash}`);
+    .concat(`download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`);
   return downloadUrl;
 };
 
