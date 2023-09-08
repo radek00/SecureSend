@@ -38,8 +38,9 @@ const router = createRouter({
               .split("")
               .map((c) => c.charCodeAt(0))
           );
-          const isProtected = to.query['pass'];
-          (to.params.masterKey as unknown as string | Uint8Array) = isProtected !== "false" ? keys[1] : new Uint8Array(
+          const isProtected = to.query['pass'] === "true";
+          (to.params.isPasswordProtected as unknown as boolean)  = isProtected;
+          (to.params.masterKey as unknown as string | Uint8Array) = isProtected ? keys[1] : new Uint8Array(
               atob(keys[1])
                   .split("")
                   .map((c) => c.charCodeAt(0))
