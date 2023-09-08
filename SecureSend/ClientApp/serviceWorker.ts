@@ -1,10 +1,12 @@
 /// <reference lib="WebWorker" />
+import {IWorkerInit} from "./src/models/WorkerInit";
+
 declare const self: ServiceWorkerGlobalScope;
 
 import endpoints from "./src/config/endpoints";
 import decryptStream from "./src/utils/streams/decryptionStream";
 
-const map = new Map();
+const map = new Map<string, IWorkerInit>();
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -25,7 +27,7 @@ const decrypt = async (id: string, url: string) => {
     const decryptedResponse = decryptStream(
       body,
       fileData.salt,
-      fileData.password
+      fileData.masterKey
     );
     const headers = {
       "Content-Disposition":
