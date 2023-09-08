@@ -185,7 +185,10 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
       await SecureSendService.createSecureUpload(uuid, values.expiryDate);
-      keychain = new AuthenticatedSecretKeyCryptography(salt, values.password ? values.password : undefined);
+      keychain = new AuthenticatedSecretKeyCryptography(
+        salt,
+        values.password ? values.password : undefined
+      );
       await keychain.start();
       isUploadSetup.value = true;
     }
@@ -248,10 +251,14 @@ const onFilesChange = (formFiles: File[] | null) => {
 
 const createDownloadUrl = () => {
   const base64Salt = btoa(String.fromCharCode(...salt));
-  const key = values.isPasswordRequired ? keychain.getHash() : btoa(String.fromCharCode(...keychain.getMasterKey()))
+  const key = values.isPasswordRequired
+    ? keychain.getHash()
+    : btoa(String.fromCharCode(...keychain.getMasterKey()));
   downloadUrl = window.location
     .toString()
-    .concat(`download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`);
+    .concat(
+      `download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
+    );
   return downloadUrl;
 };
 

@@ -14,7 +14,7 @@ const { errorMessage, value, meta, handleChange } = useField(
   {
     type: "checkbox",
     checkedValue: props.checkedValue ?? true,
-    uncheckedValue: props.uncheckedValue ?? false
+    uncheckedValue: props.uncheckedValue ?? false,
   }
 );
 </script>

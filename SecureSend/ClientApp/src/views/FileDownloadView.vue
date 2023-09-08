@@ -8,7 +8,7 @@ import { ref } from "vue";
 import SimpleInput from "@/components/SimpleInput.vue";
 import { computed } from "vue";
 import FileCard from "@/components/FileCard.vue";
-import type {IWorkerInit} from "@/models/WorkerInit";
+import type { IWorkerInit } from "@/models/WorkerInit";
 
 const props = defineProps<{
   secureUpload: SecureUploadDto;
@@ -16,8 +16,6 @@ const props = defineProps<{
   masterKey: string | Uint8Array;
   isPasswordProtected: boolean;
 }>();
-
-
 
 const password = ref<string>("");
 
@@ -30,8 +28,7 @@ const setUpWorker = () => {
   } as IWorkerInit);
 };
 
-if (!props.isPasswordProtected) setUpWorker()
-
+if (!props.isPasswordProtected) setUpWorker();
 
 const download = (url: string) => {
   const anchor = document.createElement("a");
@@ -43,7 +40,10 @@ const download = (url: string) => {
 const isPasswordValid = ref<boolean>();
 
 const verifyPassword = async () => {
-  isPasswordValid.value = await verifyHash(props.masterKey as string, password.value);
+  isPasswordValid.value = await verifyHash(
+    props.masterKey as string,
+    password.value
+  );
   if (isPasswordValid.value) setUpWorker();
 };
 

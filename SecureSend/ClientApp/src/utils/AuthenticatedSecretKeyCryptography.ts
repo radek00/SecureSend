@@ -1,6 +1,5 @@
-import {generateHash} from "./pbkdfHash";
-import type {encryptionKey} from "@/models/utilityTypes/encryptionKey";
-
+import { generateHash } from "./pbkdfHash";
+import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default class AuthenticatedSecretKeyCryptography {
   public static readonly KEY_LENGTH_IN_BYTES = 16;
@@ -28,9 +27,11 @@ export default class AuthenticatedSecretKeyCryptography {
   ) {
     this.tagLengthInBytes = tagLengthInBytes;
     this.salt = salt;
-    this.masterKey = password ? password : crypto.getRandomValues(new Uint8Array(32));
+    this.masterKey = password
+      ? password
+      : crypto.getRandomValues(new Uint8Array(32));
     this.seq = 0;
-    this.requirePassword = typeof this.masterKey === 'string';
+    this.requirePassword = typeof this.masterKey === "string";
   }
 
   async start() {
@@ -82,42 +83,43 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   public async getCryptoKeyFromRawKey(masterKey: encryptionKey) {
-    const keyData = this.requirePassword ? await this.derivePbkdfKeyMaterial(masterKey as string, this.salt) : await this.deriveHkdfKeyMaterial();
+    const keyData = this.requirePassword
+      ? await this.derivePbkdfKeyMaterial(masterKey as string, this.salt)
+      : await this.deriveHkdfKeyMaterial();
     return await crypto.subtle.importKey(
-        "raw",
-        keyData
-        ,
-        {
-          name: this.ALGORITHM,
-        },
-        true,
-        ["encrypt", "decrypt"]
+      "raw",
+      keyData,
+      {
+        name: this.ALGORITHM,
+      },
+      true,
+      ["encrypt", "decrypt"]
     );
   }
 
   public async encrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
     const nonce = this.generateNonce(seq);
     return await crypto.subtle.encrypt(
-        {
-          name: this.ALGORITHM,
-          iv: nonce,
-          tagLength: this.tagLengthInBytes * 8,
-        },
-        this.secretKey,
-        data.buffer
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      this.secretKey,
+      data.buffer
     );
   }
 
   public async decrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
     const nonce = this.generateNonce(seq);
     return await crypto.subtle.decrypt(
-        {
-          name: this.ALGORITHM,
-          iv: nonce,
-          tagLength: this.tagLengthInBytes * 8,
-        },
-        this.secretKey,
-        data
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      this.secretKey,
+      data
     );
   }
 
@@ -143,17 +145,23 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   private async deriveHkdfKeyMaterial() {
-    const keyMaterial = await crypto.subtle.importKey('raw', this.masterKey as Uint8Array, 'HKDF', false, ['deriveBits']);
-    const info = new TextEncoder().encode('info');
-    this.keyData =  await crypto.subtle.deriveBits(
-        {
-          name: 'HKDF',
-          salt: this.salt,
-          info,
-          hash: "SHA-256",
-        },
-        keyMaterial,
-        256 // 256 bits key length
+    const keyMaterial = await crypto.subtle.importKey(
+      "raw",
+      this.masterKey as Uint8Array,
+      "HKDF",
+      false,
+      ["deriveBits"]
+    );
+    const info = new TextEncoder().encode("info");
+    this.keyData = await crypto.subtle.deriveBits(
+      {
+        name: "HKDF",
+        salt: this.salt,
+        info,
+        hash: "SHA-256",
+      },
+      keyMaterial,
+      256 // 256 bits key length
     );
     return this.keyData;
   }
@@ -163,8 +171,8 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   getHash() {
-      if (this.hash) return this.hash;
-      this.hash = generateHash(this.keyData, this.salt);
-      return this.hash;
+    if (this.hash) return this.hash;
+    this.hash = generateHash(this.keyData, this.salt);
+    return this.hash;
   }
 }

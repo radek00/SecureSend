@@ -1,5 +1,5 @@
 import AuthenticatedSecretKeyCryptography from "../AuthenticatedSecretKeyCryptography";
-import type {encryptionKey} from "@/models/utilityTypes/encryptionKey";
+import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default class StreamDecryptor {
   private readonly keychain: AuthenticatedSecretKeyCryptography;
