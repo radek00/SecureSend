@@ -248,7 +248,7 @@ const onFilesChange = (formFiles: File[] | null) => {
 
 const createDownloadUrl = () => {
   const base64Salt = btoa(String.fromCharCode(...salt));
-  const key = keychain.hash ?? btoa(String.fromCharCode(...keychain.getMasterKey()))
+  const key = values.isPasswordRequired ? keychain.getHash() : btoa(String.fromCharCode(...keychain.getMasterKey()))
   downloadUrl = window.location
     .toString()
     .concat(`download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`);

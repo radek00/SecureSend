@@ -16,7 +16,7 @@ export default class AuthenticatedSecretKeyCryptography {
   private readonly salt: Uint8Array;
   private nonceBase!: ArrayBuffer;
   public seq: number;
-  public hash?: string;
+  private hash?: string;
   private readonly masterKey: encryptionKey;
 
   private readonly requirePassword: boolean;
@@ -138,7 +138,6 @@ export default class AuthenticatedSecretKeyCryptography {
       keyMaterial,
       256
     );
-    this.hash = generateHash(keyBuffer, this.salt);
     this.keyData = keyBuffer;
     return keyBuffer;
   }
@@ -161,5 +160,11 @@ export default class AuthenticatedSecretKeyCryptography {
 
   getMasterKey() {
     return this.masterKey as Uint8Array;
+  }
+
+  getHash() {
+      if (this.hash) return this.hash;
+      this.hash = generateHash(this.keyData, this.salt);
+      return this.hash;
   }
 }
