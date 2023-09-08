@@ -23,7 +23,7 @@
       :class="{
         'text-blue-600 after:border-blue-800 transition-background-color linear duration-1000':
           step === 1,
-        'after:border-gray-100 after:border-4 after:inline-block after:border-gray-700 transition-background-color linear duration-1000':
+        'after:border-4 after:inline-block after:border-gray-700 transition-background-color linear duration-1000':
           step !== 1,
       }"
       class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block after:transition-background-color after:linear after:duration-1000"
