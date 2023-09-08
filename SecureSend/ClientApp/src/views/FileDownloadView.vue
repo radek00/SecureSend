@@ -8,19 +8,16 @@ import { ref } from "vue";
 import SimpleInput from "@/components/SimpleInput.vue";
 import { computed } from "vue";
 import FileCard from "@/components/FileCard.vue";
+import type {IWorkerInit} from "@/models/WorkerInit";
 
 const props = defineProps<{
   secureUpload: SecureUploadDto;
   salt: Uint8Array;
-  passwordHash: string;
+  masterKey: string | Uint8Array;
+  isPasswordProtected: boolean;
 }>();
 
-interface IWorkerInit {
-  request: string;
-  salt: Uint8Array;
-  password: string;
-  id: string;
-}
+
 
 const password = ref<string>("");
 
@@ -29,9 +26,12 @@ const setUpWorker = () => {
     request: "init",
     id: props.secureUpload.secureUploadId,
     salt: props.salt,
-    password: password.value,
+    masterKey: props.isPasswordProtected ? password.value : props.masterKey,
   } as IWorkerInit);
 };
+
+if (!props.isPasswordProtected) setUpWorker()
+
 
 const download = (url: string) => {
   const anchor = document.createElement("a");
@@ -43,7 +43,7 @@ const download = (url: string) => {
 const isPasswordValid = ref<boolean>();
 
 const verifyPassword = async () => {
-  isPasswordValid.value = await verifyHash(props.passwordHash, password.value);
+  isPasswordValid.value = await verifyHash(props.masterKey as string, password.value);
   if (isPasswordValid.value) setUpWorker();
 };
 
@@ -52,7 +52,7 @@ const isPasswordValidComputed = computed(
 );
 </script>
 <template>
-  <div class="w-11/12 md:w-6/12" v-if="isPasswordValid">
+  <div class="w-11/12 md:w-6/12" v-if="!isPasswordProtected || isPasswordValid">
     <h1 class="text-4xl text-white text-center">Download files</h1>
     <div
       class="flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
