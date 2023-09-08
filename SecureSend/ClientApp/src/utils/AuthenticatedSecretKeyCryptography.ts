@@ -1,4 +1,4 @@
-import { generateHash } from "./pbkdfHash";
+import {generateHash} from "./pbkdfHash";
 import type {encryptionKey} from "@/models/utilityTypes/encryptionKey";
 
 
@@ -13,11 +13,11 @@ export default class AuthenticatedSecretKeyCryptography {
   private keyData!: ArrayBuffer;
   private readonly tagLengthInBytes: number;
 
-  private salt: Uint8Array;
+  private readonly salt: Uint8Array;
   private nonceBase!: ArrayBuffer;
   public seq: number;
   public hash?: string;
-  private masterKey: encryptionKey;
+  private readonly masterKey: encryptionKey;
 
   private readonly requirePassword: boolean;
 
@@ -83,46 +83,42 @@ export default class AuthenticatedSecretKeyCryptography {
 
   public async getCryptoKeyFromRawKey(masterKey: encryptionKey) {
     const keyData = this.requirePassword ? await this.derivePbkdfKeyMaterial(masterKey as string, this.salt) : await this.deriveHkdfKeyMaterial();
-    const key = await crypto.subtle.importKey(
-      "raw",
-       keyData
-       ,
-      {
-        name: this.ALGORITHM,
-      },
-      true,
-      ["encrypt", "decrypt"]
+    return await crypto.subtle.importKey(
+        "raw",
+        keyData
+        ,
+        {
+          name: this.ALGORITHM,
+        },
+        true,
+        ["encrypt", "decrypt"]
     );
-
-    return key;
   }
 
   public async encrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
     const nonce = this.generateNonce(seq);
-    const encrypted = await crypto.subtle.encrypt(
-      {
-        name: this.ALGORITHM,
-        iv: nonce,
-        tagLength: this.tagLengthInBytes * 8,
-      },
-      this.secretKey,
-      data.buffer
+    return await crypto.subtle.encrypt(
+        {
+          name: this.ALGORITHM,
+          iv: nonce,
+          tagLength: this.tagLengthInBytes * 8,
+        },
+        this.secretKey,
+        data.buffer
     );
-    return encrypted;
   }
 
   public async decrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
     const nonce = this.generateNonce(seq);
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: this.ALGORITHM,
-        iv: nonce,
-        tagLength: this.tagLengthInBytes * 8,
-      },
-      this.secretKey,
-      data
+    return await crypto.subtle.decrypt(
+        {
+          name: this.ALGORITHM,
+          iv: nonce,
+          tagLength: this.tagLengthInBytes * 8,
+        },
+        this.secretKey,
+        data
     );
-    return decrypted;
   }
 
   private async derivePbkdfKeyMaterial(
