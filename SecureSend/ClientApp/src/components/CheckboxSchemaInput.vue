@@ -8,7 +8,7 @@ const props = defineProps<{
   uncheckedValue?: unknown;
 }>();
 
-const { errorMessage, value, meta, handleChange } = useField(
+const { errorMessage, value, meta, handleChange, checked } = useField(
   () => props.name,
   undefined,
   {
@@ -21,6 +21,7 @@ const { errorMessage, value, meta, handleChange } = useField(
 <template>
   <div class="mb-6">
     <SimpleCheckboxInput
+      :checked="checked"
       :value="value"
       @update:model-value="() => handleChange(checkedValue)"
       :name="name"

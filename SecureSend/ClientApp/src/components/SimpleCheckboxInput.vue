@@ -3,6 +3,7 @@
     <input
       :name="name"
       v-bind="$attrs"
+      :checked="checked"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
@@ -35,6 +36,7 @@ defineProps<{
   label?: string;
   value: unknown;
   isValid?: boolean;
+  checked?: boolean;
   errorMessage?: string;
 }>();
 </script>
