@@ -54,16 +54,18 @@
       </div>
     </div>
     <div
-      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center px-[10px]"
+      class="flex gap-3 md:gap-0 flex-col-reverse md:flex-row justify-between items-center px-[10px]"
     >
-      <div class="flex gap-2">
+      <div class="flex gap-3 flex-col md:flex-row w-full md:w-auto md:gap-2">
         <StyledButton
+          class="w-full md:w-[80px]"
           :type="ButtonType.primary"
           :disabled="step === 0 || isLoading || isUploadSetup"
           @click="step -= 1"
           >Back</StyledButton
         >
         <StyledButton
+          class="w-full md:w-[80px]"
           :type="ButtonType.cancel"
           :disabled="isLoading"
           @click="formReset()"
@@ -71,6 +73,7 @@
         >
       </div>
       <StyledButton
+        class="w-full md:w-[80px]"
         :type="ButtonType.primary"
         :disabled="!meta.valid || isLoading"
         @click="onSubmit()"
