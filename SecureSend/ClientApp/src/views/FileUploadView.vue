@@ -56,12 +56,20 @@
     <div
       class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center px-[10px]"
     >
+      <div class="flex gap-2">
       <StyledButton
         :type="ButtonType.primary"
         :disabled="step === 0 || isLoading || isUploadSetup"
         @click="step -= 1"
         >Back</StyledButton
       >
+        <StyledButton
+            :type="ButtonType.cancel"
+            :disabled="isLoading"
+            @click="formReset()"
+        >Reset</StyledButton
+        >
+      </div>
       <StyledButton
         :type="ButtonType.primary"
         :disabled="!meta.valid || isLoading"

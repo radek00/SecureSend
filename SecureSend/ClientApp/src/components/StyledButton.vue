@@ -7,6 +7,7 @@
         type === ButtonType.primary,
       'bg-gray-800 hover:enabled:bg-gray-900 focus:enabled:ring-gray-700':
         type === ButtonType.back,
+        'bg-red-600 hover:bg-red-700 focus:ring-red-900': type === ButtonType.cancel
     }"
   >
     <slot>Submit</slot>
@@ -14,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { ButtonType } from "@/models/enums/ButtonType";
+import {ButtonType} from "@/models/enums/ButtonType";
+
 defineProps<{
   type: ButtonType;
 }>();
