@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-11/12 md:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+    class="w-11/12 lg:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
   >
     <FormStepper class="px-[10px]" :step="step"></FormStepper>
     <div
