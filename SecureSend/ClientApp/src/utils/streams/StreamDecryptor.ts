@@ -1,10 +1,11 @@
 import AuthenticatedSecretKeyCryptography from "../AuthenticatedSecretKeyCryptography";
+import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default class StreamDecryptor {
   private readonly keychain: AuthenticatedSecretKeyCryptography;
 
-  constructor(password: string, salt: Uint8Array) {
-    this.keychain = new AuthenticatedSecretKeyCryptography(password, salt);
+  constructor(masterKey: encryptionKey, salt: Uint8Array) {
+    this.keychain = new AuthenticatedSecretKeyCryptography(salt, masterKey);
   }
 
   public async transform(

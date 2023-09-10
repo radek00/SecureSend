@@ -38,7 +38,15 @@ const router = createRouter({
               .split("")
               .map((c) => c.charCodeAt(0))
           );
-          to.params.passwordHash = keys[1];
+          const isProtected = to.query["pass"] === "true";
+          (to.params.isPasswordProtected as unknown as boolean) = isProtected;
+          (to.params.masterKey as unknown as string | Uint8Array) = isProtected
+            ? keys[1]
+            : new Uint8Array(
+                atob(keys[1])
+                  .split("")
+                  .map((c) => c.charCodeAt(0))
+              );
         } catch (error) {
           if (error instanceof UploadExpiredError) {
             return {

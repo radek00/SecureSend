@@ -4,7 +4,7 @@
   >
     <FormStepper class="px-[10px]" :step="step"></FormStepper>
     <div
-      class="flex overflow-hidden items-center h-[100px] transition-height duration-500"
+      class="flex overflow-hidden items-center h-[150px] transition-height duration-500"
       :class="{ 'h-[100px]': step !== 2, 'h-[300px]': step === 2 }"
     >
       <div
@@ -15,7 +15,13 @@
           name="password"
           type="password"
           label="Encryption password"
+          :disabled="!values.isPasswordRequired"
         ></SchemaInput>
+        <CheckboxSchemaInput
+          name="isPasswordRequired"
+          :checked-value="true"
+          label="Password required"
+        ></CheckboxSchemaInput>
       </div>
       <div
         class="w-full shrink-0 transition-transform duration-700 px-[10px]"
@@ -48,15 +54,26 @@
       </div>
     </div>
     <div
-      class="flex gap-5 md:gap-0 flex-col md:flex-row justify-between items-center px-[10px]"
+      class="flex gap-3 md:gap-0 flex-col-reverse md:flex-row justify-between items-center px-[10px]"
     >
+      <div class="flex gap-3 flex-col md:flex-row w-full md:w-auto md:gap-2">
+        <StyledButton
+          class="w-full md:w-[80px]"
+          :type="ButtonType.primary"
+          :disabled="step === 0 || isLoading || isUploadSetup"
+          @click="step -= 1"
+          >Back</StyledButton
+        >
+        <StyledButton
+          class="w-full md:w-[80px]"
+          :type="ButtonType.cancel"
+          :disabled="isLoading || !meta.dirty"
+          @click="formReset()"
+          >Reset</StyledButton
+        >
+      </div>
       <StyledButton
-        :type="ButtonType.primary"
-        :disabled="step === 0 || isLoading || isUploadSetup"
-        @click="step -= 1"
-        >Back</StyledButton
-      >
-      <StyledButton
+        class="w-full md:w-[80px]"
         :type="ButtonType.primary"
         :disabled="!meta.valid || isLoading"
         @click="onSubmit()"
@@ -107,10 +124,12 @@ import { inject } from "vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
 import { UploadStatus } from "@/models/enums/UploadStatus";
+import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 
 interface IMappedFormValues {
   expiryDate: string;
   password: string;
+  isPasswordRequired: boolean;
 }
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
@@ -139,6 +158,7 @@ const isUploadSetup = ref<boolean>(false);
 
 const stepZeroschema = {
   password(value: string) {
+    if (!values.isPasswordRequired) return true;
     if (value) return true;
     return "Password is required.";
   },
@@ -161,10 +181,11 @@ const getInitialValues = (): IMappedFormValues => {
   return {
     password: "",
     expiryDate: "",
+    isPasswordRequired: false,
   };
 };
 
-const { handleSubmit, meta, resetForm } = useForm({
+const { handleSubmit, meta, resetForm, values } = useForm({
   validationSchema: currentSchema,
   initialValues: getInitialValues(),
   keepValuesOnUnmount: true,
@@ -175,7 +196,10 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
       await SecureSendService.createSecureUpload(uuid, values.expiryDate);
-      keychain = new AuthenticatedSecretKeyCryptography(values.password, salt);
+      keychain = new AuthenticatedSecretKeyCryptography(
+        salt,
+        values.password ? values.password : undefined
+      );
       await keychain.start();
       isUploadSetup.value = true;
     }
@@ -185,7 +209,7 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
       if ([...files.value.values()].find((file) => file === true)) {
         const { data } = await reveal();
         if (data) {
-          await formReset();
+          formReset();
           openSuccess("Upload successful");
           return;
         }
@@ -203,7 +227,7 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value < 2) step.value++;
 });
 
-const formReset = async () => {
+const formReset = () => {
   resetForm({ values: getInitialValues() });
   step.value = 0;
   salt = crypto.getRandomValues(new Uint8Array(16));
@@ -238,9 +262,14 @@ const onFilesChange = (formFiles: File[] | null) => {
 
 const createDownloadUrl = () => {
   const base64Salt = btoa(String.fromCharCode(...salt));
+  const key = values.isPasswordRequired
+    ? keychain.getHash()
+    : btoa(String.fromCharCode(...keychain.getMasterKey()));
   downloadUrl = window.location
     .toString()
-    .concat(`download/${uuid}#${base64Salt}_${keychain.hash}`);
+    .concat(
+      `download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
+    );
   return downloadUrl;
 };
 
