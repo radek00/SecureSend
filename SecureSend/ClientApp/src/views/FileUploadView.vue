@@ -67,7 +67,7 @@
         <StyledButton
           class="w-full md:w-[80px]"
           :type="ButtonType.cancel"
-          :disabled="isLoading"
+          :disabled="isLoading || !meta.dirty"
           @click="formReset()"
           >Reset</StyledButton
         >
