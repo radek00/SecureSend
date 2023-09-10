@@ -12,6 +12,7 @@ import { inject } from "vue";
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
 import PauseIcon from "@/assets/icons/PauseIcon.vue";
 import PlayIcon from "@/assets/icons/PlayIcon.vue";
+import OptionsDropdown from "@/components/OptionsDropdown.vue";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
@@ -83,12 +84,12 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             v-if="!isLoading && value !== true"
             @click="emit('onFileRemove', key)"
             type="button"
-            class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+            class="hidden md:block m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
           >
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
           </button>
-          <div v-if="isLoading" class="flex gap-1 justify-between">
+          <div v-if="isLoading" class="hidden md:flex gap-1 justify-between">
             <button
               @click="emit('onCancel', key)"
               type="button"
@@ -118,6 +119,29 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               <PlayIcon class="w-5 h-3"></PlayIcon>
               <span class="sr-only">Resume</span>
             </button>
+          </div>
+
+          <div class="block md:hidden">
+            <OptionsDropdown>
+              <li
+                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup"
+              >
+                <a href="#" @click="emit('onCancel', key)">Cancel</a>
+              </li>
+              <li
+                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup"
+              >
+                <a href="#" @click="emit('onPause', key)">Pause</a>
+              </li>
+              <li
+                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup && value === UploadStatus.paused"
+              >
+                <a href="#" @click="emit('onResume', key)">Resume</a>
+              </li>
+            </OptionsDropdown>
           </div>
 
           <LoadingIndicator
