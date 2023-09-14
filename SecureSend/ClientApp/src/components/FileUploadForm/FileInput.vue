@@ -124,8 +124,8 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           <div class="block md:hidden">
             <OptionsDropdown>
               <li
-                  class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-                  v-if="!isLoading && value !== true"
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="!isLoading && value !== true"
               >
                 <a href="#" @click="emit('onFileRemove', key)">Remove</a>
               </li>
