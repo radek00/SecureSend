@@ -124,25 +124,25 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           <div class="block md:hidden">
             <OptionsDropdown>
               <li
-                  class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                  class="px-4 py-2 hover:bg-gray-600 hover:text-white"
                   v-if="!isLoading && value !== true"
               >
-                <a href="#" @@click="emit('onFileRemove', key)">Remove</a>
+                <a href="#" @click="emit('onFileRemove', key)">Remove</a>
               </li>
               <li
-                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
                 v-if="isUploadSetup"
               >
                 <a href="#" @click="emit('onCancel', key)">Cancel</a>
               </li>
               <li
-                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
                 v-if="isUploadSetup && value !== UploadStatus.paused"
               >
                 <a href="#" @click="emit('onPause', key)">Pause</a>
               </li>
               <li
-                class="block px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
                 v-if="isUploadSetup && value === UploadStatus.paused"
               >
                 <a href="#" @click="emit('onResume', key)">Resume</a>
