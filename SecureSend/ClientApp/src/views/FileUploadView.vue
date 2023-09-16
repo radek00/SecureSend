@@ -313,10 +313,12 @@ const encryptFile = async () => {
               : Math.ceil(((num + 1) / totalChunks) * 100)
           );
         } catch (error: any) {
-          if (error === UploadStatus.cancelled || error.code === DOMException.ABORT_ERR) {
+          if (
+            error === UploadStatus.cancelled ||
+            error.code === DOMException.ABORT_ERR
+          ) {
             files.value.set(file, UploadStatus.cancelled);
-          }
-          else {
+          } else {
             files.value.set(file, UploadStatus.error);
           }
           throw error;
@@ -331,7 +333,8 @@ const encryptFile = async () => {
     results.find(
       (promise) =>
         promise.status === "rejected" &&
-          (promise.reason.code !== DOMException.ABORT_ERR && promise.reason !== UploadStatus.cancelled)
+        promise.reason.code !== DOMException.ABORT_ERR &&
+        promise.reason !== UploadStatus.cancelled
     )
   ) {
     throw new Error("Upload error");
