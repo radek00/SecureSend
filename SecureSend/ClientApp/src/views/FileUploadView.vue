@@ -315,9 +315,8 @@ const encryptFile = async () => {
         } catch (error: any) {
           if (error === UploadStatus.cancelled || error.code === DOMException.ABORT_ERR) {
             files.value.set(file, UploadStatus.cancelled);
-          } else if (error === UploadStatus.paused) {
-            files.value.set(file, UploadStatus.paused);
-          } else {
+          }
+          else {
             files.value.set(file, UploadStatus.error);
           }
           throw error;
