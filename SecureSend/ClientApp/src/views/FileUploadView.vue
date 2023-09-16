@@ -29,6 +29,7 @@
         :style="{ transform }"
       >
         <SchemaInput
+          :tabindex="step !== 1 ? -1 : 0"
           @keyup.enter="onSubmit"
           name="expiryDate"
           type="date"
