@@ -21,8 +21,8 @@ export default class AuthenticatedSecretKeyCryptography {
   private readonly requirePassword: boolean;
 
   constructor(
-    salt: Uint8Array,
     password?: encryptionKey,
+    salt = crypto.getRandomValues(new Uint8Array(16)),
     tagLengthInBytes = AuthenticatedSecretKeyCryptography.TAG_LENGTH_IN_BYTES
   ) {
     this.tagLengthInBytes = tagLengthInBytes;
@@ -174,5 +174,9 @@ export default class AuthenticatedSecretKeyCryptography {
     if (this.hash) return this.hash;
     this.hash = generateHash(this.keyData, this.salt);
     return this.hash;
+  }
+
+  getSalt() {
+    return this.salt;
   }
 }

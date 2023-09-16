@@ -138,7 +138,6 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { openSuccess, openDanger } = useAlert();
 
-let salt = crypto.getRandomValues(new Uint8Array(16));
 let keychain: AuthenticatedSecretKeyCryptography;
 
 const step = ref<number>(0);
@@ -261,7 +260,7 @@ const handlePause = async (file: File) => {
 
 //events
 
-const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
+const onSubmit = handleSubmit(async () => {
   if (step.value === 2) {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
@@ -343,7 +342,7 @@ const encryptFile = async () => {
   }
 };
 const createDownloadUrl = () => {
-  const base64Salt = btoa(String.fromCharCode(...salt));
+  const base64Salt = btoa(String.fromCharCode(...keychain.getSalt()));
   const key = values.isPasswordRequired
     ? keychain.getHash()
     : btoa(String.fromCharCode(...keychain.getMasterKey()));
@@ -358,7 +357,6 @@ const createDownloadUrl = () => {
 const setupUpload = async () => {
   await SecureSendService.createSecureUpload(uuid, values.expiryDate);
   keychain = new AuthenticatedSecretKeyCryptography(
-    salt,
     values.password ? values.password : undefined
   );
   await keychain.start();
@@ -372,7 +370,6 @@ const copyToClipboard = () => {
 const formReset = () => {
   resetForm({ values: getInitialValues() });
   step.value = 0;
-  salt = crypto.getRandomValues(new Uint8Array(16));
   uuid = self.crypto.randomUUID();
   files.value.clear();
   fileKeys.clear();
