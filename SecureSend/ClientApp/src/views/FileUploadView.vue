@@ -12,6 +12,7 @@
         :style="{ transform }"
       >
         <SchemaInput
+          @keyup.enter="onSubmit"
           name="password"
           type="password"
           label="Encryption password"
@@ -28,6 +29,7 @@
         :style="{ transform }"
       >
         <SchemaInput
+          @keyup.enter="onSubmit"
           name="expiryDate"
           type="date"
           label="Expiry date"
@@ -65,9 +67,9 @@
           >Back</StyledButton
         >
         <StyledButton
-          class="w-full md:w-auto"
+          :disabled="(step === 0 && !meta.dirty) || isLoading"
           :type="ButtonType.cancel"
-          :disabled="isLoading || !meta.dirty"
+          class="w-full md:w-auto"
           @click="formReset()"
           >Reset</StyledButton
         >
