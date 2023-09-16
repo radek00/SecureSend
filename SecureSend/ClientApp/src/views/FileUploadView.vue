@@ -191,34 +191,87 @@ const { handleSubmit, meta, resetForm, values } = useForm({
   keepValuesOnUnmount: true,
 });
 
+//handlers
+const handleUploadCallback = async (
+  chunk: ArrayBuffer,
+  num: number,
+  totalChunks: number,
+  file: File
+) => {
+  try {
+    await handlePause(file);
+    await SecureSendService.uploadChunk(
+      uuid,
+      num,
+      totalChunks,
+      file.name,
+      chunk,
+      file.type,
+      controllers.get(file.name)?.signal
+    );
+    files.value.set(
+      file,
+      num + 1 === totalChunks
+        ? true
+        : Math.ceil(((num + 1) / totalChunks) * 100)
+    );
+  } catch (error: any) {
+    if (
+      error === UploadStatus.cancelled ||
+      error.code === DOMException.ABORT_ERR
+    ) {
+      files.value.set(file, UploadStatus.cancelled);
+    } else {
+      files.value.set(file, UploadStatus.error);
+    }
+    throw error;
+  }
+};
+
+const handleUploadResult = async () => {
+  if ([...files.value.values()].find((file) => file === true)) {
+    const { data } = await reveal();
+    if (data) {
+      formReset();
+      openSuccess("Upload successful");
+      return;
+    }
+  } else {
+    openDanger("At least one file has to be uploaded to share files.");
+    fileKeys.clear();
+    files.value.clear();
+    controllers.clear();
+  }
+};
+
+const handlePause = async (file: File) => {
+  if (!controllers.has(file.name)) {
+    const controller = new AbortController();
+    controller.signal.addEventListener("pause", pauseEventListener);
+    controllers.set(file.name, controller);
+  }
+  if (pausedFiles.get(file)) {
+    files.value.set(file, UploadStatus.paused);
+    const promise = new Promise((res) => {
+      pausedFiles.set(file, res);
+    });
+    await promise;
+  }
+};
+
+//events
+
 const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   if (step.value === 2) {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
-      await SecureSendService.createSecureUpload(uuid, values.expiryDate);
-      keychain = new AuthenticatedSecretKeyCryptography(
-        salt,
-        values.password ? values.password : undefined
-      );
-      await keychain.start();
+      await setupUpload();
       isUploadSetup.value = true;
     }
     try {
       await encryptFile();
       isLoading!.value = false;
-      if ([...files.value.values()].find((file) => file === true)) {
-        const { data } = await reveal();
-        if (data) {
-          formReset();
-          openSuccess("Upload successful");
-          return;
-        }
-      } else {
-        openDanger("At least one file has to be uploaded to share files.");
-        fileKeys.clear();
-        files.value.clear();
-        controllers.clear();
-      }
+      await handleUploadResult();
     } catch (error) {
       openDanger("Upload failed, try again.");
       formReset();
@@ -226,121 +279,6 @@ const onSubmit = handleSubmit(async (values: IMappedFormValues) => {
   }
   if (step.value < 2) step.value++;
 });
-
-const formReset = () => {
-  resetForm({ values: getInitialValues() });
-  step.value = 0;
-  salt = crypto.getRandomValues(new Uint8Array(16));
-  uuid = self.crypto.randomUUID();
-  files.value.clear();
-  fileKeys.clear();
-  [...controllers.values()].forEach((con) =>
-    con.signal.removeEventListener("pause", pauseEventListener)
-  );
-  controllers.clear();
-  isUploadSetup.value = false;
-  isLoading!.value = false;
-  pausedFiles.clear();
-};
-
-const copyToClipboard = () => {
-  navigator.clipboard.writeText(downloadUrl);
-  openSuccess("Link copied to clipboard");
-};
-
-const onFilesChange = (formFiles: File[] | null) => {
-  if (formFiles) {
-    for (let i = 0; i < formFiles.length; i++) {
-      const file = formFiles[i];
-      if (!fileKeys.has(file.name)) {
-        files.value.set(file, 0);
-        fileKeys.set(file.name, true);
-      }
-    }
-  }
-};
-
-const createDownloadUrl = () => {
-  const base64Salt = btoa(String.fromCharCode(...salt));
-  const key = values.isPasswordRequired
-    ? keychain.getHash()
-    : btoa(String.fromCharCode(...keychain.getMasterKey()));
-  downloadUrl = window.location
-    .toString()
-    .concat(
-      `download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
-    );
-  return downloadUrl;
-};
-
-const pauseEventListener = (event: any) => {
-  pausedFiles.set(event.detail.file, true);
-};
-
-const encryptFile = async () => {
-  const requests: Promise<unknown>[] = [];
-  for (const [file] of files.value) {
-    const promise = splitFile(
-      file,
-      5 * 1024 * 1024,
-      async (chunk: ArrayBuffer, num, totalChunks) => {
-        try {
-          if (!controllers.has(file.name)) {
-            const controller = new AbortController();
-            controller.signal.addEventListener("pause", pauseEventListener);
-            controllers.set(file.name, controller);
-          }
-          if (pausedFiles.get(file)) {
-            files.value.set(file, UploadStatus.paused);
-            const promise = new Promise((res) => {
-              pausedFiles.set(file, res);
-            });
-            await promise;
-          }
-          await SecureSendService.uploadChunk(
-            uuid,
-            num,
-            totalChunks,
-            file.name,
-            chunk,
-            file.type,
-            controllers.get(file.name)?.signal
-          );
-          files.value.set(
-            file,
-            num + 1 === totalChunks
-              ? true
-              : Math.ceil(((num + 1) / totalChunks) * 100)
-          );
-        } catch (error: any) {
-          if (
-            error === UploadStatus.cancelled ||
-            error.code === DOMException.ABORT_ERR
-          ) {
-            files.value.set(file, UploadStatus.cancelled);
-          } else {
-            files.value.set(file, UploadStatus.error);
-          }
-          throw error;
-        }
-      },
-      async (chunk, num) => await keychain.encrypt(chunk, num)
-    );
-    requests.push(promise);
-  }
-  const results = await Promise.allSettled(requests);
-  if (
-    results.find(
-      (promise) =>
-        promise.status === "rejected" &&
-        promise.reason.code !== DOMException.ABORT_ERR &&
-        promise.reason !== UploadStatus.cancelled
-    )
-  ) {
-    throw new Error("Upload error");
-  }
-};
-
 const onCancel = async (fileObj: File) => {
   const controller = controllers.get(fileObj.name);
   if (controller) {
@@ -363,5 +301,92 @@ const onResume = (fileObj: File) => {
     resolve();
     pausedFiles.set(fileObj, false);
   }
+};
+
+const onFilesChange = (formFiles: File[] | null) => {
+  if (formFiles) {
+    for (let i = 0; i < formFiles.length; i++) {
+      const file = formFiles[i];
+      if (!fileKeys.has(file.name)) {
+        files.value.set(file, 0);
+        fileKeys.set(file.name, true);
+      }
+    }
+  }
+};
+
+//utils
+
+const encryptFile = async () => {
+  const requests: Promise<unknown>[] = [];
+  for (const [file] of files.value) {
+    const promise = splitFile(
+      file,
+      5 * 1024 * 1024,
+      async (chunk: ArrayBuffer, num, totalChunks) => {
+        await handleUploadCallback(chunk, num, totalChunks, file);
+      },
+      async (chunk, num) => await keychain.encrypt(chunk, num)
+    );
+    requests.push(promise);
+  }
+  const results = await Promise.allSettled(requests);
+  if (
+    results.find(
+      (promise) =>
+        promise.status === "rejected" &&
+        promise.reason.code !== DOMException.ABORT_ERR &&
+        promise.reason !== UploadStatus.cancelled
+    )
+  ) {
+    throw new Error("Upload error");
+  }
+};
+const createDownloadUrl = () => {
+  const base64Salt = btoa(String.fromCharCode(...salt));
+  const key = values.isPasswordRequired
+    ? keychain.getHash()
+    : btoa(String.fromCharCode(...keychain.getMasterKey()));
+  downloadUrl = window.location
+    .toString()
+    .concat(
+      `download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
+    );
+  return downloadUrl;
+};
+
+const setupUpload = async () => {
+  await SecureSendService.createSecureUpload(uuid, values.expiryDate);
+  keychain = new AuthenticatedSecretKeyCryptography(
+    salt,
+    values.password ? values.password : undefined
+  );
+  await keychain.start();
+};
+
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(downloadUrl);
+  openSuccess("Link copied to clipboard");
+};
+
+const formReset = () => {
+  resetForm({ values: getInitialValues() });
+  step.value = 0;
+  salt = crypto.getRandomValues(new Uint8Array(16));
+  uuid = self.crypto.randomUUID();
+  files.value.clear();
+  fileKeys.clear();
+  [...controllers.values()].forEach((con) =>
+    con.signal.removeEventListener("pause", pauseEventListener)
+  );
+  controllers.clear();
+  isUploadSetup.value = false;
+  isLoading!.value = false;
+  pausedFiles.clear();
+};
+
+//listeners
+const pauseEventListener = (event: any) => {
+  pausedFiles.set(event.detail.file, true);
 };
 </script>
