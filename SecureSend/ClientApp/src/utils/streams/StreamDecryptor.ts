@@ -5,7 +5,7 @@ export default class StreamDecryptor {
   private readonly keychain: AuthenticatedSecretKeyCryptography;
 
   constructor(masterKey: encryptionKey, salt: Uint8Array) {
-    this.keychain = new AuthenticatedSecretKeyCryptography(salt, masterKey);
+    this.keychain = new AuthenticatedSecretKeyCryptography(masterKey, salt);
   }
 
   public async transform(
