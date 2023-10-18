@@ -110,7 +110,7 @@ const isPasswordValidComputed = computed(
             errorMessage="Invalid password"
           ></SimpleInput>
         </div>
-        <StyledButton @click="verifyPassword()" :type="ButtonType.primary"
+        <StyledButton @click="verifyPassword()" :category="ButtonType.primary"
           >Unlock</StyledButton
         >
       </div>

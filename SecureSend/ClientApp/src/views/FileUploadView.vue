@@ -1,5 +1,6 @@
 <template>
-  <div
+  <form
+    @submit="onSubmit"
     class="w-11/12 lg:w-6/12 flex flex-col justify-between gap-4 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
   >
     <FormStepper class="px-[10px]" :step="step"></FormStepper>
@@ -12,7 +13,6 @@
         :style="{ transform }"
       >
         <SchemaInput
-          @keyup.enter="onSubmit"
           name="password"
           type="password"
           label="Encryption password"
@@ -30,7 +30,6 @@
       >
         <SchemaInput
           :tabindex="step !== 1 ? -1 : 0"
-          @keyup.enter="onSubmit"
           name="expiryDate"
           type="date"
           label="Expiry date"
@@ -61,15 +60,17 @@
     >
       <div class="flex gap-3 flex-col md:flex-row w-full md:w-auto md:gap-2">
         <StyledButton
+          type="button"
           class="w-full md:w-auto"
-          :type="ButtonType.primary"
+          :category="ButtonType.primary"
           :disabled="step === 0 || isLoading || isUploadSetup"
           @click="step -= 1"
           >Back</StyledButton
         >
         <StyledButton
+          type="button"
           :disabled="(step === 0 && !meta.dirty) || isLoading"
-          :type="ButtonType.cancel"
+          :category="ButtonType.cancel"
           class="w-full md:w-auto"
           @click="formReset()"
           >Reset</StyledButton
@@ -77,9 +78,9 @@
       </div>
       <StyledButton
         class="w-full md:w-auto"
-        :type="ButtonType.primary"
+        :category="ButtonType.primary"
         :disabled="!meta.valid || isLoading"
-        @click="onSubmit()"
+        type="submit"
       >
         <span class="flex items-center justify-center">
           {{ step < 2 ? "Next" : "Upload" }}
@@ -90,7 +91,7 @@
         </span>
       </StyledButton>
     </div>
-  </div>
+  </form>
   <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
     <template #header>Share your files</template>
     <template #body>
@@ -101,7 +102,7 @@
       ></SimpleInput>
     </template>
     <template #footer>
-      <StyledButton @click="copyToClipboard()" :type="ButtonType.primary"
+      <StyledButton @click="copyToClipboard()" :category="ButtonType.primary"
         >Copy to clipboard</StyledButton
       >
     </template>
@@ -264,6 +265,7 @@ const handlePause = async (file: File) => {
 //events
 
 const onSubmit = handleSubmit(async () => {
+  console.log("triggered");
   if (step.value === 2) {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
