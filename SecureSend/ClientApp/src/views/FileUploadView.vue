@@ -265,7 +265,6 @@ const handlePause = async (file: File) => {
 //events
 
 const onSubmit = handleSubmit(async () => {
-  console.log("triggered");
   if (step.value === 2) {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
