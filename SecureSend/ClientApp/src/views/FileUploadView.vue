@@ -4,10 +4,7 @@
   >
     <form @submit="onSubmit" class="flex flex-col justify-between gap-4">
       <FormStepper class="px-[10px]" :step="step"></FormStepper>
-      <div
-        class="flex overflow-hidden items-center h-[150px] transition-height duration-500"
-        :class="{ 'h-[100px]': step !== 2, 'h-[300px]': step === 2 }"
-      >
+      <div class="flex overflow-hidden items-center h-auto">
         <div
           class="w-full shrink-0 transition-transform duration-700 px-[10px]"
           :style="{ transform }"
@@ -40,6 +37,7 @@
           :style="{ transform }"
         >
           <FileInput
+            v-show="step === 2"
             :files="files"
             :is-upload-setup="isUploadSetup"
             @on-fiels-change="(value) => onFilesChange(value)"
