@@ -12,6 +12,11 @@ export default async function splitFile(
   const totalChunks = Math.ceil(fileSize / chunkSize);
   let offset = 0;
 
+  if (fileSize === 0) {
+    await callback(await file.arrayBuffer(), 0, 1);
+    return;
+  }
+
   while (offset < fileSize) {
     const buffer = await file.slice(offset, offset + chunkSize).arrayBuffer();
     await readEventHandler(buffer);
