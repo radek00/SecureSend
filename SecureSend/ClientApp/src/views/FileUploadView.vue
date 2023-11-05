@@ -352,7 +352,7 @@ const createDownloadUrl = () => {
   downloadUrl = window.location.origin
     .toString()
     .concat(
-      `download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
+      `/download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
     );
   return downloadUrl;
 };
