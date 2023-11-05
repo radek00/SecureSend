@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Web;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SecureSend.Application.Commands;
 using SecureSend.Application.DTO;
@@ -29,7 +30,7 @@ namespace SecureSend.Controllers
         public async Task<FileStreamResult> DownloadFile([FromQuery] DownloadFile file, CancellationToken token)
         {
             var fileStream = await _sender.Send(file, token);
-            Response.Headers.Add("Content-Disposition", $"attachment;filename={fileStream.FileName}");
+            Response.Headers.Add("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
             return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
         }
 
