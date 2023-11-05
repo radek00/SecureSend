@@ -29,7 +29,7 @@
             :tabindex="step !== 1 ? -1 : 0"
             name="expiryDate"
             type="date"
-            label="Expiry date"
+            label="Optional expiry date"
           ></SchemaInput>
         </div>
         <div
