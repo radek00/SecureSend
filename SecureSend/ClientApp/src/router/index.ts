@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from "vue-router";
 const FileUploadView = () => import("@/views/FileUploadView.vue");
 const FileDownloadView = () => import("@/views/FileDownloadView.vue");
 const ErrorPageView = () => import("@/views/ErrorPageView.vue");
+const LandingView = () => import("@/views/LandingView.vue");
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,6 +14,11 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
+      component: LandingView,
+    },
+    {
+      path: "/upload",
+      name: "upload",
       component: FileUploadView,
     },
     {
