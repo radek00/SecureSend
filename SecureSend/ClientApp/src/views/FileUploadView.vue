@@ -278,8 +278,9 @@ const onSubmit = handleSubmit(async () => {
       openDanger("Upload failed, try again.");
       formReset();
     }
+  } else {
+    step.value++;
   }
-  if (step.value < 2) step.value++;
 });
 const onCancel = async (fileObj: File) => {
   const controller = controllers.get(fileObj.name);
