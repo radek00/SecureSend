@@ -45,6 +45,7 @@ namespace SecureSend.Infrastructure.EF.Config
                 fileBuilder.HasKey("Id");
                 fileBuilder.Property(p => p.FileName);
                 fileBuilder.Property(p => p.ContentType);
+                fileBuilder.Property(p => p.FileSize);
 
                 fileBuilder.ToTable("UploadedFiles");
 
