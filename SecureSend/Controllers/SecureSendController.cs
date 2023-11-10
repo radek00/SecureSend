@@ -65,5 +65,13 @@ namespace SecureSend.Controllers
             await _sender.Send(command, token);
             return NoContent();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckIfUploadExists([FromQuery] CheckIfUploadExists query,
+            CancellationToken token)
+        {
+            var result = await _sender.Send(query, token);
+            return Ok(result);
+        }
     }
 }
