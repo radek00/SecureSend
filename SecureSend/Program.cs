@@ -1,3 +1,4 @@
+using Microsoft.Net.Http.Headers;
 using SecureSend.Application;
 using SecureSend.Infrastructure;
 using SecureSend.Infrastructure.EF.Options;
@@ -34,7 +35,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSpaStaticFiles();
+app.UseSpaStaticFiles(new StaticFileOptions()
+{
+    OnPrepareResponse = ctx =>
+    {
+        var headers = ctx.Context.Response.GetTypedHeaders();
+        headers.CacheControl = new CacheControlHeaderValue
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromDays(30)
+        };
+
+    }
+});
 
 app.UseSpa(config =>
 {
