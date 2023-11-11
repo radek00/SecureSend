@@ -14,7 +14,7 @@ const isLoading = ref<boolean>(false);
 app.provide("isLoading", isLoading);
 
 app.config.errorHandler = (err) => {
-  if (import.meta.env.DEV) console.log(err);
+  console.error(err);
   isLoading!.value = false;
   openDanger("Something went wrong");
 };
