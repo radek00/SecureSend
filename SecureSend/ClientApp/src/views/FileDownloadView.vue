@@ -30,13 +30,6 @@ const setUpWorker = () => {
 
 if (!props.isPasswordProtected) setUpWorker();
 
-const download = (url: string) => {
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  document.body.appendChild(anchor);
-  anchor.click();
-};
-
 const isPasswordValid = ref<boolean>();
 
 const verifyPassword = async () => {
@@ -70,13 +63,7 @@ const isPasswordValidComputed = computed(
           <template #cardBottom>
             <a
               class="font-medium text-blue-500 hover:underline"
-              href="#"
-              @click.prevent
-              @click="
-                download(
-                  `${endpoints.download}?id=${secureUpload.secureUploadId}&fileName=${file.fileName}`
-                )
-              "
+              :href="`${endpoints.download}?id=${secureUpload.secureUploadId}&fileName=${file.fileName}`"
               >Download</a
             >
           </template>
