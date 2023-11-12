@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-5xl mx-auto lg:pt-52 pt-32 flex flex-col gap-4 items-center h-screen w-[90%] md:w-full"
+    class="max-w-5xl mx-auto lg:pt-52 pt-32 flex flex-col gap-4 items-center w-[90%] md:w-full"
   >
     <h1
       class="font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center"
