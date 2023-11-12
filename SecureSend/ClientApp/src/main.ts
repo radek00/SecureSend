@@ -4,6 +4,7 @@ import { createApp, ref } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { useAlert } from "./utils/composables/useAlert";
+import { clickOutside } from "@/utils/composables/directives/clickOutside";
 
 const app = createApp(App);
 
@@ -18,6 +19,8 @@ app.config.errorHandler = (err) => {
   isLoading!.value = false;
   openDanger("Something went wrong");
 };
+
+app.directive("click-outside", clickOutside);
 
 const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
