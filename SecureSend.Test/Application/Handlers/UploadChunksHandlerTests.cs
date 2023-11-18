@@ -28,7 +28,7 @@ public class UploadChunksHandlerTests
         _fileService = new Mock<IFileService>();
         _commandHandler = new UploadChunksHandler(_fileService.Object, _repository.Object);
         _factory = new SecureSendUploadFactory();
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, String.Empty);
         _file = new Mock<IFormFile>();
         _file.Setup(x => x.FileName).Returns("file.txt");
         _file.Setup(x => x.ContentType).Returns("text/plain");

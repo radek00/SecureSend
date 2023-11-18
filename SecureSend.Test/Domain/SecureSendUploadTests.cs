@@ -15,7 +15,7 @@ public class SecureSendUploadTests
     public SecureSendUploadTests()
     {
         _factory = new SecureSendUploadFactory();
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, new SecureSendPasswordHash(String.Empty));
     }
 
     #endregion

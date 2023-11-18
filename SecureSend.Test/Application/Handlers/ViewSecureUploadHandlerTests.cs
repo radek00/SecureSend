@@ -42,7 +42,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async void Handle_Throws_UploadExpiredException()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false);
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, String.Empty);
         var command = new ViewSecureUpload(Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
@@ -56,7 +56,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async void Handle_Succedes()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false);
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, String.Empty);
         var command = new ViewSecureUpload(Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);

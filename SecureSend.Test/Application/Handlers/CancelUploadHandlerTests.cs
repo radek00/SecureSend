@@ -24,7 +24,7 @@ public class CancelUploadHandlerTests
         _factory = new SecureSendUploadFactory();
         _fileService = new Mock<IFileService>();
         _commandHandler = new CancelUploadHandler(_fileService.Object, _repository.Object);
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, String.Empty);
     }
     
     [Fact]
