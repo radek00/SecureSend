@@ -22,6 +22,8 @@ namespace SecureSend.Infrastructure.EF.Config
             var uploadDateConverter = new ValueConverter<SecureSendUploadDate, DateTime>(d => d.Value, d => new SecureSendUploadDate());
             var expiryDateConverter = new ValueConverter<SecureSendExpiryDate, DateTime?>(d => d.Value, d => new SecureSendExpiryDate(d));
             var isViewedConverter = new ValueConverter<SecureSendIsViewed, bool>(v => v.Value, v => new SecureSendIsViewed(v));
+            var passwordHashConverter =
+                new ValueConverter<SecureSendPasswordHash, byte[]?>(v => v.Value, v => new SecureSendPasswordHash(v));
 
             builder.Property(p => p.Id).HasConversion(id => id.Value, id => new SecureSendUploadId(id));
 
@@ -38,6 +40,11 @@ namespace SecureSend.Infrastructure.EF.Config
             builder.Property(p => p.IsViewed)
                 .HasConversion(isViewedConverter)
                 .HasColumnName("IsViewed");
+
+            builder.Property(p => p.PasswordHash)
+                .HasConversion(passwordHashConverter)
+                .HasColumnName("PasswordHash")
+                .IsRequired(false);
 
             builder.OwnsMany<SecureSendFile>(p => p.Files, fileBuilder =>
             {

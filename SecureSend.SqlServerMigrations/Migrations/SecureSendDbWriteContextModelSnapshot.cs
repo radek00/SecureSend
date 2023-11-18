@@ -36,6 +36,10 @@ namespace SecureSend.SqlServerMigration.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("IsViewed");
 
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)")
+                        .HasColumnName("PasswordHash");
+
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("UploadDate");
