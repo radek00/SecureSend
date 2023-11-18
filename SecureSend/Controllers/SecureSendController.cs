@@ -19,7 +19,7 @@ namespace SecureSend.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<SecureUploadDto>> ViewSecureUpload([FromQuery] ViewSecureUpload query, CancellationToken token)
+        public async Task<IActionResult> ViewSecureUpload([FromQuery] ViewSecureUpload query, CancellationToken token)
         {
             var result  = await _sender.Send(query, token);
             return OkOrNotFound(result);
@@ -33,14 +33,19 @@ namespace SecureSend.Controllers
             Response.Headers.Add("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
             return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> VerifyUpload([FromQuery] VerifyUpload query, CancellationToken token)
+        {
+            var verificationResponse = await _sender.Send(query, token);
+            return OkOrNotFound(verificationResponse);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromQuery] CreateSecureUpload command, CancellationToken token)
         {
                 await _sender.Send(command, token);
                 return CreatedAtAction(nameof(Post), new { id = command.uploadId }, null);
-            
-
         }
 
         [HttpPost]
