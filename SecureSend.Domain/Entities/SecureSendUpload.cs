@@ -10,14 +10,17 @@ namespace SecureSend.Domain.Entities
         public SecureSendUploadDate UploadDate { get; private set; }
         public SecureSendExpiryDate ExpiryDate { get; private set; }
         public SecureSendIsViewed IsViewed { get; private set; }
+        public SecureSendPasswordHash PasswordHash { get; private set; }
+        
         public List<SecureSendFile> Files { get; private set; } = new();
 
-    public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl)
+    public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl, SecureSendPasswordHash passwordHash)
         {
             Id = id;
             UploadDate = uploadDate;
             ExpiryDate = expiryDate;
             IsViewed = isViewedl;
+            PasswordHash = passwordHash;
         }
 
         public SecureSendUpload()
