@@ -31,6 +31,11 @@ namespace SecureSend.Infrastructure.Services
                         .FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<SecureUploadsReadModel?> GetSecureUpload(Guid id, CancellationToken cancellationToken)
+        {
+            return await _uploads.Where(x => x.Id == id).AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+        }
+
 
     }
 }

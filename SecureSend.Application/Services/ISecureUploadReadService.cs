@@ -6,5 +6,6 @@ namespace SecureSend.Application.Services
     {
         Task<UploadedFilesReadModel?> GetUploadedFile(string fileName, Guid id, CancellationToken cancellationToken);
         Task<Guid?> GetUploadId(Guid id, CancellationToken cancellationToken);
+        Task<SecureUploadsReadModel?> GetSecureUpload(Guid id, CancellationToken cancellationToken);
     }
 }
