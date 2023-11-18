@@ -34,7 +34,7 @@ public class CreateSecureUploadHandlerTests
     [Fact]
     public async void Handle_Succeeds()
     {
-        var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5));
+        var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
         _secureUploadReadService.Setup(x => x.GetUploadId(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => Guid.Empty);
         
@@ -45,7 +45,7 @@ public class CreateSecureUploadHandlerTests
     [Fact]
     public async void Handle_Throws_UploadAlreadyExistsException()
     {
-        var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5));
+        var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
         _secureUploadReadService.Setup(x => x.GetUploadId(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => Guid.NewGuid());
         
