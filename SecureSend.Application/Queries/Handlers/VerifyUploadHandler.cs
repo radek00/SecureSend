@@ -4,7 +4,7 @@ using SecureSend.Application.Services;
 
 namespace SecureSend.Application.Queries.Handlers;
 
-internal class VerifyUploadHandler: IQueryHandler<VerifyUpload,UploadVerifyResponseDTO>
+public sealed class VerifyUploadHandler: IQueryHandler<VerifyUpload,UploadVerifyResponseDTO>
 {
     private readonly ISecureUploadReadService _readService;
 
