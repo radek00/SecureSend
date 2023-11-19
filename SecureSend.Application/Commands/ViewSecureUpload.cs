@@ -2,7 +2,5 @@
 
 namespace SecureSend.Application.Commands
 {
-    public record ViewSecureUpload(Guid id) : ICommand<SecureUploadDto>
-    {
-    }
+    public record ViewSecureUpload(Guid id, string? password) : ICommand<SecureUploadDto>;
 }

@@ -27,37 +27,23 @@ public class ViewSecureUploadHandlerTests
     #endregion
     
     [Fact]
-    public async void Handle_Throws_UploadDoesNotExistException()
+    public async void Handle_Throws_InvalidPasswordException()
     {
-        var command = new ViewSecureUpload(Guid.NewGuid());
-        _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
-            .ReturnsAsync(default(SecureSendUpload));
-        
-        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
-        Assert.NotNull(exception);
-        Assert.IsType<UploadDoesNotExistException>(exception);
-
-    }
-    
-    [Fact]
-    public async void Handle_Throws_UploadExpiredException()
-    {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, String.Empty);
-        var command = new ViewSecureUpload(Guid.NewGuid());
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, "testing");
+        var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
         
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
-        Assert.IsType<UploadExpiredException>(exception);
-
+        Assert.IsType<InvalidPasswordException>(exception);
     }
     
     [Fact]
-    public async void Handle_Succedes()
+    public async void Handle_Succeeds_EmptyPassword()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, String.Empty);
-        var command = new ViewSecureUpload(Guid.NewGuid());
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, "");
+        var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
         
@@ -65,6 +51,19 @@ public class ViewSecureUploadHandlerTests
         Assert.True(upload.IsViewed);
         Assert.NotNull(result);
         Assert.IsType<SecureUploadDto>(result);
-
+    }
+    
+    [Fact]
+    public async void Handle_Succeeds_Protected()
+    {
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, "testing");
+        var command = new ViewSecureUpload(Guid.NewGuid(), "testing");
+        _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
+            .ReturnsAsync(upload);
+        
+        var result  = await _commandHandler.Handle(command, It.IsAny<CancellationToken>());
+        Assert.True(upload.IsViewed);
+        Assert.NotNull(result);
+        Assert.IsType<SecureUploadDto>(result);
     }
 }
