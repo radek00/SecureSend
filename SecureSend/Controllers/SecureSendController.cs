@@ -19,7 +19,7 @@ namespace SecureSend.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> ViewSecureUpload([FromQuery] ViewSecureUpload query, CancellationToken token)
+        public async Task<IActionResult> ViewSecureUpload([FromBody] ViewSecureUpload query, CancellationToken token)
         {
             var result  = await _sender.Send(query, token);
             return OkOrNotFound(result);
@@ -42,7 +42,7 @@ namespace SecureSend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromQuery] CreateSecureUpload command, CancellationToken token)
+        public async Task<IActionResult> Post([FromBody] CreateSecureUpload command, CancellationToken token)
         {
                 await _sender.Send(command, token);
                 return CreatedAtAction(nameof(Post), new { id = command.uploadId }, null);

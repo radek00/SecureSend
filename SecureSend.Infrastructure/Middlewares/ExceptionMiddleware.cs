@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SecureSend.Domain.Exceptions;
 using System.Text.Json;
+using SecureSend.Domain.Entities;
 
 namespace SecureSend.Infrastructure.Middlewares
 {
@@ -16,7 +17,12 @@ namespace SecureSend.Infrastructure.Middlewares
             catch (SecureSendNotFoundException ex)
             {
                 context.Response.StatusCode = 404;
-                await WriteToResponse(context, ex); 
+                await WriteToResponse(context, ex);
+            }
+            catch (InvalidPasswordException ex)
+            {
+                context.Response.StatusCode = 401;
+                await WriteToResponse(context, ex);
             }
             catch (SecureSendException ex)
             {

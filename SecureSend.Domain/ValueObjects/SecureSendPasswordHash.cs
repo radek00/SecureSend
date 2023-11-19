@@ -18,9 +18,9 @@ public class SecureSendPasswordHash
         Value = hash;
     }
 
-    public void VerifyHash(string password)
+    public void VerifyHash(string? password)
     {
-        if (Value is null || !_hashingService.Verify(password, Value)) throw new InvalidPasswordException();
+        if (Value is null || String.IsNullOrEmpty(password) || !_hashingService.Verify(password, Value)) throw new InvalidPasswordException();
     }
     
     public static implicit operator byte[]?(SecureSendPasswordHash value) => value.Value;
