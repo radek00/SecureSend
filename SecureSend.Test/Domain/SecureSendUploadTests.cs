@@ -15,7 +15,7 @@ public class SecureSendUploadTests
     public SecureSendUploadTests()
     {
         _factory = new SecureSendUploadFactory();
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, new SecureSendPasswordHash(String.Empty));
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, "testing");
     }
 
     #endregion
@@ -62,5 +62,19 @@ public class SecureSendUploadTests
         Assert.Single(upload.Files);
         upload.RemoveFile("test_file");
         Assert.Empty(upload.Files);
+    }
+
+    [Fact]
+    public void VerifyHash_Throws_InvalidPasswordException()
+    {
+        var exception = Record.Exception(() => upload.PasswordHash.VerifyHash("wrong password"));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidPasswordException>(exception);
+    }
+    
+    [Fact]
+    public void VerifyHash_Succeeds()
+    {
+        upload.PasswordHash.VerifyHash("testing");
     }
 }
