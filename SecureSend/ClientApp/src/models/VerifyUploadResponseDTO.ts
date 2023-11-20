@@ -1,4 +1,4 @@
 export interface UploadVerifyResponseDTO {
-    SecureUploadId: string;
-    IsProtected: boolean;
+    secureUploadId: string;
+    isProtected: boolean;
 }
