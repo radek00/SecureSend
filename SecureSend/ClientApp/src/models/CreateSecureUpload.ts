@@ -1,4 +1,5 @@
 export interface CreateSecureUpload {
-  uploadId: Uint8Array;
-  expiryDate?: string;
+  uploadId: string;
+  expiryDate: string | null;
+  password: string | null;
 }
