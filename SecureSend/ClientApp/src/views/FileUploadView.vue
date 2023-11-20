@@ -365,7 +365,7 @@ const createDownloadUrl = () => {
 };
 
 const setupUpload = async () => {
-  await SecureSendService.createSecureUpload(uuid, values.expiryDate);
+  await SecureSendService.createSecureUpload({uploadId: uuid, expiryDate: values.expiryDate ? values.expiryDate : null, password: values.password});
   keychain = new AuthenticatedSecretKeyCryptography(
     values.password ? values.password : undefined
   );
