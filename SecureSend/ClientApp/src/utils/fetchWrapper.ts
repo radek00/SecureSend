@@ -22,7 +22,7 @@ function get<T>(url: string): Promise<T> {
   return fetch(url, requestOptions).then(handleResponse<T>);
 }
 
-function post<T>(url: string, body?: Body, options?: RequestInit): Promise<T> {
+function post<T, Y=null>(url: string, body?: Y, options?: RequestInit): Promise<T> {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -31,7 +31,7 @@ function post<T>(url: string, body?: Body, options?: RequestInit): Promise<T> {
   return fetch(url, options ?? requestOptions).then(handleResponse<T>);
 }
 
-function put<T>(url: string, body?: Body): Promise<T> {
+function put<T, Y=null>(url: string, body?: Y): Promise<T> {
   const requestOptions = {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
