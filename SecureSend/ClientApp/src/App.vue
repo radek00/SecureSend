@@ -9,7 +9,9 @@ import { RouterView } from "vue-router";
   ></div>
   <RouterView v-slot="{ Component, route }">
     <transition name="fade" mode="out-in">
-      <component :is="Component" :key="route.path"></component>
+      <suspense>
+        <component :is="Component" :key="route.path"></component>
+      </suspense>
     </transition>
   </RouterView>
 </template>
