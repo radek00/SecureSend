@@ -1,7 +1,7 @@
 import { UploadExpiredError } from "@/models/errors/ResponseErrors";
 import { SecureSendService } from "@/services/SecureSendService";
 import { createRouter, createWebHistory } from "vue-router";
-import type {UploadVerifyResponseDTO} from "@/models/VerifyUploadResponseDTO";
+import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
 
 const FileUploadView = () => import("@/views/FileUploadView.vue");
 const FileDownloadView = () => import("@/views/FileDownloadView.vue");
@@ -34,7 +34,9 @@ const router = createRouter({
       props: true,
       beforeEnter: async (to) => {
         try {
-          (to.params.verifyUploadResponse as unknown as UploadVerifyResponseDTO) = await SecureSendService.verifySecureUpload(to.params.id as string);
+          (to.params
+            .verifyUploadResponse as unknown as UploadVerifyResponseDTO) =
+            await SecureSendService.verifySecureUpload(to.params.id as string);
           const keys = to.hash.split("_");
           (to.params.salt as unknown as Uint8Array) = new Uint8Array(
             atob(keys[0].slice(1))

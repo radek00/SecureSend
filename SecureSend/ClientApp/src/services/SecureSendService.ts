@@ -3,15 +3,16 @@ import type { CancelSecureUpload } from "@/models/CancelSecureUpload";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import type { ViewSecureUpload } from "@/models/ViewSecureUpload";
 import { fetchWrapper } from "@/utils/fetchWrapper";
-import type {CreateSecureUpload} from "@/models/CreateSecureUpload";
-import type {UploadVerifyResponseDTO} from "@/models/VerifyUploadResponseDTO";
+import type { CreateSecureUpload } from "@/models/CreateSecureUpload";
+import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
 
 export abstract class SecureSendService {
   static createSecureUpload = async (
-      secureUpload: CreateSecureUpload
+    secureUpload: CreateSecureUpload
   ): Promise<void> => {
     return await fetchWrapper.post<void, CreateSecureUpload>(
-      endpoints.secureSend, secureUpload
+      endpoints.secureSend,
+      secureUpload
     );
   };
 
@@ -43,7 +44,8 @@ export abstract class SecureSendService {
     viewSecureUpload: ViewSecureUpload
   ): Promise<SecureUploadDto> => {
     return await fetchWrapper.put<SecureUploadDto, ViewSecureUpload>(
-      `${endpoints.secureSend}`, viewSecureUpload
+      `${endpoints.secureSend}`,
+      viewSecureUpload
     );
   };
 
@@ -55,7 +57,9 @@ export abstract class SecureSendService {
     );
   };
 
-  static verifySecureUpload = async(id: string): Promise<UploadVerifyResponseDTO> => {
+  static verifySecureUpload = async (
+    id: string
+  ): Promise<UploadVerifyResponseDTO> => {
     return await fetchWrapper.get(`${endpoints.secureSend}?id=${id}`);
-}
+  };
 }

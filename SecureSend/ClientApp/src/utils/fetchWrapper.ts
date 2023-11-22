@@ -1,5 +1,9 @@
-import {ErrorTypes} from "@/models/enums/ErrorTypes";
-import {InvalidPasswordError, UploadDoesNotExistError, UploadExpiredError,} from "@/models/errors/ResponseErrors";
+import { ErrorTypes } from "@/models/enums/ErrorTypes";
+import {
+  InvalidPasswordError,
+  UploadDoesNotExistError,
+  UploadExpiredError,
+} from "@/models/errors/ResponseErrors";
 
 interface IErrorResponse {
   Message: string;
@@ -19,7 +23,11 @@ function get<T>(url: string): Promise<T> {
   return fetch(url, requestOptions).then(handleResponse<T>);
 }
 
-function post<T, Y=null>(url: string, body?: Y, options?: RequestInit): Promise<T> {
+function post<T, Y = null>(
+  url: string,
+  body?: Y,
+  options?: RequestInit
+): Promise<T> {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,7 +36,7 @@ function post<T, Y=null>(url: string, body?: Y, options?: RequestInit): Promise<
   return fetch(url, options ?? requestOptions).then(handleResponse<T>);
 }
 
-function put<T, Y=null>(url: string, body?: Y): Promise<T> {
+function put<T, Y = null>(url: string, body?: Y): Promise<T> {
   const requestOptions = {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -60,7 +68,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
           ErrorTypes.upload_does_not_exist
         )
           return Promise.reject(new UploadDoesNotExistError(data.Message));
-        if ((data as IErrorResponse).ErrorCode === ErrorTypes.invalid_password) return Promise.reject(new InvalidPasswordError(data.Message));
+        if ((data as IErrorResponse).ErrorCode === ErrorTypes.invalid_password)
+          return Promise.reject(new InvalidPasswordError(data.Message));
       }
       return Promise.reject(new Error(response.statusText));
     }

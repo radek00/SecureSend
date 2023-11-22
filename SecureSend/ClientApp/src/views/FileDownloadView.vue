@@ -3,14 +3,14 @@ import StyledButton from "@/components/StyledButton.vue";
 import endpoints from "@/config/endpoints";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import { ButtonType } from "@/models/enums/ButtonType";
-import {inject, Ref, ref} from "vue";
+import { inject, Ref, ref } from "vue";
 import SimpleInput from "@/components/SimpleInput.vue";
 import { computed } from "vue";
 import FileCard from "@/components/FileCard.vue";
 import type { IWorkerInit } from "@/models/WorkerInit";
-import type {UploadVerifyResponseDTO} from "@/models/VerifyUploadResponseDTO";
-import {SecureSendService} from "@/services/SecureSendService";
-import {InvalidPasswordError} from "@/models/errors/ResponseErrors";
+import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
+import { SecureSendService } from "@/services/SecureSendService";
+import { InvalidPasswordError } from "@/models/errors/ResponseErrors";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 const props = defineProps<{
@@ -21,7 +21,7 @@ const props = defineProps<{
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 
-const secureUpload = ref<SecureUploadDto | null>(null)
+const secureUpload = ref<SecureUploadDto | null>(null);
 
 const password = ref<string>("");
 
@@ -30,12 +30,17 @@ const setUpWorker = async () => {
     request: "init",
     id: secureUpload.value!.secureUploadId,
     salt: props.salt,
-    masterKey: props.verifyUploadResponse.isProtected ? password.value : props.masterKey,
+    masterKey: props.verifyUploadResponse.isProtected
+      ? password.value
+      : props.masterKey,
   } as IWorkerInit);
 };
 
 if (!props.verifyUploadResponse.isProtected) {
-  secureUpload.value = await SecureSendService.viewSecureUpload({id: props.verifyUploadResponse.secureUploadId, password: password.value});
+  secureUpload.value = await SecureSendService.viewSecureUpload({
+    id: props.verifyUploadResponse.secureUploadId,
+    password: password.value,
+  });
   await setUpWorker();
 }
 
@@ -44,7 +49,10 @@ const isPasswordValid = ref<boolean>();
 const verifyPassword = async () => {
   isLoading!.value = true;
   try {
-    secureUpload.value = await SecureSendService.viewSecureUpload({id: props.verifyUploadResponse.secureUploadId, password: password.value});
+    secureUpload.value = await SecureSendService.viewSecureUpload({
+      id: props.verifyUploadResponse.secureUploadId,
+      password: password.value,
+    });
     isPasswordValid.value = true;
     await setUpWorker();
   } catch (err: unknown) {
@@ -116,16 +124,18 @@ const isPasswordValidComputed = computed(
               errorMessage="Invalid password"
             ></SimpleInput>
           </div>
-          <StyledButton @click="verifyPassword()" :category="ButtonType.primary">
+          <StyledButton
+            @click="verifyPassword()"
+            :category="ButtonType.primary"
+          >
             <span class="flex items-center justify-center">
               Unlock
               <LoadingIndicator
-                  v-if="isLoading"
-                  class="w-5 h-5 ml-2"
+                v-if="isLoading"
+                class="w-5 h-5 ml-2"
               ></LoadingIndicator>
             </span>
-          </StyledButton
-          >
+          </StyledButton>
         </div>
       </div>
     </div>
