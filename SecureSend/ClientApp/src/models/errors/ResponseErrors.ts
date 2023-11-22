@@ -11,3 +11,10 @@ export class UploadDoesNotExistError extends Error {
     Object.setPrototypeOf(this, UploadDoesNotExistError.prototype);
   }
 }
+
+export class InvalidPasswordError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    Object.setPrototypeOf(this, InvalidPasswordError.prototype);
+  }
+}

@@ -1,8 +1,5 @@
-import { ErrorTypes } from "@/models/enums/ErrorTypes";
-import {
-  UploadDoesNotExistError,
-  UploadExpiredError,
-} from "@/models/errors/ResponseErrors";
+import {ErrorTypes} from "@/models/enums/ErrorTypes";
+import {InvalidPasswordError, UploadDoesNotExistError, UploadExpiredError,} from "@/models/errors/ResponseErrors";
 
 interface IErrorResponse {
   Message: string;
@@ -63,6 +60,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
           ErrorTypes.upload_does_not_exist
         )
           return Promise.reject(new UploadDoesNotExistError(data.Message));
+        if ((data as IErrorResponse).ErrorCode === ErrorTypes.invalid_password) return Promise.reject(new InvalidPasswordError(data.Message));
       }
       return Promise.reject(new Error(response.statusText));
     }
