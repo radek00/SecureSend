@@ -8,9 +8,9 @@ namespace SecureSend.Domain.Entities
     {
         public SecureSendUploadId Id {get; private set;}
         public SecureSendUploadDate UploadDate { get; private set; }
-        public SecureSendExpiryDate ExpiryDate { get; private set; }
+        public SecureSendExpiryDate? ExpiryDate { get; private set; }
         public SecureSendIsViewed IsViewed { get; private set; }
-        public SecureSendPasswordHash PasswordHash { get; private set; }
+        public SecureSendPasswordHash? PasswordHash { get; private set; }
         
         public List<SecureSendFile> Files { get; private set; } = new();
 
