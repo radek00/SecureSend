@@ -3,41 +3,55 @@ import StyledButton from "@/components/StyledButton.vue";
 import endpoints from "@/config/endpoints";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import { ButtonType } from "@/models/enums/ButtonType";
-import { verifyHash } from "@/utils/pbkdfHash";
-import { ref } from "vue";
+import {inject, Ref, ref} from "vue";
 import SimpleInput from "@/components/SimpleInput.vue";
 import { computed } from "vue";
 import FileCard from "@/components/FileCard.vue";
 import type { IWorkerInit } from "@/models/WorkerInit";
+import type {UploadVerifyResponseDTO} from "@/models/VerifyUploadResponseDTO";
+import {SecureSendService} from "@/services/SecureSendService";
+import {InvalidPasswordError} from "@/models/errors/ResponseErrors";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 const props = defineProps<{
-  secureUpload: SecureUploadDto;
+  verifyUploadResponse: UploadVerifyResponseDTO;
   salt: Uint8Array;
   masterKey: string | Uint8Array;
-  isPasswordProtected: boolean;
 }>();
+
+const isLoading = inject<Ref<boolean>>("isLoading");
+
+const secureUpload = ref<SecureUploadDto | null>(null)
 
 const password = ref<string>("");
 
-const setUpWorker = () => {
+const setUpWorker = async () => {
   navigator.serviceWorker.controller?.postMessage({
     request: "init",
-    id: props.secureUpload.secureUploadId,
+    id: secureUpload.value!.secureUploadId,
     salt: props.salt,
-    masterKey: props.isPasswordProtected ? password.value : props.masterKey,
+    masterKey: props.verifyUploadResponse.isProtected ? password.value : props.masterKey,
   } as IWorkerInit);
 };
 
-if (!props.isPasswordProtected) setUpWorker();
+if (!props.verifyUploadResponse.isProtected) {
+  secureUpload.value = await SecureSendService.viewSecureUpload({id: props.verifyUploadResponse.secureUploadId, password: password.value});
+  await setUpWorker();
+}
 
 const isPasswordValid = ref<boolean>();
 
 const verifyPassword = async () => {
-  isPasswordValid.value = await verifyHash(
-    props.masterKey as string,
-    password.value
-  );
-  if (isPasswordValid.value) setUpWorker();
+  isLoading!.value = true;
+  try {
+    secureUpload.value = await SecureSendService.viewSecureUpload({id: props.verifyUploadResponse.secureUploadId, password: password.value});
+    isPasswordValid.value = true;
+    await setUpWorker();
+  } catch (err: unknown) {
+    if (err instanceof InvalidPasswordError) isPasswordValid.value = false;
+    else throw err;
+  }
+  isLoading!.value = false;
 };
 
 const isPasswordValidComputed = computed(
@@ -48,14 +62,14 @@ const isPasswordValidComputed = computed(
   <div class="flex justify-center items-center pt-14 md:pt-20">
     <div
       class="w-11/12 md:w-6/12"
-      v-if="!isPasswordProtected || isPasswordValid"
+      v-if="!verifyUploadResponse.isProtected || isPasswordValid"
     >
       <h1 class="text-4xl text-white text-center">Download files</h1>
       <div
         class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
       >
         <FileCard
-          v-for="file in secureUpload.files"
+          v-for="file in secureUpload!.files"
           :key="(file.fileName as string)"
           :file-name="file.fileName!"
           :size="file.fileSize"
@@ -63,7 +77,7 @@ const isPasswordValidComputed = computed(
           <template #cardBottom>
             <a
               class="font-medium text-blue-500 hover:underline"
-              :href="`${endpoints.download}?id=${secureUpload.secureUploadId}&fileName=${file.fileName}`"
+              :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${file.fileName}`"
               >Download</a
             >
           </template>
@@ -102,8 +116,15 @@ const isPasswordValidComputed = computed(
               errorMessage="Invalid password"
             ></SimpleInput>
           </div>
-          <StyledButton @click="verifyPassword()" :category="ButtonType.primary"
-            >Unlock</StyledButton
+          <StyledButton @click="verifyPassword()" :category="ButtonType.primary">
+            <span class="flex items-center justify-center">
+              Unlock
+              <LoadingIndicator
+                  v-if="isLoading"
+                  class="w-5 h-5 ml-2"
+              ></LoadingIndicator>
+            </span>
+          </StyledButton
           >
         </div>
       </div>
