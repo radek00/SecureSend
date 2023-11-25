@@ -26,8 +26,8 @@ const decrypt = async (id: string, url: string) => {
     const body = fileResponse.body!;
     const decryptedResponse = decryptStream(
       body,
-      fileData.salt,
-      fileData.masterKey
+      fileData.b64key,
+      fileData.password
     );
     const headers = {
       "Content-Disposition":

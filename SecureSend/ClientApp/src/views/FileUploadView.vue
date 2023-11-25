@@ -352,15 +352,9 @@ const encryptFile = async () => {
   }
 };
 const createDownloadUrl = () => {
-  const base64Salt = btoa(String.fromCharCode(...keychain.getSalt()));
-  const key = values.isPasswordRequired
-    ? keychain.getHash()
-    : btoa(String.fromCharCode(...keychain.getMasterKey()));
   downloadUrl = window.location.origin
     .toString()
-    .concat(
-      `/download/${uuid}?pass=${values.isPasswordRequired}#${base64Salt}_${key}`
-    );
+    .concat(`/download/${uuid}#${keychain.getSecret()}`);
   return downloadUrl;
 };
 

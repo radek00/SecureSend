@@ -15,8 +15,7 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 const props = defineProps<{
   verifyUploadResponse: UploadVerifyResponseDTO;
-  salt: Uint8Array;
-  masterKey: string | Uint8Array;
+  b64Key: string;
 }>();
 
 const isLoading = inject<Ref<boolean>>("isLoading");
@@ -29,10 +28,10 @@ const setUpWorker = async () => {
   navigator.serviceWorker.controller?.postMessage({
     request: "init",
     id: secureUpload.value!.secureUploadId,
-    salt: props.salt,
-    masterKey: props.verifyUploadResponse.isProtected
+    b64key: props.b64Key,
+    password: props.verifyUploadResponse.isProtected
       ? password.value
-      : props.masterKey,
+      : undefined,
   } as IWorkerInit);
 };
 

@@ -1,8 +1,6 @@
-import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
-
 export interface IWorkerInit {
   request: string;
-  salt: Uint8Array;
-  masterKey: encryptionKey;
+  b64key: string;
+  password?: string;
   id: string;
 }

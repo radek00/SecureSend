@@ -38,20 +38,7 @@ const router = createRouter({
             .verifyUploadResponse as unknown as UploadVerifyResponseDTO) =
             await SecureSendService.verifySecureUpload(to.params.id as string);
           const keys = to.hash.split("_");
-          (to.params.salt as unknown as Uint8Array) = new Uint8Array(
-            atob(keys[0].slice(1))
-              .split("")
-              .map((c) => c.charCodeAt(0))
-          );
-          const isProtected = to.query["pass"] === "true";
-          (to.params.isPasswordProtected as unknown as boolean) = isProtected;
-          (to.params.masterKey as unknown as string | Uint8Array) = isProtected
-            ? keys[1]
-            : new Uint8Array(
-                atob(keys[1])
-                  .split("")
-                  .map((c) => c.charCodeAt(0))
-              );
+          to.params.b64Key = keys[0].slice(1);
         } catch (error) {
           if (error instanceof UploadExpiredError) {
             return {
