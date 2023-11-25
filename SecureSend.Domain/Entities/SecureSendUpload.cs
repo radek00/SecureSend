@@ -14,7 +14,7 @@ namespace SecureSend.Domain.Entities
         
         public List<SecureSendFile> Files { get; private set; } = new();
 
-    public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate expiryDate, SecureSendIsViewed isViewedl, SecureSendPasswordHash passwordHash)
+    public SecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate? expiryDate, SecureSendIsViewed isViewedl, SecureSendPasswordHash? passwordHash)
         {
             Id = id;
             UploadDate = uploadDate;
