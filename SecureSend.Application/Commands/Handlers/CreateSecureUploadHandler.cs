@@ -25,7 +25,7 @@ namespace SecureSend.Application.Commands.Handlers
         public async Task<Unit> Handle (CreateSecureUpload command, CancellationToken cancellationToken)
         {
             var persisted = await _secureUploadReadService.GetUploadId(command.uploadId, cancellationToken);
-            if (persisted != Guid.Empty) throw new UploadAlreadyExistsException(persisted.Value);
+            if (persisted is not null && persisted != Guid.Empty) throw new UploadAlreadyExistsException(persisted.Value);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, new SecureSendUploadDate(), command.expiryDate, false, command.password);
             await _secureSendUploadRepository.AddAsync(secureUpload, cancellationToken);
             return Unit.Value;

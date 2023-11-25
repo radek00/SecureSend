@@ -15,7 +15,7 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task<SecureUploadDto> Handle(ViewSecureUpload request, CancellationToken cancellationToken)
         {
-            var upload = await _repository.GetAsync(request.id, cancellationToken);
+            var upload = await _repository.GetAsync(request.id, cancellationToken) ?? throw new UploadDoesNotExistException(request.id);
             if (upload.PasswordHash is not null)
             {
                 upload.PasswordHash.VerifyHash(request.password);
