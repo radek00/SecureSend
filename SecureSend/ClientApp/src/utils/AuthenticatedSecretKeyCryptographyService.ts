@@ -1,6 +1,6 @@
 import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
-export default class AuthenticatedSecretKeyCryptography {
+export default class AuthenticatedSecretKeyCryptographyService {
   public static readonly KEY_LENGTH_IN_BYTES = 32;
   public static readonly SALT_LENGTH_IN_BYTES = 16;
   public static readonly TAG_LENGTH_IN_BYTES = 16;
@@ -23,7 +23,7 @@ export default class AuthenticatedSecretKeyCryptography {
   constructor(
     password?: string,
     b64Key?: string,
-    tagLengthInBytes = AuthenticatedSecretKeyCryptography.TAG_LENGTH_IN_BYTES
+    tagLengthInBytes = AuthenticatedSecretKeyCryptographyService.TAG_LENGTH_IN_BYTES
   ) {
     this.tagLengthInBytes = tagLengthInBytes;
     this.seq = 0;
@@ -33,10 +33,10 @@ export default class AuthenticatedSecretKeyCryptography {
       if (!password) {
         this.salt = arrayKey.slice(
           0,
-          AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES
+          AuthenticatedSecretKeyCryptographyService.SALT_LENGTH_IN_BYTES
         );
         this.masterKey = arrayKey.slice(
-          AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES
+          AuthenticatedSecretKeyCryptographyService.SALT_LENGTH_IN_BYTES
         );
       } else {
         this.salt = arrayKey;
@@ -44,13 +44,15 @@ export default class AuthenticatedSecretKeyCryptography {
       }
     } else {
       this.salt = crypto.getRandomValues(
-        new Uint8Array(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES)
+        new Uint8Array(
+          AuthenticatedSecretKeyCryptographyService.SALT_LENGTH_IN_BYTES
+        )
       );
       this.masterKey = password
         ? password
         : crypto.getRandomValues(
             new Uint8Array(
-              AuthenticatedSecretKeyCryptography.KEY_LENGTH_IN_BYTES
+              AuthenticatedSecretKeyCryptographyService.KEY_LENGTH_IN_BYTES
             )
           );
     }
