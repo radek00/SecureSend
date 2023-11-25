@@ -1,5 +1,3 @@
-import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
-
 export default class AuthenticatedSecretKeyCryptographyService {
   public static readonly KEY_LENGTH_IN_BYTES = 32;
   public static readonly SALT_LENGTH_IN_BYTES = 16;
@@ -12,7 +10,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
 
   private cryptoKey!: CryptoKey;
   private derivedKey!: ArrayBuffer;
-  private readonly masterKey: encryptionKey;
+  private readonly masterKey: string | Uint8Array;
 
   private readonly salt: Uint8Array;
   private nonceBase!: ArrayBuffer;
@@ -68,7 +66,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
   }
 
   async start() {
-    this.cryptoKey = await this.getCryptoKeyFromRawKey(this.masterKey);
+    this.cryptoKey = await this.getCryptoKeyFromRawKey(this.masterKey as string);
     this.nonceBase = await this.generateNonceBase();
   }
 
@@ -115,9 +113,9 @@ export default class AuthenticatedSecretKeyCryptographyService {
     return new Uint8Array(nonce.buffer);
   }
 
-  public async getCryptoKeyFromRawKey(masterKey: encryptionKey) {
+  public async getCryptoKeyFromRawKey(password: string) {
     this.derivedKey = this.requirePassword
-      ? await this.derivePbkdfKeyMaterial(masterKey as string)
+      ? await this.derivePbkdfKeyMaterial(password)
       : await this.deriveHkdfKeyMaterial();
     return await crypto.subtle.importKey(
       "raw",
