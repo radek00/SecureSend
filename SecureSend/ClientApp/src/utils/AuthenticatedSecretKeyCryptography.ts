@@ -4,18 +4,20 @@ export default class AuthenticatedSecretKeyCryptography {
   public static readonly KEY_LENGTH_IN_BYTES = 32;
   public static readonly SALT_LENGTH_IN_BYTES = 16;
   public static readonly TAG_LENGTH_IN_BYTES = 16;
+
   private readonly NONCE_LENGTH = 12;
+  private readonly tagLengthInBytes: number;
 
   private readonly ALGORITHM = "AES-GCM";
-  private secretKey!: CryptoKey;
-  private keyData!: ArrayBuffer;
-  private readonly tagLengthInBytes: number;
+
+  private cryptoKey!: CryptoKey;
+  private derivedKey!: ArrayBuffer;
+  private readonly masterKey: encryptionKey;
 
   private readonly salt: Uint8Array;
   private nonceBase!: ArrayBuffer;
   public seq: number;
 
-  private readonly masterKey: encryptionKey;
   private readonly requirePassword: boolean;
 
   constructor(
@@ -29,17 +31,28 @@ export default class AuthenticatedSecretKeyCryptography {
     if (b64Key) {
       const arrayKey = this.base64ToArray(b64Key);
       if (!password) {
-        this.salt = arrayKey.slice(0, AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES);
-        this.masterKey = arrayKey.slice(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES);
+        this.salt = arrayKey.slice(
+          0,
+          AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES
+        );
+        this.masterKey = arrayKey.slice(
+          AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES
+        );
       } else {
         this.salt = arrayKey;
         this.masterKey = password;
       }
     } else {
-      this.salt = crypto.getRandomValues(new Uint8Array(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES));
+      this.salt = crypto.getRandomValues(
+        new Uint8Array(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES)
+      );
       this.masterKey = password
         ? password
-        : crypto.getRandomValues(new Uint8Array(AuthenticatedSecretKeyCryptography.KEY_LENGTH_IN_BYTES));
+        : crypto.getRandomValues(
+            new Uint8Array(
+              AuthenticatedSecretKeyCryptography.KEY_LENGTH_IN_BYTES
+            )
+          );
     }
     this.requirePassword = password ? true : false;
   }
@@ -53,7 +66,7 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   async start() {
-    this.secretKey = await this.getCryptoKeyFromRawKey(this.masterKey);
+    this.cryptoKey = await this.getCryptoKeyFromRawKey(this.masterKey);
     this.nonceBase = await this.generateNonceBase();
   }
 
@@ -61,7 +74,7 @@ export default class AuthenticatedSecretKeyCryptography {
     const encoder = new TextEncoder();
     const inputKey = await crypto.subtle.importKey(
       "raw",
-      this.keyData,
+      this.derivedKey,
       "HKDF",
       false,
       ["deriveKey"]
@@ -101,12 +114,12 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   public async getCryptoKeyFromRawKey(masterKey: encryptionKey) {
-    this.keyData = this.requirePassword
+    this.derivedKey = this.requirePassword
       ? await this.derivePbkdfKeyMaterial(masterKey as string)
       : await this.deriveHkdfKeyMaterial();
     return await crypto.subtle.importKey(
       "raw",
-      this.keyData,
+      this.derivedKey,
       {
         name: this.ALGORITHM,
       },
@@ -123,7 +136,7 @@ export default class AuthenticatedSecretKeyCryptography {
         iv: nonce,
         tagLength: this.tagLengthInBytes * 8,
       },
-      this.secretKey,
+      this.cryptoKey,
       data.buffer
     );
   }
@@ -136,14 +149,12 @@ export default class AuthenticatedSecretKeyCryptography {
         iv: nonce,
         tagLength: this.tagLengthInBytes * 8,
       },
-      this.secretKey,
+      this.cryptoKey,
       data
     );
   }
 
-  private async derivePbkdfKeyMaterial(
-    password: string
-  ): Promise<ArrayBuffer> {
+  private async derivePbkdfKeyMaterial(password: string): Promise<ArrayBuffer> {
     const encoder = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
       "raw",
