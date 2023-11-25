@@ -117,7 +117,7 @@
 <script setup lang="ts">
 import SchemaInput from "@/components/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
-import AuthenticatedSecretKeyCryptography from "@/utils/AuthenticatedSecretKeyCryptography";
+import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
 import splitFile from "@/utils/splitFile";
 import { ref, type Ref } from "vue";
 import { useForm } from "vee-validate";
@@ -147,7 +147,7 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { openSuccess, openDanger } = useAlert();
 
-let keychain: AuthenticatedSecretKeyCryptography;
+let keychain: AuthenticatedSecretKeyCryptographyService;
 
 const step = ref<number>(0);
 
@@ -364,7 +364,7 @@ const setupUpload = async () => {
     expiryDate: values.expiryDate ? values.expiryDate : null,
     password: values.password,
   });
-  keychain = new AuthenticatedSecretKeyCryptography(
+  keychain = new AuthenticatedSecretKeyCryptographyService(
     values.password ? values.password : undefined
   );
   await keychain.start();
