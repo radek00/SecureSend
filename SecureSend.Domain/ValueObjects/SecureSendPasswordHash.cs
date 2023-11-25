@@ -27,5 +27,5 @@ public class SecureSendPasswordHash
 
     public static implicit operator SecureSendPasswordHash(byte[] hash) => new(hash);
 
-    public static implicit operator SecureSendPasswordHash(string password) => new(password);
+    public static implicit operator SecureSendPasswordHash(string? password) => new(password);
 }

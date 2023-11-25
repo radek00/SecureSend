@@ -6,11 +6,11 @@
 
         public SecureSendExpiryDate(DateTime? value = null)
         {
-            Value = value is not null ? value?.ToUniversalTime() : null;
+            Value = value?.ToUniversalTime();
         }
 
 
-        public static implicit operator DateTime?(SecureSendExpiryDate secureSendExpiryDate) => secureSendExpiryDate?.Value;
+        public static implicit operator DateTime?(SecureSendExpiryDate? secureSendExpiryDate) => secureSendExpiryDate?.Value;
 
         public static implicit operator SecureSendExpiryDate(DateTime? secureSendExpiryDate) => new(secureSendExpiryDate);
     }

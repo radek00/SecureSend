@@ -20,7 +20,7 @@ namespace SecureSend.Infrastructure.Repositories
 
         public async Task AddAsync(SecureSendUpload upload, CancellationToken cancellationToken)
         {
-            await _uploads.AddAsync(upload);
+            await _uploads.AddAsync(upload, cancellationToken);
             await SaveChanges(cancellationToken);
         }
 
