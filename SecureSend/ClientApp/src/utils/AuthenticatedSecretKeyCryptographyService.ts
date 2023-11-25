@@ -66,7 +66,9 @@ export default class AuthenticatedSecretKeyCryptographyService {
   }
 
   async start() {
-    this.cryptoKey = await this.getCryptoKeyFromRawKey(this.masterKey as string);
+    this.cryptoKey = await this.getCryptoKeyFromRawKey(
+      this.masterKey as string
+    );
     this.nonceBase = await this.generateNonceBase();
   }
 
