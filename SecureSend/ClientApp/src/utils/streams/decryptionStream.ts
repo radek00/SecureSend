@@ -4,13 +4,13 @@ import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default function decryptStream(
   input: ReadableStream,
-  salt: Uint8Array,
-  masterKey: encryptionKey
+  b64Key: string,
+  password?: string
 ) {
   const inputStream = input.pipeThrough(
     new TransformStream(new StreamSlicer(5 * 1024 * 1024 + 16))
   );
   return inputStream.pipeThrough(
-    new TransformStream(new StreamDecryptor(masterKey, salt))
+    new TransformStream(new StreamDecryptor(b64Key, password))
   );
 }

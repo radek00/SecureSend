@@ -1,9 +1,8 @@
-import { generateHash } from "./pbkdfHash";
 import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default class AuthenticatedSecretKeyCryptography {
-  public static readonly KEY_LENGTH_IN_BYTES = 16;
-  public static readonly IV_LENGTH_IN_BYTES = 16;
+  public static readonly KEY_LENGTH_IN_BYTES = 32;
+  public static readonly SALT_LENGTH_IN_BYTES = 16;
   public static readonly TAG_LENGTH_IN_BYTES = 16;
   private readonly NONCE_LENGTH = 12;
 
@@ -15,23 +14,42 @@ export default class AuthenticatedSecretKeyCryptography {
   private readonly salt: Uint8Array;
   private nonceBase!: ArrayBuffer;
   public seq: number;
-  private hash?: string;
-  private readonly masterKey: encryptionKey;
 
+  private readonly masterKey: encryptionKey;
   private readonly requirePassword: boolean;
 
   constructor(
-    password?: encryptionKey,
-    salt = crypto.getRandomValues(new Uint8Array(16)),
+    password?: string,
+    b64Key?: string,
     tagLengthInBytes = AuthenticatedSecretKeyCryptography.TAG_LENGTH_IN_BYTES
   ) {
     this.tagLengthInBytes = tagLengthInBytes;
-    this.salt = salt;
-    this.masterKey = password
-      ? password
-      : crypto.getRandomValues(new Uint8Array(32));
     this.seq = 0;
-    this.requirePassword = typeof this.masterKey === "string";
+
+    if (b64Key) {
+      const arrayKey = this.base64ToArray(b64Key);
+      if (!password) {
+        this.salt = arrayKey.slice(0, AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES);
+        this.masterKey = arrayKey.slice(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES);
+      } else {
+        this.salt = arrayKey;
+        this.masterKey = password;
+      }
+    } else {
+      this.salt = crypto.getRandomValues(new Uint8Array(AuthenticatedSecretKeyCryptography.SALT_LENGTH_IN_BYTES));
+      this.masterKey = password
+        ? password
+        : crypto.getRandomValues(new Uint8Array(AuthenticatedSecretKeyCryptography.KEY_LENGTH_IN_BYTES));
+    }
+    this.requirePassword = password ? true : false;
+  }
+
+  private base64ToArray(b64Key: string): Uint8Array {
+    return new Uint8Array(
+      atob(b64Key)
+        .split("")
+        .map((c) => c.charCodeAt(0))
+    );
   }
 
   async start() {
@@ -83,12 +101,12 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   public async getCryptoKeyFromRawKey(masterKey: encryptionKey) {
-    const keyData = this.requirePassword
-      ? await this.derivePbkdfKeyMaterial(masterKey as string, this.salt)
+    this.keyData = this.requirePassword
+      ? await this.derivePbkdfKeyMaterial(masterKey as string)
       : await this.deriveHkdfKeyMaterial();
     return await crypto.subtle.importKey(
       "raw",
-      keyData,
+      this.keyData,
       {
         name: this.ALGORITHM,
       },
@@ -124,8 +142,7 @@ export default class AuthenticatedSecretKeyCryptography {
   }
 
   private async derivePbkdfKeyMaterial(
-    password: string,
-    salt: Uint8Array
+    password: string
   ): Promise<ArrayBuffer> {
     const encoder = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
@@ -136,11 +153,10 @@ export default class AuthenticatedSecretKeyCryptography {
       ["deriveBits"]
     );
     const keyBuffer = await crypto.subtle.deriveBits(
-      { name: "PBKDF2", salt, iterations: 1e6, hash: "SHA-256" },
+      { name: "PBKDF2", salt: this.salt, iterations: 1e6, hash: "SHA-256" },
       keyMaterial,
       256
     );
-    this.keyData = keyBuffer;
     return keyBuffer;
   }
 
@@ -153,7 +169,7 @@ export default class AuthenticatedSecretKeyCryptography {
       ["deriveBits"]
     );
     const info = new TextEncoder().encode("info");
-    this.keyData = await crypto.subtle.deriveBits(
+    return await crypto.subtle.deriveBits(
       {
         name: "HKDF",
         salt: this.salt,
@@ -163,20 +179,17 @@ export default class AuthenticatedSecretKeyCryptography {
       keyMaterial,
       256 // 256 bits key length
     );
-    return this.keyData;
   }
 
-  getMasterKey() {
-    return this.masterKey as Uint8Array;
-  }
-
-  getHash() {
-    if (this.hash) return this.hash;
-    this.hash = generateHash(this.keyData, this.salt);
-    return this.hash;
-  }
-
-  getSalt() {
-    return this.salt;
+  getSecret() {
+    if (this.requirePassword) return btoa(String.fromCharCode(...this.salt));
+    return btoa(
+      String.fromCharCode(
+        ...new Uint8Array([
+          ...this.salt,
+          ...new Uint8Array(this.masterKey as Uint8Array),
+        ])
+      )
+    );
   }
 }
