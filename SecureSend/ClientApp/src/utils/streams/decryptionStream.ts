@@ -1,6 +1,5 @@
 import StreamSlicer from "./StreamSlicer";
 import StreamDecryptor from "./StreamDecryptor";
-import type { encryptionKey } from "@/models/utilityTypes/encryptionKey";
 
 export default function decryptStream(
   input: ReadableStream,
