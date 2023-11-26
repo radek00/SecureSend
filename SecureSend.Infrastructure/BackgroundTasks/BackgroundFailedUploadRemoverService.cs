@@ -38,18 +38,18 @@ namespace SecureSend.Infrastructure.BackgroundTasks
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
                     var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
-                    var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any());
-                    var emptyUploads = await query.AsNoTracking().ToListAsync();
+                    var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddDays(-1));
+                    var emptyUploads = await query.AsNoTracking().ToListAsync(token);
                     foreach (var upload in emptyUploads)
                     {
-                        fileService.RemoveUpload(upload.Id);
                         _logger.LogInformation("Removing failed upload: {@id}", upload.Id);
+                        fileService.RemoveUpload(upload.Id);
 
                     }
 
-                    if (emptyUploads.Any()) await query.ExecuteDeleteAsync();
+                    if (emptyUploads.Any()) await query.ExecuteDeleteAsync(token);
                     
-                    await Task.Delay(TimeSpan.FromMinutes(60), token);
+                    await Task.Delay(TimeSpan.FromDays(1), token);
                 }
             }
         }
