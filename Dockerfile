@@ -10,8 +10,7 @@ ENV FileStorageOptions__Path=/app/files
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-COPY --from=mcr.microsoft.com/dotnet/aspnet:7.0 /usr/share/dotnet/shared /usr/share/dotnet/shared
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
 RUN apt-get install -y nodejs
