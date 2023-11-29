@@ -15,6 +15,7 @@ on:
       - "**"
     tags:
       - "v*.*.*"
+      - "latest"
   pull_request:
     branches:
       - "main"
