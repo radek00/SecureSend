@@ -11,8 +11,13 @@ name: Publish Docker image
 
 on:
   push:
-    branches:
-      - 'docker-tag-managment'
+      branches:
+        - "**"
+      tags:
+        - "v*.*.*"
+    pull_request:
+      branches:
+        - "main"
 
 jobs:
   push_to_registry:
@@ -40,7 +45,6 @@ jobs:
         with:
           images: chupacabra500/secure_send
           tags: |
-            type=schedule
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
