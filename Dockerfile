@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 WORKDIR /app
 EXPOSE 5000
 
@@ -10,10 +10,12 @@ ENV FileStorageOptions__Path=/app/files
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs
+RUN curl -SLO https://deb.nodesource.com/nsolid_setup_deb.sh
+RUN chmod 500 nsolid_setup_deb.sh
+RUN ./nsolid_setup_deb.sh 21
+RUN apt-get install nodejs -y
 COPY ["SecureSend/SecureSend.csproj", "SecureSend/"]
 COPY ["SecureSend.Application/SecureSend.Application.csproj", "SecureSend.Application/"]
 COPY ["SecureSend.Infrastructure/SecureSend.Infrastructure.csproj", "SecureSend.Infrastructure/"]
@@ -24,7 +26,7 @@ WORKDIR "/src/SecureSend"
 RUN dotnet build "SecureSend.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "SecureSend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "SecureSend.csproj" --no-restore -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
