@@ -46,6 +46,7 @@ jobs:
         with:
           images: chupacabra500/secure_send
           tags: |
+            type=raw,value=latest,enable=${{ endsWith(github.ref, 'release') }}
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
