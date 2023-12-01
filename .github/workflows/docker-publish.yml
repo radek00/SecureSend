@@ -15,7 +15,6 @@ on:
       - "**"
     tags:
       - "v*.*.*"
-      - "latest"
   pull_request:
     branches:
       - "master"
@@ -50,7 +49,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: chupacabra500/secure_send
+          images: |
+            chupacabra500/secure_send
+            ghcr.io/${{ github.repository_owner }}/secure_send
           tags: |
             type=raw,value=latest,enable=${{ endsWith(github.ref, 'release') }}
             type=ref,event=branch
