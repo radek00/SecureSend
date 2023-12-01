@@ -51,7 +51,7 @@ jobs:
         with:
           images: |
             chupacabra500/secure_send
-            ghcr.io/${{ github.repository_owner }}/SecureSend
+            ghcr.io/${{ github.repository_owner }}/secure_send
           tags: |
             type=raw,value=latest,enable=${{ endsWith(github.ref, 'release') }}
             type=ref,event=branch
@@ -59,7 +59,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
