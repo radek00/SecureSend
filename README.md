@@ -64,7 +64,7 @@ services:
       # - SqlServerOptions__Password=YourStrong@Passw0rd
       # - SqlServerOptions__TrustServerCertificate=True
     ports:
-      - 5000:5000
+      - 8080:80
     networks:
       - secureSend
     depends_on:
