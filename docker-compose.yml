@@ -5,7 +5,7 @@ networks:
   secureSend:
 services:
   securesend:
-    image: chupacabra500/secure_send:latest
+    image: chupacabra500/secure_send
     build:
       dockerfile: ./Dockerfile
     volumes:
@@ -18,30 +18,12 @@ services:
       - PostgresOptions__Password=example
       - PostgresOptions__UserId=postgres
       - PostgresOptions__Database=SecureSend
-
-    #sql server options
-      # - SqlServerOptions__Server=db
-      # - SqlServerOptions__Port=1433
-      # - SqlServerOptions__Database=SecureSend
-      # - SqlServerOptions__TrustedConnection=False
-      # - SqlServerOptions__UserId=SA
-      # - SqlServerOptions__Password=YourStrong@Passw0rd
-      # - SqlServerOptions__TrustServerCertificate=True
     ports:
-      - 5000:5000
+      - 8080:80
     networks:
       - secureSend
     depends_on:
       - db
-  # db:
-  #   image: "mcr.microsoft.com/mssql/server"
-  #   environment:
-  #     SA_PASSWORD: "YourStrong@Passw0rd"
-  #     ACCEPT_EULA: "Y"
-  #   ports:
-  #     - 1433:1433
-  #   networks:
-  #     - secureSend
   db:
     image: postgres
     restart: always
