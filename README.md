@@ -135,7 +135,7 @@ services:
       - proxy
     labels:
       - traefik.enable=true
-      - traefik.http.services.securesned.loadbalancer.server.port=5000
+      - traefik.http.services.securesned.loadbalancer.server.port=80
       - traefik.http.routers.securesend.rule=Host(`securesend.example.com`)
       - traefik.http.routers.securesend.tls.certresolver=myresolver
       - traefik.http.routers.securesend.entrypoints=websecure
