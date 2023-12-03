@@ -1,9 +1,6 @@
 name: Publish Docker image
 
 on:
-  push:
-    branches:
-      - "release-docker"
     tags:
       - "v*.*.*"
   pull_request:
@@ -44,7 +41,7 @@ jobs:
             chupacabra500/secure_send
             ghcr.io/${{ github.repository_owner }}/secure_send
           tags: |
-            type=raw,value=latest,enable=${{ endsWith(github.ref, 'release') }}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
