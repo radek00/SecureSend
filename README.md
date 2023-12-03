@@ -31,7 +31,7 @@ SecureSend is a simple file sharing solution with end to end encryption and serv
 
 ## Run with Docker
 
-Easiest way to run SecureSend is to use provided Docker Compose file. SecureSend comes with support for Postgres and SqlServer, simply uncomment options for the database of choice.
+Easiest way to run SecureSend is to use provided Docker Compose file. Below config shows configuration with Postgres, for SqlServer config refer to this [compose](https://github.com/radek00/SecureSend/blob/master/docker-compose-sqlserver.yml) file
 
 ```yaml
 version: '3.4'
@@ -40,6 +40,82 @@ volumes:
 networks:
   secureSend:
 services:
+  securesend:
+    image: chupacabra500/secure_send
+    build:
+      dockerfile: ./Dockerfile
+    volumes:
+      - secureSend:/app/files
+    environment:
+    #db provider
+      - Database=Postgres
+    #postgres options
+      - PostgresOptions__Host=db
+      - PostgresOptions__Password=example
+      - PostgresOptions__UserId=postgres
+      - PostgresOptions__Database=SecureSend
+    ports:
+      - 8080:80
+    networks:
+      - secureSend
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+    networks:
+      - secureSend
+```
+**IMPORTANT**: SecureSend uses Web Crypto APIs to provide encryption features, which are disallowed by modern browsers in insecure contexts. In this case it's likely that you will see an error like: `Cannot read property 'importKey'`. In order to prevent that SecureSend must be accesed via localhost or HTTPS. You can set it up using various reverse proxies like Traefik or Caddy. Below Docker Compose file shows an example Traefik configuration with DNS Challenge.
+
+```yaml
+version: '3.4'
+networks:
+  proxy:
+    external: true
+services:
+#reverse proxy
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    restart: unless-stopped
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.dns.address=:53"
+      - "--entrypoints.udpdns.address=:53/udp"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.https.http.tls.certresolver=myresolver"
+      - "--entrypoints.https.http.tls.domains[0].main=${BASE_DOMAIN}"
+      - "--entrypoints.https.http.tls.domains[0].sans=*.${BASE_DOMAIN}"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.myresolver.acme.email=${API_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.delaybeforecheck=90"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"   
+    environment:
+      - "CF_API_EMAIL=${API_EMAIL}"
+      - "CF_API_KEY=${API_KEY}"
+    networks:
+      proxy:
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
   securesend:
     image: chupacabra500/secure_send:latest
     build:
@@ -54,30 +130,18 @@ services:
       - PostgresOptions__Password=example
       - PostgresOptions__UserId=postgres
       - PostgresOptions__Database=SecureSend
-
-    #sql server options
-      # - SqlServerOptions__Server=db
-      # - SqlServerOptions__Port=1433
-      # - SqlServerOptions__Database=SecureSend
-      # - SqlServerOptions__TrustedConnection=False
-      # - SqlServerOptions__UserId=SA
-      # - SqlServerOptions__Password=YourStrong@Passw0rd
-      # - SqlServerOptions__TrustServerCertificate=True
-    ports:
-      - 5000:5000
     networks:
       - secureSend
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.securesned.loadbalancer.server.port=80
+      - traefik.http.routers.securesend.rule=Host(`securesend.example.com`)
+      - traefik.http.routers.securesend.tls.certresolver=myresolver
+      - traefik.http.routers.securesend.entrypoints=websecure
+      - traefik.docker.network=proxy
     depends_on:
       - db
-  # db:
-  #   image: "mcr.microsoft.com/mssql/server"
-  #   environment:
-  #     SA_PASSWORD: "YourStrong@Passw0rd"
-  #     ACCEPT_EULA: "Y"
-  #   ports:
-  #     - 1433:1433
-  #   networks:
-  #     - secureSend
   db:
     image: postgres
     restart: always
@@ -87,8 +151,9 @@ services:
       - 5432:5432
     networks:
       - secureSend
-
+      - proxy
 ```
+
 
 ## Building from source
 

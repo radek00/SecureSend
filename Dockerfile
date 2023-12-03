@@ -1,12 +1,10 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 WORKDIR /app
-EXPOSE 5000
-
-ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_URLS=http://+:80
 ENV FileStorageOptions__Path=/app/files
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-dotnet-configure-containers
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
@@ -20,6 +18,9 @@ COPY ["SecureSend/SecureSend.csproj", "SecureSend/"]
 COPY ["SecureSend.Application/SecureSend.Application.csproj", "SecureSend.Application/"]
 COPY ["SecureSend.Infrastructure/SecureSend.Infrastructure.csproj", "SecureSend.Infrastructure/"]
 COPY ["SecureSend.Domain/SecureSend.Domain.csproj", "SecureSend.Domain/"]
+COPY ["SecureSend.SqlServerMigrations/SecureSend.SqlServerMigrations.csproj", "SecureSend.SqlServerMigrations/"]
+COPY ["SecureSend.PostgresMigrations/SecureSend.PostgresMigrations.csproj", "SecureSend.PostgresMigrations/"]
+
 RUN dotnet restore "SecureSend/SecureSend.csproj"
 COPY . .
 WORKDIR "/src/SecureSend"
@@ -30,6 +31,9 @@ RUN dotnet publish "SecureSend.csproj" --no-restore -c Release -o /app/publish /
 
 FROM base AS final
 WORKDIR /app
+
+EXPOSE 80
+
 RUN mkdir -p /app/files
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SecureSend.dll"]
