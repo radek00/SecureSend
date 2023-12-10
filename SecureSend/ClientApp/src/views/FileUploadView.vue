@@ -215,6 +215,7 @@ const handleUploadCallback = async (
       file.name,
       chunk,
       file.type,
+      file.size,
       controllers.get(file.name)?.signal
     );
     files.value.set(

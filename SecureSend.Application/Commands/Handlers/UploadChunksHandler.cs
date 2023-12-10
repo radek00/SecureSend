@@ -40,7 +40,7 @@ namespace SecureSend.Application.Commands.Handlers
                     await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory);
 
                     
-                    persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType, chunk.Chunk.Length));
+                    persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize));
                     await _repository.SaveChanges(cancellationToken);
 
                 }
