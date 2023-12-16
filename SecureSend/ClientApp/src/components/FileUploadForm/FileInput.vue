@@ -89,7 +89,15 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
           </button>
-          <div v-if="isLoading && typeof value !== 'boolean' && value !== UploadStatus.error && value !== UploadStatus.cancelled" class="hidden md:flex gap-1 justify-between">
+          <div
+            v-if="
+              isLoading &&
+              typeof value !== 'boolean' &&
+              value !== UploadStatus.error &&
+              value !== UploadStatus.cancelled
+            "
+            class="hidden md:flex gap-1 justify-between"
+          >
             <button
               @click="emit('onCancel', key)"
               type="button"
@@ -121,33 +129,42 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             </button>
           </div>
 
-          <OptionsDropdown class="block md:hidden" v-if="!isLoading && value !== true">
-            <li
-              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-            >
+          <OptionsDropdown
+            class="block md:hidden"
+            v-if="!isLoading && value !== true"
+          >
+            <li class="px-4 py-2 hover:bg-gray-600 hover:text-white">
               <a href="#" @click="emit('onFileRemove', key)">Remove</a>
             </li>
-            </OptionsDropdown>
-            <OptionsDropdown class="block md:hidden" v-if="isLoading && typeof value !== 'boolean' && value !== UploadStatus.error && value !== UploadStatus.cancelled">
-              <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-                v-if="isUploadSetup"
-              >
-                <a href="#" @click="emit('onCancel', key)">Cancel</a>
-              </li>
-              <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-                v-if="isUploadSetup && value !== UploadStatus.paused"
-              >
-                <a href="#" @click="emit('onPause', key)">Pause</a>
-              </li>
-              <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-                v-if="isUploadSetup && value === UploadStatus.paused"
-              >
-                <a href="#" @click="emit('onResume', key)">Resume</a>
-              </li>
-            </OptionsDropdown>
+          </OptionsDropdown>
+          <OptionsDropdown
+            class="block md:hidden"
+            v-if="
+              isLoading &&
+              typeof value !== 'boolean' &&
+              value !== UploadStatus.error &&
+              value !== UploadStatus.cancelled
+            "
+          >
+            <li
+              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+              v-if="isUploadSetup"
+            >
+              <a href="#" @click="emit('onCancel', key)">Cancel</a>
+            </li>
+            <li
+              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+              v-if="isUploadSetup && value !== UploadStatus.paused"
+            >
+              <a href="#" @click="emit('onPause', key)">Pause</a>
+            </li>
+            <li
+              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+              v-if="isUploadSetup && value === UploadStatus.paused"
+            >
+              <a href="#" @click="emit('onResume', key)">Resume</a>
+            </li>
+          </OptionsDropdown>
 
           <LoadingIndicator
             v-if="value === 100"
