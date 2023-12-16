@@ -89,7 +89,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
           </button>
-          <div v-if="isLoading" class="hidden md:flex gap-1 justify-between">
+          <div v-if="isLoading && value !== 100" class="hidden md:flex gap-1 justify-between">
             <button
               @click="emit('onCancel', key)"
               type="button"
