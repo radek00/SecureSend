@@ -80,7 +80,7 @@
           <StyledButton
             class="w-full md:w-auto"
             :category="ButtonType.primary"
-            :disabled="!meta.valid || isLoading"
+            :disabled="!meta.valid || isLoading || (step === 2 && !files.size)"
             type="submit"
           >
             <span class="flex items-center justify-center">
