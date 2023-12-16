@@ -282,8 +282,12 @@ const onSubmit = handleSubmit(async () => {
       isLoading!.value = false;
       await handleUploadResult();
     } catch (error) {
-      openDanger("Upload failed, try again.");
-      formReset();
+      if (![...files.value.values()].find((file) => file === true)) {
+        openDanger("Upload failed, try again.");
+        formReset();
+      } else {
+        handleUploadResult();
+      }
     }
   } else {
     step.value++;
