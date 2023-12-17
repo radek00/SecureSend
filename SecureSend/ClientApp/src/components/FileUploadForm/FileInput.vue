@@ -3,7 +3,7 @@ import UploadIcon from "@/assets/icons/UploadIcon.vue";
 import FileCard from "../FileCard.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import CheckIcon from "@/assets/icons/CheckIcon.vue";
-import { ref } from "vue";
+import { inject, type Ref, ref } from "vue";
 import { useDropZone } from "@/utils/composables/useDropZone";
 import TrashIcon from "@/assets/icons/TrashIcon.vue";
 import PlusIcon from "@/assets/icons/PlusIcon.vue";
@@ -25,6 +25,8 @@ defineProps<{
   files: Map<File, UploadStateTuple>;
   isUploadSetup: boolean;
 }>();
+
+const isLoading = inject<Ref<boolean>>("isLoading");
 
 const fileDropZone = ref<HTMLElement>();
 
@@ -86,9 +88,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             <TrashIcon class="w-5 h-3"></TrashIcon>
             <span class="sr-only">Remove file</span>
           </button>
-          <div
-            class="hidden md:flex gap-1 justify-between"
-          >
+          <div class="hidden md:flex gap-1 justify-between">
             <button
               v-if="value[1] === UploadState.InProgress"
               @click="emit('onCancel', key)"
@@ -169,13 +169,13 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
                 }`,
               }"
             >
-              {{value[0] }}
+              {{ value[0] }}
             </div>
           </div>
         </template>
       </FileCard>
     </TransitionGroup>
-    <div v-if="!files.size">
+    <div v-if="files.size > 0 && !isLoading">
       <label
         for="add-more-files"
         type="button"
