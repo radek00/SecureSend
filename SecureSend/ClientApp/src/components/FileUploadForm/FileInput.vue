@@ -7,12 +7,11 @@ import { ref } from "vue";
 import { useDropZone } from "@/utils/composables/useDropZone";
 import TrashIcon from "@/assets/icons/TrashIcon.vue";
 import PlusIcon from "@/assets/icons/PlusIcon.vue";
-import { UploadStatus } from "@/models/enums/UploadStatus";
-import { inject } from "vue";
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
 import PauseIcon from "@/assets/icons/PauseIcon.vue";
 import PlayIcon from "@/assets/icons/PlayIcon.vue";
 import OptionsDropdown from "@/components/OptionsDropdown.vue";
+import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 
 const emit = defineEmits<{
   onFielsChange: [files: File[] | null];
@@ -23,7 +22,7 @@ const emit = defineEmits<{
 }>();
 
 defineProps<{
-  files: Map<File, number | string | boolean>;
+  files: Map<File, UploadStateTuple>;
   isUploadSetup: boolean;
 }>();
 
@@ -32,8 +31,6 @@ const fileDropZone = ref<HTMLElement>();
 const onDrop = (files: File[] | null) => {
   emit("onFielsChange", files);
 };
-
-const isLoading = inject<boolean>("isLoading");
 
 const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
 </script>
@@ -81,7 +78,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       >
         <template #cardMiddle>
           <button
-            v-if="!isLoading && value !== true"
+            v-if="value[1] === UploadState.NewFile"
             @click="emit('onFileRemove', key)"
             type="button"
             class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
@@ -90,15 +87,10 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
             <span class="sr-only">Remove file</span>
           </button>
           <div
-            v-if="
-              isLoading &&
-              typeof value !== 'boolean' &&
-              value !== UploadStatus.error &&
-              value !== UploadStatus.cancelled
-            "
             class="hidden md:flex gap-1 justify-between"
           >
             <button
+              v-if="value[1] === UploadState.InProgress"
               @click="emit('onCancel', key)"
               type="button"
               :disabled="!isUploadSetup"
@@ -108,7 +100,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               <span class="sr-only">Cancel</span>
             </button>
             <button
-              v-if="value !== UploadStatus.paused"
+              v-if="value[1] === UploadState.InProgress"
               @click="emit('onPause', key)"
               type="button"
               :disabled="!isUploadSetup"
@@ -118,7 +110,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               <span class="sr-only">Pause</span>
             </button>
             <button
-              v-if="value === UploadStatus.paused"
+              v-if="value[1] === UploadState.Paused"
               @click="emit('onResume', key)"
               type="button"
               :disabled="!isUploadSetup"
@@ -131,46 +123,38 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
 
           <OptionsDropdown
             class="block md:hidden"
-            v-if="!isLoading && value !== true"
+            v-if="value[1] === UploadState.NewFile"
           >
             <li class="px-4 py-2 hover:bg-gray-600 hover:text-white">
               <a href="#" @click="emit('onFileRemove', key)">Remove</a>
             </li>
           </OptionsDropdown>
-          <OptionsDropdown
-            class="block md:hidden"
-            v-if="
-              isLoading &&
-              typeof value !== 'boolean' &&
-              value !== UploadStatus.error &&
-              value !== UploadStatus.cancelled
-            "
-          >
+          <OptionsDropdown class="block md:hidden">
             <li
               class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup"
+              v-if="isUploadSetup && value[1] === UploadState.InProgress"
             >
               <a href="#" @click="emit('onCancel', key)">Cancel</a>
             </li>
             <li
               class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup && value !== UploadStatus.paused"
+              v-if="isUploadSetup && value[1] === UploadState.InProgress"
             >
               <a href="#" @click="emit('onPause', key)">Pause</a>
             </li>
             <li
               class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup && value === UploadStatus.paused"
+              v-if="isUploadSetup && value[1] === UploadState.Paused"
             >
               <a href="#" @click="emit('onResume', key)">Resume</a>
             </li>
           </OptionsDropdown>
 
           <LoadingIndicator
-            v-if="value === 100"
+            v-if="value[1] === UploadState.Merging"
             class="w-8 h-5 mr-2"
           ></LoadingIndicator>
-          <CheckIcon v-if="value === true"></CheckIcon>
+          <CheckIcon v-if="value[1] === UploadState.Completed"></CheckIcon>
         </template>
         <template #cardBottom>
           <div class="w-full rounded-full bg-gray-700 mt-2">
@@ -178,19 +162,14 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
               :style="{
                 width: `${
-                  value === true ? 100 : typeof value === 'number' ? value : 100
-                }%`,
+                  value[1] === UploadState.InProgress ||
+                  value[1] === UploadState.NewFile
+                    ? value[0]
+                    : `100%`
+                }`,
               }"
             >
-              {{
-                typeof value === "string"
-                  ? value
-                  : typeof value === "number"
-                  ? value === 100
-                    ? UploadStatus.finishing
-                    : `${value}%`
-                  : UploadStatus.completed
-              }}
+              {{value[0] }}
             </div>
           </div>
         </template>

@@ -119,9 +119,8 @@ import SchemaInput from "@/components/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
 import splitFile from "@/utils/splitFile";
-import { ref, type Ref } from "vue";
+import { computed, inject, ref, type Ref } from "vue";
 import { useForm } from "vee-validate";
-import { computed } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
 import StyledButton from "@/components/StyledButton.vue";
@@ -129,11 +128,10 @@ import { ButtonType } from "@/models/enums/ButtonType";
 import ConfirmModalVue from "@/components/ConfirmModal.vue";
 import { useConfirmDialog } from "@/utils/composables/useConfirmDialog";
 import SimpleInput from "@/components/SimpleInput.vue";
-import { inject } from "vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
-import { UploadStatus } from "@/models/enums/UploadStatus";
 import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
+import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 
 interface IMappedFormValues {
   expiryDate: string;
@@ -153,7 +151,7 @@ const step = ref<number>(0);
 
 let uuid = self.crypto.randomUUID();
 
-const files = ref(new Map<File, number | string | boolean>());
+const files = ref(new Map<File, UploadStateTuple>());
 const fileKeys = new Map<string, boolean>();
 const pausedFiles = new Map<File, boolean | ((value?: string) => void)>();
 const controllers = new Map<string, AbortController>();
@@ -208,9 +206,10 @@ const handleUploadCallback = async (
 ) => {
   try {
     await handlePause(file);
+    const currentChunk = num + 1;
     await SecureSendService.uploadChunk(
       uuid,
-      num,
+      currentChunk,
       totalChunks,
       file.name,
       chunk,
@@ -218,27 +217,31 @@ const handleUploadCallback = async (
       file.size,
       controllers.get(file.name)?.signal
     );
-    files.value.set(
-      file,
-      num + 1 === totalChunks
-        ? true
-        : Math.ceil(((num + 1) / totalChunks) * 100)
-    );
+    const progress = Math.ceil((currentChunk / totalChunks) * 100);
+    const stateTuple: UploadStateTuple =
+      currentChunk === totalChunks
+        ? ["Upload completed", UploadState.Completed]
+        : currentChunk === totalChunks - 1
+        ? ["Finishing upload...", UploadState.Merging]
+        : [`${progress}%`, UploadState.InProgress];
+    files.value.set(file, stateTuple);
   } catch (error: any) {
     if (
-      error === UploadStatus.cancelled ||
+      error === UploadState.Cancelled ||
       error.code === DOMException.ABORT_ERR
     ) {
-      files.value.set(file, UploadStatus.cancelled);
+      files.value.set(file, ["Upload cancelled.", UploadState.Cancelled]);
     } else {
-      files.value.set(file, UploadStatus.error);
+      files.value.set(file, ["Error with uploading file.", UploadState.Failed]);
     }
     throw error;
   }
 };
 
 const handleUploadResult = async () => {
-  if ([...files.value.values()].find((file) => file === true)) {
+  if (
+    [...files.value.values()].find((file) => file[1] === UploadState.Completed)
+  ) {
     const { data } = await reveal();
     if (data) {
       formReset();
@@ -260,7 +263,7 @@ const handlePause = async (file: File) => {
     controllers.set(file.name, controller);
   }
   if (pausedFiles.get(file)) {
-    files.value.set(file, UploadStatus.paused);
+    files.value.set(file, ["Upload paused", UploadState.Paused]);
     const promise = new Promise((res) => {
       pausedFiles.set(file, res);
     });
@@ -282,11 +285,15 @@ const onSubmit = handleSubmit(async () => {
       isLoading!.value = false;
       await handleUploadResult();
     } catch (error) {
-      if (![...files.value.values()].find((file) => file === true)) {
+      if (
+        ![...files.value.values()].find(
+          (file) => file[1] === UploadState.Completed
+        )
+      ) {
         openDanger("Upload failed, try again.");
         formReset();
       } else {
-        handleUploadResult();
+        await handleUploadResult();
       }
     }
   } else {
@@ -296,7 +303,7 @@ const onSubmit = handleSubmit(async () => {
 const onCancel = async (fileObj: File) => {
   const controller = controllers.get(fileObj.name);
   if (controller) {
-    controller.abort(UploadStatus.cancelled);
+    controller.abort(UploadState.Cancelled);
     onResume(fileObj);
     await SecureSendService.cancelUpload({ id: uuid, fileName: fileObj.name });
   }
@@ -322,7 +329,7 @@ const onFilesChange = (formFiles: File[] | null) => {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
       if (!fileKeys.has(file.name)) {
-        files.value.set(file, 0);
+        files.value.set(file, [`0%`, UploadState.NewFile]);
         fileKeys.set(file.name, true);
       }
     }
@@ -350,7 +357,7 @@ const encryptFile = async () => {
       (promise) =>
         promise.status === "rejected" &&
         promise.reason.code !== DOMException.ABORT_ERR &&
-        promise.reason !== UploadStatus.cancelled
+        promise.reason !== UploadState.Cancelled
     )
   ) {
     throw new Error("Upload error");
