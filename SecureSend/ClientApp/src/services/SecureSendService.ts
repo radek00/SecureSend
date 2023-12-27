@@ -28,7 +28,6 @@ export abstract class SecureSendService {
   ): Promise<void> => {
     const formData = new FormData();
     formData.append("chunk", new Blob([chunk], { type: fileType }), name);
-    chunkNumber = +chunkNumber + 1;
     const requestOptions: RequestInit = {
       method: "POST",
       body: formData,
