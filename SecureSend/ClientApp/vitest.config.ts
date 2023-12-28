@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
   },
   resolve: {
     alias: [{ find: "@", replacement: resolve(__dirname, "./src") }],
