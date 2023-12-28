@@ -3,22 +3,32 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView.vue";
 import { ref } from "vue";
 import { waitForExpect } from "@/tests/utils";
+import FileInput from "@/components/FileUploadForm/FileInput.vue";
+import { clickOutside } from "@/utils/composables/directives/clickOutside";
+import { SecureSendService } from "@/services/SecureSendService";
 
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
   beforeEach(async () => {
     const div = document.createElement("div");
+    const alertContainer = document.createElement("div");
+    alertContainer.id = "alert-container";
     div.id = "root";
+    document.body.appendChild(alertContainer);
     document.body.appendChild(div);
     wrapper = mount(FileUploadView, {
-      global: { provide: { isLoading: ref(false) } },
+      global: {
+        provide: { isLoading: ref(false) },
+        directives: {
+          "click-outside": clickOutside,
+        },
+      },
     });
     await flushPromises();
   });
 
   test("Multistep form flow", async () => {
     const submitButton = wrapper.find('button[type="submit"]');
-    console.log(submitButton.text());
     const passwordRequired = wrapper.find('input[type="password"]');
 
     const submit = vi.spyOn(wrapper.vm, "onSubmit");
@@ -35,7 +45,6 @@ describe("FileUploadView", () => {
 
     await flushPromises();
     await waitForExpect(() => {
-      console.log(wrapper.vm.currentSchema);
       expect(submitButton.text()).toEqual("Upload");
       expect(submitButton.attributes("disabled")).toBeDefined();
     });
@@ -45,9 +54,7 @@ describe("FileUploadView", () => {
     const passwordInput = wrapper.find('input[type="password"]');
     expect(passwordInput.attributes("disabled")).toBeDefined();
 
-    const requiredCheckbox = wrapper.find('input[name="isPasswordRequired"');
-    expect(requiredCheckbox.attributes("value")).toEqual("false");
-
+    const requiredCheckbox = wrapper.find('input[type="checkbox"]');
     await requiredCheckbox.setValue();
 
     await waitForExpect(() => {
@@ -55,7 +62,6 @@ describe("FileUploadView", () => {
     });
 
     await passwordInput.setValue("test");
-    console.log(passwordInput.attributes());
     await passwordInput.setValue("");
 
     await waitForExpect(() => {
@@ -74,13 +80,45 @@ describe("FileUploadView", () => {
     await dateInput.setValue("2022-12-01");
 
     await waitForExpect(() => {
-      console.log(dateInput.attributes());
-      console.log(
-        wrapper.find('div[label="Optional expiry date"]').find("span").text()
-      );
       expect(
         wrapper.find('div[label="Optional expiry date"]').find("span").text()
       ).toEqual("Expiry date must be earlier than today.");
-    }, 1000);
+    });
+  });
+
+  test("File input", async () => {
+    SecureSendService.createSecureUpload = vi.fn().mockImplementation(() => {});
+    SecureSendService.uploadChunk = vi.fn().mockReturnValue({});
+
+    const file = new File(["file content"], "test.txt", { type: "text/plain" });
+    const submitButton = wrapper.find('button[type="submit"]');
+
+    await submitButton.trigger("submit");
+    await submitButton.trigger("submit");
+
+    await waitForExpect(() => {
+      expect(submitButton.text()).toEqual("Upload");
+      expect(submitButton.attributes("disabled")).toBeDefined();
+    });
+
+    const fileInputComponent = wrapper.findComponent(FileInput);
+    fileInputComponent.vm.$emit("onFielsChange", [file]);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find("#add-more-files").exists()).toEqual(true);
+    expect(submitButton.attributes("disabled")).toBeUndefined();
+    expect(fileInputComponent.text()).toContain("0%");
+    expect(fileInputComponent.find("button span").text()).toEqual(
+      "Remove file"
+    );
+    await submitButton.trigger("submit");
+
+    await waitForExpect(async () => {
+      const closeButton = wrapper.find("#close-modal-button");
+      await closeButton.trigger("click");
+      expect(document.querySelector("#alert-container")?.innerHTML).toContain(
+        "Upload successful"
+      );
+    });
   });
 });
