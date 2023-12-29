@@ -90,6 +90,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           </button>
           <div class="hidden md:flex gap-1 justify-between">
             <button
+              data-test="cancel-button"
               v-if="value[1] === UploadState.InProgress"
               @click="emit('onCancel', key)"
               type="button"
@@ -100,6 +101,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               <span class="sr-only">Cancel</span>
             </button>
             <button
+              data-test="pause-button"
               v-if="value[1] === UploadState.InProgress"
               @click="emit('onPause', key)"
               type="button"
@@ -110,6 +112,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
               <span class="sr-only">Pause</span>
             </button>
             <button
+              data-test="resume-button"
               v-if="value[1] === UploadState.Paused"
               @click="emit('onResume', key)"
               type="button"
@@ -159,6 +162,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
         <template #cardBottom>
           <div class="w-full rounded-full bg-gray-700 mt-2">
             <div
+              data-test="progress-bar"
               class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
               :style="{
                 width: `${
