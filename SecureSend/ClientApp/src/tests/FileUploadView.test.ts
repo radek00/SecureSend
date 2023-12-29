@@ -107,7 +107,9 @@ describe("FileUploadView", () => {
     fileInputComponent.vm.$emit("onFielsChange", [file]);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.find('input[data-test="add-more-files"]').exists()).toEqual(true);
+    expect(wrapper.find('input[data-test="add-more-files"]').exists()).toEqual(
+      true
+    );
     expect(submitButton.attributes("disabled")).toBeUndefined();
     expect(wrapper.find('div[data-test="progress-bar"]').text()).toEqual("0%");
     expect(fileInputComponent.find("button span").text()).toEqual(
@@ -116,7 +118,9 @@ describe("FileUploadView", () => {
     await submitButton.trigger("submit");
 
     await waitForExpect(async () => {
-      const closeButton = wrapper.find('button[data-test="close-modal-button"]');
+      const closeButton = wrapper.find(
+        'button[data-test="close-modal-button"]'
+      );
       await closeButton.trigger("click");
       expect(document.querySelector("#alert-container")?.innerHTML).toContain(
         "Upload successful"
