@@ -6,6 +6,9 @@ import { waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { clickOutside } from "@/utils/composables/directives/clickOutside";
 import { SecureSendService } from "@/services/SecureSendService";
+import FileCard from "@/components/FileCard.vue";
+import { UploadState } from "@/models/UploadStateTuple";
+import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
@@ -120,5 +123,80 @@ describe("FileUploadView", () => {
         "Upload successful"
       );
     });
+  });
+
+  test("File status upload handling", async () => {
+    const file = new File(["file content"], "test.txt", { type: "text/plain" });
+    const submitButton = wrapper.find('button[type="submit"]');
+
+    await submitButton.trigger("submit");
+    await submitButton.trigger("submit");
+
+    await waitForExpect(() => {
+      expect(submitButton.text()).toEqual("Upload");
+      expect(submitButton.attributes("disabled")).toBeDefined();
+    });
+
+    const fileInputComponent = wrapper.findComponent(FileInput);
+    fileInputComponent.vm.$emit("onFielsChange", [file]);
+    wrapper.vm.files.set(file, ["50%", UploadState.InProgress]);
+    await wrapper.vm.$nextTick();
+
+    const progressBar = wrapper.find('div[data-test="progress-bar"]');
+
+    expect(wrapper.find('button[data-test="cancel-button"]').exists()).toEqual(
+      true
+    );
+    expect(wrapper.find('button[data-test="pause-button"]').exists()).toEqual(
+      true
+    );
+    expect(progressBar.text()).toEqual("50%");
+
+    wrapper.vm.files.set(file, ["Upload paused", UploadState.Paused]);
+    await wrapper.vm.$forceUpdate();
+
+    expect(wrapper.find('button[data-test="resume-button"]').exists()).toEqual(
+      true
+    );
+    expect(wrapper.find('button[data-test="cancel-button"]').exists()).toEqual(
+      false
+    );
+    expect(wrapper.find('button[data-test="pause-button"]').exists()).toEqual(
+      false
+    );
+    expect(progressBar.text()).toEqual("Upload paused");
+
+    wrapper.vm.files.set(file, ["Finishing upload...", UploadState.Merging]);
+    await wrapper.vm.$forceUpdate();
+    expect(progressBar.text()).toEqual("Finishing upload...");
+    expect(wrapper.findComponent(LoadingIndicator).exists()).toBe(true);
+
+    wrapper.vm.files.set(file, ["Upload completed", UploadState.Completed]);
+    await wrapper.vm.$forceUpdate();
+    expect(progressBar.text()).toEqual("Upload completed");
+    expect(wrapper.findComponent(LoadingIndicator).exists()).toBe(false);
+    expect(wrapper.find('button[data-test="resume-button"]').exists()).toEqual(
+      false
+    );
+    expect(wrapper.find('button[data-test="cancel-button"]').exists()).toEqual(
+      false
+    );
+    expect(wrapper.find('button[data-test="pause-button"]').exists()).toEqual(
+      false
+    );
+
+    wrapper.vm.files.set(file, ["Upload failed", UploadState.Failed]);
+    await wrapper.vm.$forceUpdate();
+    expect(progressBar.text()).toEqual("Upload failed");
+    expect(wrapper.findComponent(LoadingIndicator).exists()).toBe(false);
+    expect(wrapper.find('button[data-test="resume-button"]').exists()).toEqual(
+      false
+    );
+    expect(wrapper.find('button[data-test="cancel-button"]').exists()).toEqual(
+      false
+    );
+    expect(wrapper.find('button[data-test="pause-button"]').exists()).toEqual(
+      false
+    );
   });
 });
