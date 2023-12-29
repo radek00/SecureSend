@@ -21,7 +21,7 @@ defineEmits(["closeClick"]);
             <slot name="header"></slot>
           </h3>
           <button
-            id="close-modal-button"
+            data-test="close-modal-button"
             @click="$emit('closeClick')"
             type="button"
             class="text-gray-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"

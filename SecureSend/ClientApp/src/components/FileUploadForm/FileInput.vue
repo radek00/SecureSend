@@ -192,7 +192,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
         @change="
           $emit('onFielsChange', ($event.target as HTMLInputElement).files)
         "
-        id="add-more-files"
+        data-test="add-more-files"
         type="file"
         multiple
         class="hidden"
