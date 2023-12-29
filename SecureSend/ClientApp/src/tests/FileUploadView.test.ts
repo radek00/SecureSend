@@ -6,7 +6,6 @@ import { waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { clickOutside } from "@/utils/composables/directives/clickOutside";
 import { SecureSendService } from "@/services/SecureSendService";
-import FileCard from "@/components/FileCard.vue";
 import { UploadState } from "@/models/UploadStateTuple";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 
@@ -108,16 +107,16 @@ describe("FileUploadView", () => {
     fileInputComponent.vm.$emit("onFielsChange", [file]);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.find("#add-more-files").exists()).toEqual(true);
+    expect(wrapper.find('input[data-test="add-more-files"]').exists()).toEqual(true);
     expect(submitButton.attributes("disabled")).toBeUndefined();
-    expect(fileInputComponent.text()).toContain("0%");
+    expect(wrapper.find('div[data-test="progress-bar"]').text()).toEqual("0%");
     expect(fileInputComponent.find("button span").text()).toEqual(
       "Remove file"
     );
     await submitButton.trigger("submit");
 
     await waitForExpect(async () => {
-      const closeButton = wrapper.find("#close-modal-button");
+      const closeButton = wrapper.find('button[data-test="close-modal-button"]');
       await closeButton.trigger("click");
       expect(document.querySelector("#alert-container")?.innerHTML).toContain(
         "Upload successful"
