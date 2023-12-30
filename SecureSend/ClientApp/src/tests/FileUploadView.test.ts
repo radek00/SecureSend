@@ -1,10 +1,8 @@
-import { VueWrapper, mount, flushPromises } from "@vue/test-utils";
+import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView.vue";
-import { ref } from "vue";
-import { waitForExpect } from "@/tests/utils";
+import {mountComponent, waitForExpect} from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
-import { clickOutside } from "@/utils/composables/directives/clickOutside";
 import { SecureSendService } from "@/services/SecureSendService";
 import { UploadState } from "@/models/UploadStateTuple";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
@@ -12,20 +10,7 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
   beforeEach(async () => {
-    const div = document.createElement("div");
-    const alertContainer = document.createElement("div");
-    alertContainer.id = "alert-container";
-    div.id = "root";
-    document.body.appendChild(alertContainer);
-    document.body.appendChild(div);
-    wrapper = mount(FileUploadView, {
-      global: {
-        provide: { isLoading: ref(false) },
-        directives: {
-          "click-outside": clickOutside,
-        },
-      },
-    });
+    wrapper = mountComponent(FileUploadView);
     await flushPromises();
   });
 
