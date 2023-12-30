@@ -1,7 +1,7 @@
 import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView.vue";
-import {mountComponent, waitForExpect} from "@/tests/utils";
+import { mountComponent, waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import { UploadState } from "@/models/UploadStateTuple";
@@ -10,7 +10,7 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
   beforeEach(async () => {
-    wrapper = mountComponent(FileUploadView);
+    wrapper = mountComponent(FileUploadView).wrapper;
     await flushPromises();
   });
 
