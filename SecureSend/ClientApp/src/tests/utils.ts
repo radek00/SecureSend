@@ -3,7 +3,7 @@ import { ref } from "vue";
 import type { Component } from "vue";
 import { clickOutside } from "@/utils/composables/directives/clickOutside";
 import { routes } from "@/router";
-import { createRouter, createWebHistory } from "vue-router";
+import { createMemoryHistory, createRouter } from "vue-router";
 
 export const waitForExpect = async (callback: () => any, waitFor = 100) => {
   return new Promise((resolve, reject) => {
@@ -19,7 +19,7 @@ export const waitForExpect = async (callback: () => any, waitFor = 100) => {
 
 export const mountComponent = (component: Component, props = {}) => {
   const router = createRouter({
-    history: createWebHistory(),
+    history: createMemoryHistory(),
     routes: routes,
   });
   const div = document.createElement("div");
