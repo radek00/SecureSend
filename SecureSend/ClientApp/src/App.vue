@@ -10,7 +10,11 @@ import { RouterView } from "vue-router";
   <RouterView v-slot="{ Component, route }">
     <transition name="fade" mode="out-in">
       <suspense>
-          <component v-if="Component" :is="Component" :key="route.path"></component>
+        <component
+          v-if="Component"
+          :is="Component"
+          :key="route.path"
+        ></component>
       </suspense>
     </transition>
   </RouterView>
