@@ -1,6 +1,7 @@
 import { UploadExpiredError } from "@/models/errors/ResponseErrors";
 import { SecureSendService } from "@/services/SecureSendService";
 import { createRouter, createWebHistory } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
 
 const FileUploadView = () => import("@/views/FileUploadView.vue");
@@ -30,7 +31,7 @@ const routes = [
     name: "fileDownload",
     component: FileDownloadView,
     props: true,
-    beforeEnter: async (to) => {
+    beforeEnter: async (to: RouteLocationNormalized) => {
       try {
         (to.params.verifyUploadResponse as unknown as UploadVerifyResponseDTO) =
           await SecureSendService.verifySecureUpload(to.params.id as string);
