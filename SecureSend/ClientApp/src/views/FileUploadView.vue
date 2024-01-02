@@ -324,7 +324,7 @@ const onResume = (fileObj: File) => {
   }
 };
 
-const onFilesChange = (formFiles: FileList | undefined) => {
+const onFilesChange = (formFiles: FileList | undefined | null) => {
   if (formFiles) {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
