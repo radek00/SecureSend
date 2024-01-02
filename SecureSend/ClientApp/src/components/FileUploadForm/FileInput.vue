@@ -88,7 +88,7 @@ const areOptionsAvailable = (state: UploadState) => {
       >
         <template #cardMiddle>
           <button
-            v-if="value[1] === UploadState.NewFile"
+            v-if="value[1] === UploadState.NewFile && !isLoading"
             @click="emit('onFileRemove', key)"
             type="button"
             class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
@@ -137,7 +137,7 @@ const areOptionsAvailable = (state: UploadState) => {
             class="block md:hidden"
           >
             <li
-              v-if="value[1] === UploadState.NewFile"
+              v-if="value[1] === UploadState.NewFile && !isLoading"
               class="px-4 py-2 hover:bg-gray-600 hover:text-white"
             >
               <a href="#" @click="emit('onFileRemove', key)">Remove</a>
@@ -172,7 +172,17 @@ const areOptionsAvailable = (state: UploadState) => {
           <div class="w-full rounded-full bg-gray-700 mt-2">
             <div
               data-test="progress-bar"
-              class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              class="text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+              :class="{
+                'bg-blue-600':
+                  value[1] === UploadState.InProgress ||
+                  value[1] === UploadState.NewFile,
+                'bg-orange-600': value[1] === UploadState.Paused,
+                'bg-green-600': value[1] === UploadState.Completed,
+                'bg-red-600':
+                  value[1] === UploadState.Failed ||
+                  value[1] === UploadState.Cancelled,
+              }"
               :style="{
                 width: `${
                   value[1] === UploadState.InProgress ||
