@@ -14,7 +14,7 @@ import OptionsDropdown from "@/components/OptionsDropdown.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 
 const emit = defineEmits<{
-  onFilesChange: [files: FileList | undefined];
+  onFilesChange: [files: FileList | undefined | null];
   onFileRemove: [file: File];
   onCancel: [file: File];
   onPause: [file: File];
@@ -35,6 +35,14 @@ const onDrop = (files: FileList | undefined) => {
 };
 
 const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
+
+const areOptionsAvailable = (state: UploadState) => {
+  return (
+    state === UploadState.NewFile ||
+    state === UploadState.InProgress ||
+    state === UploadState.Paused
+  );
+};
 </script>
 
 <template>
@@ -73,8 +81,8 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
   >
     <TransitionGroup name="list">
       <FileCard
-        v-for="([key, value], idx) in files"
-        :key="idx"
+        v-for="[key, value] in files"
+        :key="key.name"
         :file-name="key.name"
         :size="key.size"
       >
@@ -125,14 +133,15 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
           </div>
 
           <OptionsDropdown
+            v-if="areOptionsAvailable(value[1])"
             class="block md:hidden"
-            v-if="value[1] === UploadState.NewFile"
           >
-            <li class="px-4 py-2 hover:bg-gray-600 hover:text-white">
+            <li
+              v-if="value[1] === UploadState.NewFile"
+              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+            >
               <a href="#" @click="emit('onFileRemove', key)">Remove</a>
             </li>
-          </OptionsDropdown>
-          <OptionsDropdown class="block md:hidden">
             <li
               class="px-4 py-2 hover:bg-gray-600 hover:text-white"
               v-if="isUploadSetup && value[1] === UploadState.InProgress"
