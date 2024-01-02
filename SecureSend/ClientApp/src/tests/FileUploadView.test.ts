@@ -89,7 +89,7 @@ describe("FileUploadView", () => {
     });
 
     const fileInputComponent = wrapper.findComponent(FileInput);
-    fileInputComponent.vm.$emit("onFielsChange", [file]);
+    fileInputComponent.vm.$emit("onFilesChange", [file]);
     await wrapper.vm.$nextTick();
 
     expect(wrapper.find('input[data-test="add-more-files"]').exists()).toEqual(
@@ -126,7 +126,7 @@ describe("FileUploadView", () => {
     });
 
     const fileInputComponent = wrapper.findComponent(FileInput);
-    fileInputComponent.vm.$emit("onFielsChange", [file]);
+    fileInputComponent.vm.$emit("onFilesChange", [file]);
     wrapper.vm.files.set(file, ["50%", UploadState.InProgress]);
     await wrapper.vm.$nextTick();
 
