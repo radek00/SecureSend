@@ -111,7 +111,10 @@ const isPasswordValidComputed = computed(
         >
           Unlock your files
         </h2>
-        <div class="mt-4 space-y-4 lg:mt-5 md:space-y-5">
+        <form
+          @submit.prevent="verifyPassword()"
+          class="mt-4 space-y-4 lg:mt-5 md:space-y-5"
+        >
           <div>
             <SimpleInput
               name="password"
@@ -122,12 +125,10 @@ const isPasswordValidComputed = computed(
               :value="password"
               :isValid="isPasswordValidComputed"
               errorMessage="Invalid password"
+              autofocus
             ></SimpleInput>
           </div>
-          <StyledButton
-            @click="verifyPassword()"
-            :category="ButtonType.primary"
-          >
+          <StyledButton :category="ButtonType.primary" type="submit">
             <span class="flex items-center justify-center">
               Unlock
               <LoadingIndicator
@@ -136,7 +137,7 @@ const isPasswordValidComputed = computed(
               ></LoadingIndicator>
             </span>
           </StyledButton>
-        </div>
+        </form>
       </div>
     </div>
   </div>
