@@ -6,10 +6,10 @@ export interface UseDropZoneReturn {
 }
 
 export interface UseDropZoneOptions {
-  onDrop?: (files: File[] | null, event: DragEvent) => void;
-  onEnter?: (files: File[] | null, event: DragEvent) => void;
-  onLeave?: (files: File[] | null, event: DragEvent) => void;
-  onOver?: (files: File[] | null, event: DragEvent) => void;
+  onDrop?: (files: FileList | null | undefined, event: DragEvent) => void;
+  onEnter?: (files: FileList | null | undefined, event: DragEvent) => void;
+  onLeave?: (files: FileList | null | undefined, event: DragEvent) => void;
+  onOver?: (files: FileList | null | undefined, event: DragEvent) => void;
 }
 
 export function useDropZone(
@@ -21,8 +21,7 @@ export function useDropZone(
   let counter = 0;
 
   const getFiles = (event: DragEvent) => {
-    const list = Array.from(event.dataTransfer?.files ?? []);
-    return (files.value = list.length === 0 ? null : list);
+    return event.dataTransfer?.files;
   };
   const registerListeners = () => {
     target.value?.addEventListener("dragenter", (event) => {

@@ -14,7 +14,7 @@ import OptionsDropdown from "@/components/OptionsDropdown.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 
 const emit = defineEmits<{
-  onFielsChange: [files: File[] | null];
+  onFielsChange: [files: FileList | null];
   onFileRemove: [file: File];
   onCancel: [file: File];
   onPause: [file: File];
@@ -30,7 +30,7 @@ const isLoading = inject<Ref<boolean>>("isLoading");
 
 const fileDropZone = ref<HTMLElement>();
 
-const onDrop = (files: File[] | null) => {
+const onDrop = (files: FileList | null) => {
   emit("onFielsChange", files);
 };
 
