@@ -6,10 +6,10 @@ export interface UseDropZoneReturn {
 }
 
 export interface UseDropZoneOptions {
-  onDrop?: (files: FileList | null | undefined, event: DragEvent) => void;
-  onEnter?: (files: FileList | null | undefined, event: DragEvent) => void;
-  onLeave?: (files: FileList | null | undefined, event: DragEvent) => void;
-  onOver?: (files: FileList | null | undefined, event: DragEvent) => void;
+  onDrop?: (files: FileList | undefined, event: DragEvent) => void;
+  onEnter?: (files: FileList | undefined, event: DragEvent) => void;
+  onLeave?: (files: FileList | undefined, event: DragEvent) => void;
+  onOver?: (files: FileList | undefined, event: DragEvent) => void;
 }
 
 export function useDropZone(

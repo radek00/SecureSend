@@ -41,7 +41,7 @@
               v-show="step === 2"
               :files="files"
               :is-upload-setup="isUploadSetup"
-              @on-fiels-change="(value) => onFilesChange(value)"
+              @on-files-change="(value) => onFilesChange(value)"
               @on-cancel="(value) => onCancel(value)"
               @on-pause="(value) => onPause(value)"
               @on-resume="(value) => onResume(value)"
@@ -324,7 +324,7 @@ const onResume = (fileObj: File) => {
   }
 };
 
-const onFilesChange = (formFiles: File[] | null) => {
+const onFilesChange = (formFiles: FileList | undefined) => {
   if (formFiles) {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
