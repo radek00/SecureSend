@@ -68,7 +68,7 @@ describe("FileDownloadView", () => {
         },
       ],
     });
-    await unlockButton.trigger("click");
+    await unlockButton.trigger("submit");
     expect(wrapper.html()).toContain("test.txt");
     expect(wrapper.find("a").attributes("href")).toEqual(
       "/api/SecureSend/download?id=280a2753-5b23-4fbd-83fe-b080379c3ad2&fileName=test.txt"
