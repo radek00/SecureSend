@@ -14,7 +14,7 @@ import OptionsDropdown from "@/components/OptionsDropdown.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 
 const emit = defineEmits<{
-  onFielsChange: [files: FileList | null];
+  onFilesChange: [files: FileList | undefined];
   onFileRemove: [file: File];
   onCancel: [file: File];
   onPause: [file: File];
@@ -30,8 +30,8 @@ const isLoading = inject<Ref<boolean>>("isLoading");
 
 const fileDropZone = ref<HTMLElement>();
 
-const onDrop = (files: FileList | null) => {
-  emit("onFielsChange", files);
+const onDrop = (files: FileList | undefined) => {
+  emit("onFilesChange", files);
 };
 
 const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
@@ -58,7 +58,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       </span>
       <input
         @change="
-          $emit('onFielsChange', ($event.target as HTMLInputElement).files)
+          $emit('onFilesChange', ($event.target as HTMLInputElement).files)
         "
         id="dropzone-file"
         type="file"
@@ -190,7 +190,7 @@ const { isOverDropZone } = useDropZone(fileDropZone, { onDrop });
       </label>
       <input
         @change="
-          $emit('onFielsChange', ($event.target as HTMLInputElement).files)
+          $emit('onFilesChange', ($event.target as HTMLInputElement).files)
         "
         data-test="add-more-files"
         id="add-more-files"
