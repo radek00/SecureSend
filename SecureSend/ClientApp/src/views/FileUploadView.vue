@@ -20,6 +20,8 @@
               name="isPasswordRequired"
               :checked-value="true"
               label="Password required"
+              :tabindex="step !== 0 ? -1 : 0"
+              autofocus
             ></CheckboxSchemaInput>
           </div>
           <div
@@ -39,6 +41,7 @@
           >
             <FileInput
               v-show="step === 2"
+              :step="step"
               :files="files"
               :is-upload-setup="isUploadSetup"
               @on-files-change="(value) => onFilesChange(value)"
