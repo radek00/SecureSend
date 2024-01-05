@@ -24,11 +24,14 @@ const emit = defineEmits<{
 defineProps<{
   files: Map<File, UploadStateTuple>;
   isUploadSetup: boolean;
+  step: number;
 }>();
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 
 const fileDropZone = ref<HTMLElement>();
+const fileInput = ref<HTMLElement>();
+const addMoreFilesInput = ref<HTMLElement>();
 
 const onDrop = (files: FileList | undefined) => {
   emit("onFilesChange", files);
@@ -53,7 +56,9 @@ const areOptionsAvailable = (state: UploadState) => {
   >
     <label
       for="dropzone-file"
-      class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer hover:bg-bray-800 bg-gray-700 border-gray-600 hover:border-gray-500 hover:bg-gray-600"
+      :tabindex="step !== 2 ? -1 : 0"
+      @keyup.enter="() => fileInput?.click()"
+      class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-700 border-gray-600 focus:border-gray-500 focus:bg-gray-600 hover:border-gray-500 hover:bg-gray-600"
     >
       <span class="flex flex-col items-center justify-center pt-5 pb-6">
         <UploadIcon></UploadIcon>
@@ -70,8 +75,10 @@ const areOptionsAvailable = (state: UploadState) => {
         "
         id="dropzone-file"
         type="file"
-        class="hidden"
+        class="opacity-0 absolute"
         multiple
+        tabindex="-1"
+        ref="fileInput"
       />
     </label>
   </div>
@@ -202,6 +209,8 @@ const areOptionsAvailable = (state: UploadState) => {
       <label
         for="add-more-files"
         type="button"
+        :tabindex="step !== 2 ? -1 : 0"
+        @keyup.enter="() => addMoreFilesInput?.click()"
         class="w-[fit-content] text-blue-600 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
       >
         <PlusIcon class="w-4 h-4"></PlusIcon>
@@ -215,7 +224,9 @@ const areOptionsAvailable = (state: UploadState) => {
         id="add-more-files"
         type="file"
         multiple
-        class="hidden"
+        class="opacity-0"
+        ref="addMoreFilesInput"
+        tabindex="-1"
       />
     </div>
   </div>
