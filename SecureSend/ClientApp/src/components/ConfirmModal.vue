@@ -1,16 +1,52 @@
 <script setup lang="ts">
 import CloseIcon from "@/assets/icons/CloseIcon.vue";
+import { onMounted, ref } from "vue";
 defineEmits(["closeClick"]);
+
+const dialogElement = ref<HTMLElement>();
+
+onMounted(() => {
+  trapFocus(dialogElement.value!);
+});
+const trapFocus = (element: HTMLElement) => {
+  const focusableEls = element.querySelectorAll<HTMLElement>(
+    'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
+  );
+  console.log(focusableEls);
+  const firstFocusableEl = focusableEls[0];
+  const lastFocusableEl = focusableEls[focusableEls.length - 1];
+  const KEYCODE_TAB = "9";
+
+  element.addEventListener("keydown", function (e) {
+    const isTabPressed = e.key === "Tab" || e.code === KEYCODE_TAB;
+    console.log("key clicked");
+    if (!isTabPressed) {
+      return;
+    }
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstFocusableEl) {
+        lastFocusableEl.focus();
+        e.preventDefault();
+      }
+    } else {
+      if (document.activeElement === lastFocusableEl) {
+        firstFocusableEl.focus();
+        e.preventDefault();
+      }
+    }
+  });
+};
 </script>
 
 <template>
   <!-- Main modal -->
   <div
-    tabindex="-1"
-    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
     class="backdrop-blur fixed top-0 bottom-1/2 left-0 z-40 h-full w-screen flex items-center justify-center p-5 bg-gray-900/50"
   >
-    <div class="relative w-full max-w-2xl max-h-full">
+    <div class="relative w-full max-w-2xl max-h-full" ref="dialogElement">
       <!-- Modal content -->
       <div class="relative rounded-lg shadow bg-gray-700">
         <!-- Modal header -->
