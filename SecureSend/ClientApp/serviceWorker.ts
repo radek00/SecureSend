@@ -23,6 +23,7 @@ const decrypt = async (id: string, url: string) => {
 
   try {
     const fileResponse = await fetch(url);
+    if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
     const decryptedResponse = decryptStream(
       body,
