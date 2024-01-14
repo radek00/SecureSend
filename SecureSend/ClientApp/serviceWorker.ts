@@ -27,6 +27,8 @@ const decrypt = async (id: string, url: string) => {
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
+      +fileResponse.headers.get("Content-Length"),
+      new URL(url).searchParams.get("fileName"),
       fileData.password
     );
     const headers = {
