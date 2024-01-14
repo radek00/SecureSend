@@ -3,16 +3,16 @@ import StyledButton from "@/components/StyledButton.vue";
 import endpoints from "@/config/endpoints";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import { ButtonType } from "@/models/enums/ButtonType";
-import { inject, ref } from "vue";
-import SimpleInput from "@/components/SimpleInput.vue";
-import { computed } from "vue";
 import type { Ref } from "vue";
+import { computed, inject, ref } from "vue";
+import SimpleInput from "@/components/SimpleInput.vue";
 import FileCard from "@/components/FileCard.vue";
 import type { IWorkerInit } from "@/models/WorkerInit";
 import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
 import { SecureSendService } from "@/services/SecureSendService";
 import { InvalidPasswordError } from "@/models/errors/ResponseErrors";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
+import { DownloadState, type DownloadStateTuple } from "@/models/DownloadState";
 
 const props = defineProps<{
   verifyUploadResponse: UploadVerifyResponseDTO;
@@ -24,6 +24,23 @@ const isLoading = inject<Ref<boolean>>("isLoading");
 const secureUpload = ref<SecureUploadDto | null>(null);
 
 const password = ref<string>("");
+
+const fileDownloadStatuses = ref<Map<string, DownloadStateTuple>>(
+  new Map<string, DownloadStateTuple>()
+);
+
+const broadcast = new BroadcastChannel("progress-channel");
+
+broadcast.onmessage = (event) => {
+  if (event.data.request === "progress") {
+    fileDownloadStatuses.value.set(event.data.fileName, [
+      event.data.value,
+      DownloadState.InProgress,
+    ]);
+
+    console.log("progress", fileDownloadStatuses.value);
+  }
+};
 
 const setUpWorker = async () => {
   navigator.serviceWorker.controller?.postMessage({
@@ -42,6 +59,9 @@ if (!props.verifyUploadResponse.isProtected) {
     password: password.value,
   });
   await setUpWorker();
+  secureUpload.value.files!.forEach((file) =>
+    fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
+  );
 }
 
 const isPasswordValid = ref<boolean>();
@@ -55,6 +75,9 @@ const verifyPassword = async () => {
     });
     isPasswordValid.value = true;
     await setUpWorker();
+    secureUpload.value.files!.forEach((file) =>
+      fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
+    );
   } catch (err: unknown) {
     if (err instanceof InvalidPasswordError) isPasswordValid.value = false;
     else throw err;
@@ -65,6 +88,40 @@ const verifyPassword = async () => {
 const isPasswordValidComputed = computed(
   () => isPasswordValid.value === true || isPasswordValid.value === undefined
 );
+
+const downloadAll = async () => {
+  const directoryHandle = await window.showDirectoryPicker();
+  const files = secureUpload.value?.files!;
+  const promises = [];
+  for (const file of files) {
+    const promise = async (): Promise<void> => {
+      try {
+        //fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New]);
+        const writableStream = await (
+          await directoryHandle.getFileHandle(file.fileName!, { create: true })
+        ).createWritable();
+        const response = await fetch(
+          `${endpoints.download}?id=${
+            secureUpload.value!.secureUploadId
+          }&fileName=${file.fileName}`
+        );
+        await response.body!.pipeTo(writableStream);
+        fileDownloadStatuses.value.set(file.fileName!, [
+          "Download completed",
+          DownloadState.Completed,
+        ]);
+        console.log(fileDownloadStatuses.value);
+      } catch {
+        fileDownloadStatuses.value.set(file.fileName!, [
+          "Error with downloading file",
+          DownloadState.Failed,
+        ]);
+      }
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+};
 </script>
 <template>
   <div class="flex justify-center items-center pt-14 md:pt-20">
@@ -76,6 +133,11 @@ const isPasswordValidComputed = computed(
       <div
         class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
       >
+        <div v-if="true">
+          <StyledButton :category="ButtonType.primary" @click="downloadAll()"
+            >Download all</StyledButton
+          >
+        </div>
         <FileCard
           v-for="file in secureUpload!.files"
           :key="(file.fileName as string)"
@@ -88,6 +150,9 @@ const isPasswordValidComputed = computed(
               :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${file.fileName}`"
               >Download</a
             >
+          </template>
+          <template #cardMiddle>
+            {{ fileDownloadStatuses.get(file.fileName!) }}
           </template>
         </FileCard>
       </div>

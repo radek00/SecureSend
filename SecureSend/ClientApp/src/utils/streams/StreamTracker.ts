@@ -17,6 +17,7 @@ export default class StreamTracker {
       this.broadcast.postMessage({
         request: "progress",
         value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
+        fileName: this.fileName,
       });
       this.currentChunk++;
       controller.enqueue(chunk);
@@ -29,6 +30,7 @@ export default class StreamTracker {
     this.broadcast.postMessage({
       request: "progress",
       value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
+      fileName: this.fileName,
     });
   }
 }
