@@ -53,15 +53,19 @@ const setUpWorker = async () => {
   } as IWorkerInit);
 };
 
-if (!props.verifyUploadResponse.isProtected) {
+const viewSecureUpload = async () => {
   secureUpload.value = await SecureSendService.viewSecureUpload({
     id: props.verifyUploadResponse.secureUploadId,
     password: password.value,
   });
   await setUpWorker();
   secureUpload.value.files!.forEach((file) =>
-    fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
+      fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
   );
+}
+
+if (!props.verifyUploadResponse.isProtected) {
+  await viewSecureUpload();
 }
 
 const isPasswordValid = ref<boolean>();
@@ -69,15 +73,9 @@ const isPasswordValid = ref<boolean>();
 const verifyPassword = async () => {
   isLoading!.value = true;
   try {
-    secureUpload.value = await SecureSendService.viewSecureUpload({
-      id: props.verifyUploadResponse.secureUploadId,
-      password: password.value,
-    });
+    await viewSecureUpload()
     isPasswordValid.value = true;
-    await setUpWorker();
-    secureUpload.value.files!.forEach((file) =>
-      fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
-    );
+
   } catch (err: unknown) {
     if (err instanceof InvalidPasswordError) isPasswordValid.value = false;
     else throw err;
@@ -96,7 +94,6 @@ const downloadAll = async () => {
   for (const file of files) {
     const promise = async (): Promise<void> => {
       try {
-        //fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New]);
         const writableStream = await (
           await directoryHandle.getFileHandle(file.fileName!, { create: true })
         ).createWritable();
