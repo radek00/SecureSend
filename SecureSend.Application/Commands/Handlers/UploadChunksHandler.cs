@@ -4,6 +4,8 @@ using SecureSend.Application.Services;
 using SecureSend.Domain.Entities;
 using SecureSend.Domain.Repositories;
 using SecureSend.Domain.ValueObjects;
+using System.Net;
+using System.Text.Encodings.Web;
 
 namespace SecureSend.Application.Commands.Handlers
 {
@@ -37,10 +39,11 @@ namespace SecureSend.Application.Commands.Handlers
                     }
                     var savedChunks = _fileService.GetChunksList(command.uploadId, chunk.ChunkDirectory).ToList();
                     if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
-                    await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory);
-
+                    var randomFileName = Path.GetRandomFileName();
+                    await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory, randomFileName);
                     
-                    persisted.AddFile(new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize));
+                    
+                    persisted.AddFile(new SecureSendFile(WebUtility.HtmlEncode(chunk.Chunk.FileName), chunk.ContentType, command.totalFileSize, randomFileName));
                     await _repository.SaveChanges(cancellationToken);
 
                 }

@@ -28,7 +28,7 @@ namespace SecureSend.Application.Commands.Handlers
                 SecureUploadId = upload.Id,
                 UploadDate = upload.UploadDate,
                 ExpiryDate = upload.ExpiryDate,
-                Files = upload.Files.Select(f => new SecureFileDto { ContentType = f.ContentType, FileName = f.FileName, FileSize = f.FileSize})
+                Files = upload.Files.Select(f => new SecureFileDto { ContentType = f.ContentType, FileName = f.DisplayFileName, FileSize = f.FileSize})
 
             };
 
