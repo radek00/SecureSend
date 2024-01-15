@@ -22,7 +22,7 @@ namespace SecureSend.Application.Commands.Handlers
 
         public async Task<Unit> Handle(UploadChunks command, CancellationToken cancellationToken)
         {
-            var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk);
+            var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk, command.chunkId);
             SecureSendUpload? persisted = null;
 
             try

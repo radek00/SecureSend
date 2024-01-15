@@ -24,6 +24,7 @@ export abstract class SecureSendService {
     chunk: ArrayBuffer,
     fileType: string,
     totalFileSize: number,
+    chunkId: string,
     controller?: AbortSignal
   ): Promise<void> => {
     const formData = new FormData();
@@ -34,7 +35,7 @@ export abstract class SecureSendService {
       signal: controller ?? undefined,
     };
     return await fetchWrapper.post<void>(
-      `${endpoints.uploadChunks}?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}&totalFileSize=${totalFileSize}`,
+      `${endpoints.uploadChunks}?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}&totalFileSize=${totalFileSize}&chunkId=${chunkId}`,
       undefined,
       requestOptions
     );

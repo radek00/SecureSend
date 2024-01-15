@@ -205,7 +205,8 @@ const handleUploadCallback = async (
   chunk: ArrayBuffer,
   num: number,
   totalChunks: number,
-  file: File
+  file: File,
+  chunkId: string
 ) => {
   try {
     await handlePause(file);
@@ -218,6 +219,7 @@ const handleUploadCallback = async (
       chunk,
       file.type,
       file.size,
+      chunkId,
       controllers.get(file.name)?.signal
     );
     const progress = Math.ceil((currentChunk / totalChunks) * 100);
@@ -344,11 +346,12 @@ const onFilesChange = (formFiles: FileList | undefined | null) => {
 const encryptFile = async () => {
   const requests: Promise<unknown>[] = [];
   for (const [file] of files.value) {
+    const chunkId = self.crypto.randomUUID();
     const promise = splitFile(
       file,
       5 * 1024 * 1024,
       async (chunk: ArrayBuffer, num, totalChunks) => {
-        await handleUploadCallback(chunk, num, totalChunks, file);
+        await handleUploadCallback(chunk, num, totalChunks, file, chunkId);
       },
       async (chunk, num) => await keychain.encrypt(chunk, num)
     );
