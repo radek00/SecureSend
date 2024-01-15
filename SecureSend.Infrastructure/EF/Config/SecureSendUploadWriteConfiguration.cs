@@ -50,7 +50,8 @@ namespace SecureSend.Infrastructure.EF.Config
             {
                 fileBuilder.Property<int>("Id");
                 fileBuilder.HasKey("Id");
-                fileBuilder.Property(p => p.FileName);
+                fileBuilder.Property(p => p.DisplayFileName);
+                fileBuilder.Property(p => p.RandomFileName);
                 fileBuilder.Property(p => p.ContentType);
                 fileBuilder.Property(p => p.FileSize);
 

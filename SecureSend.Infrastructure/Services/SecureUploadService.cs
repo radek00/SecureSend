@@ -39,15 +39,13 @@ namespace SecureSend.Infrastructure.Services
             }
         }
 
-        public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory)
+        public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory, string randomFileName)
         {
 
 
             var dir = GetOrCreateDirectory(uploadId, chunkDirectory);
 
-            var chunkName = chunkFiles.FirstOrDefault();
-            var fileName = chunkName!.Substring(chunkName.IndexOf("_") + 1);
-            var mergedFilePath = Path.Combine(dir.Parent.FullName, fileName);
+            var mergedFilePath = Path.Combine(dir.Parent.FullName, randomFileName);
             using (var mergedFile = new FileStream(mergedFilePath, FileMode.Create))
             {
                 foreach (var chunkFile in chunkFiles)
