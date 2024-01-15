@@ -5,16 +5,18 @@ namespace SecureSend.Domain.ValueObjects
 {
     public record SecureSendFile
     {
-        public string FileName { get; }
+        public string DisplayFileName { get; }
+        public string RandomFileName { get; set; }
         public string ContentType { get; }
         public long FileSize { get; set; }
 
-        public SecureSendFile(string fileName, string contentType, long fileSize)
+        public SecureSendFile(string displayFileName, string contentType, long fileSize, string randomFileName)
         {
-            if (string.IsNullOrEmpty(fileName)) throw new EmptyFileNameException();
-            FileName = fileName;
+            if (string.IsNullOrEmpty(displayFileName)) throw new EmptyFileNameException();
+            DisplayFileName = displayFileName;
             ContentType = contentType;
             FileSize = fileSize;
+            RandomFileName = randomFileName;
         }
     }
 }

@@ -32,8 +32,17 @@ namespace SecureSend.Domain.ValueObjects
             IsLast = chunkNumber == totalChunks ? true : false;
             Chunk = chunk;
             ContentType = chunk.ContentType;
-            ChunkName = $"{chunkNumber}_{chunk.FileName}";
-            ChunkDirectory = Path.GetFileNameWithoutExtension(chunk.FileName);
+            ChunkName = $"{chunkNumber}_{Path.GetRandomFileName()}";
+            ChunkDirectory = Path.GetFileNameWithoutExtension(SanitizeDirectoryName(chunk.FileName));
+        }
+
+        private string SanitizeDirectoryName(string fileName)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(c, '-');
+            }
+            return fileName;
         }
     }
 }
