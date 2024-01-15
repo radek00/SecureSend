@@ -30,7 +30,7 @@ public class CancelUploadHandlerTests
     [Fact]
     public async void Handle_Succeeds()
     {
-        upload.AddFile(new SecureSendFile("test.txt", "text/plain", new long()));
+        upload.AddFile(new SecureSendFile("test.txt", "text/plain", new long(), Path.GetRandomFileName()));
         var command = new CancelUpload(Guid.NewGuid(), "test.txt");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
