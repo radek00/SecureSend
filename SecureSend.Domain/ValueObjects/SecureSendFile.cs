@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
 using SecureSend.Domain.Exceptions;
+using System.Net;
 
 namespace SecureSend.Domain.ValueObjects
 {
@@ -10,13 +11,13 @@ namespace SecureSend.Domain.ValueObjects
         public string ContentType { get; }
         public long FileSize { get; set; }
 
-        public SecureSendFile(string displayFileName, string contentType, long fileSize, string randomFileName)
+        public SecureSendFile(string displayFileName, string contentType, long fileSize)
         {
             if (string.IsNullOrEmpty(displayFileName)) throw new EmptyFileNameException();
-            DisplayFileName = displayFileName;
+            DisplayFileName = WebUtility.HtmlEncode(displayFileName);
             ContentType = contentType;
             FileSize = fileSize;
-            RandomFileName = randomFileName;
+            RandomFileName = Path.GetRandomFileName();
         }
     }
 }

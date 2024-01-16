@@ -38,7 +38,7 @@ public class UploadChunksHandlerTests
     [Fact]
     public async void Handle_Succeeds()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224);
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
         _fileService.Setup(x => x.GetChunksList(command.uploadId, It.IsAny<string>()))
@@ -52,7 +52,7 @@ public class UploadChunksHandlerTests
     [Fact]
     public async void Handle_Throws_UploadDoesNotExistException()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224);
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(default(SecureSendUpload));
         
@@ -66,7 +66,7 @@ public class UploadChunksHandlerTests
     [Fact]
     public async void Handle_Throws_InvalidChunkCountException()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224);
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
         _fileService.Setup(x => x.GetChunksList(It.IsAny<Guid>(), It.IsAny<string>()))
