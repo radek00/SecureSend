@@ -7,9 +7,9 @@ namespace SecureSend.Domain.ValueObjects
     public record SecureSendFile
     {
         public string DisplayFileName { get; }
-        public string RandomFileName { get; set; }
+        public string RandomFileName { get; }
         public string ContentType { get; }
-        public long FileSize { get; set; }
+        public long FileSize { get; }
 
         public SecureSendFile(string displayFileName, string contentType, long fileSize)
         {
