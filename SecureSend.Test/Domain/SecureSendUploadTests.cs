@@ -2,6 +2,7 @@ using SecureSend.Domain.Entities;
 using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.ValueObjects;
+using System.Net;
 
 namespace SecureSend.Test.Domain;
 
@@ -23,7 +24,7 @@ public class SecureSendUploadTests
     [Fact]
     public void AddFile_Succeeds()
     {
-        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long(), Path.GetRandomFileName()));
+        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long()));
         Assert.Single(upload.Files);
     }
 
@@ -33,7 +34,7 @@ public class SecureSendUploadTests
         IList<SecureSendFile> files = new List<SecureSendFile>();
         for (int i = 0; i < 5; i++)
         {
-            files.Add(new SecureSendFile($"{i}_test_file", "application/octet-stream", new long(), Path.GetRandomFileName()));
+            files.Add(new SecureSendFile($"{i}_test_file", "application/octet-stream", new long()));
         }
         upload.AddMultipleFiles(files);
         Assert.Collection(upload.Files,
@@ -46,10 +47,21 @@ public class SecureSendUploadTests
     }
 
     [Fact]
+    public void SecureSendFile_Has_Saintized_File_Names()
+    {
+        var fileName = "<test>_file";
+        upload.AddFile(new SecureSendFile(fileName, "application/octet-stream", new long()));
+
+        Assert.Equal(upload.Files.First().DisplayFileName, WebUtility.HtmlEncode(fileName));
+        Assert.True(upload.Files.First().RandomFileName != fileName);
+
+    }
+
+    [Fact]
     public void AddFile_Throws_FileAlreadyExistsException()
     {
-        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long(), Path.GetRandomFileName()));
-        var exception = Record.Exception(() => upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long(), Path.GetRandomFileName())));
+        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long()));
+        var exception = Record.Exception(() => upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long())));
         Assert.NotNull(exception);
         Assert.IsType<FileAlreadyExistsException>(exception);
     }
@@ -58,7 +70,7 @@ public class SecureSendUploadTests
     public void RemoveFile_Succeeds()
     {
 
-        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long(), Path.GetRandomFileName()));
+        upload.AddFile(new SecureSendFile("test_file", "application/octet-stream", new long()));
         Assert.Single(upload.Files);
         upload.RemoveFile("test_file");
         Assert.Empty(upload.Files);
