@@ -27,14 +27,14 @@ namespace SecureSend.Infrastructure.BackgroundTasks
         {
             while (!token.IsCancellationRequested)
             {
-                _logger.LogInformation("Checking for expired files");
+                _logger.LogInformation("Checking for expired files: {@date}", DateTime.UtcNow);
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
                     var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
                     var query = dbContext.SecureSendUploads.Where(u => u.ExpiryDate < DateTime.UtcNow);
-                    var expiredUploads = await query.AsNoTracking().ToListAsync();
+                    var expiredUploads = await query.AsNoTracking().ToListAsync(token);
 
                     foreach (var upload in expiredUploads)
                     {
@@ -42,9 +42,9 @@ namespace SecureSend.Infrastructure.BackgroundTasks
                         _logger.LogInformation("Removing expired upload: {@id}", upload.Id);
                     }
 
-                    if (expiredUploads.Count > 0) await query.ExecuteDeleteAsync();
+                    if (expiredUploads.Count > 0) await query.ExecuteDeleteAsync(token);
 
-                    await Task.Delay(TimeSpan.FromMinutes(60), token);
+                    await Task.Delay(TimeSpan.FromMinutes(30), token);
                 }
             }
 
