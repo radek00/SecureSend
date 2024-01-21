@@ -4,7 +4,7 @@ namespace SecureSend.Domain.ValueObjects
 {
     public record SecureSendUploadId
     {
-        public Guid Value { get; set; }
+        public Guid Value { get; private set; }
 
         public SecureSendUploadId(Guid value)
         {

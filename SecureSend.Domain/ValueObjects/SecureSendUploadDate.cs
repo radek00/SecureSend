@@ -2,7 +2,7 @@
 {
     public record SecureSendUploadDate
     {
-        public DateTime Value { get; set; }
+        public DateTime Value { get; private set; }
 
         public SecureSendUploadDate()
         {

@@ -2,7 +2,7 @@
 {
     public record SecureSendIsViewed
     {
-        public bool Value { get; set; }
+        public bool Value { get; private set; }
 
         public SecureSendIsViewed(bool value)
         {

@@ -24,7 +24,7 @@ namespace SecureSend.Domain.ValueObjects
 
         public string ChunkDirectory { get; }
 
-        public SecureUploadChunk(int chunkNumber, int totalChunks, IFormFile chunk)
+        public SecureUploadChunk(int chunkNumber, int totalChunks, IFormFile chunk, Guid chunkId)
         {
             if (string.IsNullOrEmpty(chunk.FileName)) throw new EmptyFileNameException();
             ChunkNumber = chunkNumber;
@@ -32,8 +32,8 @@ namespace SecureSend.Domain.ValueObjects
             IsLast = chunkNumber == totalChunks ? true : false;
             Chunk = chunk;
             ContentType = chunk.ContentType;
-            ChunkName = $"{chunkNumber}_{chunk.FileName}";
-            ChunkDirectory = Path.GetFileNameWithoutExtension(chunk.FileName);
+            ChunkName = $"{chunkNumber}_{Path.GetRandomFileName()}";
+            ChunkDirectory = chunkId.ToString();
         }
     }
 }

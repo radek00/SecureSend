@@ -63,12 +63,16 @@ namespace SecureSend.SqlServerMigration.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("FileName")
+                            b1.Property<string>("DisplayFileName")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<long>("FileSize")
                                 .HasColumnType("bigint");
+
+                            b1.Property<string>("RandomFileName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
 
                             b1.Property<Guid>("SecureSendUploadId")
                                 .HasColumnType("uniqueidentifier");

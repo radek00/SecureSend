@@ -2,6 +2,7 @@ using SecureSend.Domain.Entities;
 using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.ValueObjects;
+using System.Net;
 
 namespace SecureSend.Test.Domain;
 
@@ -37,11 +38,22 @@ public class SecureSendUploadTests
         }
         upload.AddMultipleFiles(files);
         Assert.Collection(upload.Files,
-            x => Assert.Equal("0_test_file", x.FileName),
-            x => Assert.Equal("1_test_file", x.FileName),
-            x => Assert.Equal("2_test_file", x.FileName),
-            x => Assert.Equal("3_test_file", x.FileName),
-            x => Assert.Equal("4_test_file", x.FileName));
+            x => Assert.Equal("0_test_file", x.DisplayFileName),
+            x => Assert.Equal("1_test_file", x.DisplayFileName),
+            x => Assert.Equal("2_test_file", x.DisplayFileName),
+            x => Assert.Equal("3_test_file", x.DisplayFileName),
+            x => Assert.Equal("4_test_file", x.DisplayFileName));
+
+    }
+
+    [Fact]
+    public void SecureSendFile_Has_Saintized_File_Names()
+    {
+        var fileName = "<test>_file";
+        upload.AddFile(new SecureSendFile(fileName, "application/octet-stream", new long()));
+
+        Assert.Equal(upload.Files.First().DisplayFileName, WebUtility.HtmlEncode(fileName));
+        Assert.True(upload.Files.First().RandomFileName != fileName);
 
     }
 

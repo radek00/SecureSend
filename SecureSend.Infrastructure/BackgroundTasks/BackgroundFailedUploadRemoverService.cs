@@ -32,13 +32,13 @@ namespace SecureSend.Infrastructure.BackgroundTasks
         {
             while (!token.IsCancellationRequested)
             {
-                _logger.LogInformation("Removing failed uploads");
+                _logger.LogInformation("Removing failed uploads: {@date}", DateTime.UtcNow);
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
                     var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
-                    var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddDays(-1));
+                    var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddHours(-1));
                     var emptyUploads = await query.AsNoTracking().ToListAsync(token);
                     foreach (var upload in emptyUploads)
                     {
@@ -49,7 +49,7 @@ namespace SecureSend.Infrastructure.BackgroundTasks
 
                     if (emptyUploads.Any()) await query.ExecuteDeleteAsync(token);
                     
-                    await Task.Delay(TimeSpan.FromDays(1), token);
+                    await Task.Delay(TimeSpan.FromMinutes(30), token);
                 }
             }
         }
