@@ -33,10 +33,11 @@ const broadcast = new BroadcastChannel("progress-channel");
 
 broadcast.onmessage = (event) => {
   if (event.data.request === "progress") {
-    fileDownloadStatuses.value.set(event.data.fileName, [
-      event.data.value,
-      DownloadState.InProgress,
-    ]);
+    const stateTuple: DownloadStateTuple =
+      event.data.value === "100%"
+        ? ["Download completed", DownloadState.Completed]
+        : [event.data.value, DownloadState.InProgress];
+    fileDownloadStatuses.value.set(event.data.fileName, stateTuple);
 
     console.log("progress", fileDownloadStatuses.value);
   }
@@ -60,9 +61,12 @@ const viewSecureUpload = async () => {
   });
   await setUpWorker();
   secureUpload.value.files!.forEach((file) =>
-      fileDownloadStatuses.value.set(file.fileName!, ["0%", DownloadState.New])
+    fileDownloadStatuses.value.set(file.fileName!, [
+      "0%",
+      DownloadState.NewFile,
+    ])
   );
-}
+};
 
 if (!props.verifyUploadResponse.isProtected) {
   await viewSecureUpload();
@@ -73,9 +77,8 @@ const isPasswordValid = ref<boolean>();
 const verifyPassword = async () => {
   isLoading!.value = true;
   try {
-    await viewSecureUpload()
+    await viewSecureUpload();
     isPasswordValid.value = true;
-
   } catch (err: unknown) {
     if (err instanceof InvalidPasswordError) isPasswordValid.value = false;
     else throw err;
@@ -136,20 +139,40 @@ const downloadAll = async () => {
           >
         </div>
         <FileCard
-          v-for="file in secureUpload!.files"
-          :key="(file.fileName as string)"
-          :file-name="file.fileName!"
-          :size="file.fileSize"
+          v-for="[fileName, status] in fileDownloadStatuses"
+          :key="fileName"
+          :file-name="fileName"
+          :size="secureUpload!.files!.find((f) => f.fileName === fileName)?.fileSize"
         >
           <template #cardBottom>
             <a
               class="font-medium text-blue-500 hover:underline"
-              :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${file.fileName}`"
+              :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${fileName}`"
               >Download</a
             >
-          </template>
-          <template #cardMiddle>
-            {{ fileDownloadStatuses.get(file.fileName!) }}
+            <div class="w-full rounded-full bg-gray-700 mt-2">
+              <div
+                data-test="progress-bar"
+                class="text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                :class="{
+                  'bg-blue-600':
+                    status[1] === DownloadState.InProgress ||
+                    status[1] === DownloadState.NewFile,
+                  'bg-green-600': status[1] === DownloadState.Completed,
+                  'bg-red-600': status[1] === DownloadState.Failed,
+                }"
+                :style="{
+                  width: `${
+                    status[1] === DownloadState.InProgress ||
+                    status[1] === DownloadState.NewFile
+                      ? status[0]
+                      : `100%`
+                  }`,
+                }"
+              >
+                {{ status[0] }}
+              </div>
+            </div>
           </template>
         </FileCard>
       </div>

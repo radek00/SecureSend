@@ -1,8 +1,8 @@
 export enum DownloadState {
-  New = 0,
+  NewFile = 0,
   InProgress,
-  Failed = 2,
-  Completed = 3,
+  Completed = 2,
+  Failed = 3,
 }
 
 export type DownloadStateTuple = [string, DownloadState];
