@@ -1,6 +1,6 @@
 export enum DownloadState {
   NewFile = 0,
-  InProgress,
+  InProgress = 1,
   Completed = 2,
   Failed = 3,
 }
