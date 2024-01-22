@@ -13,6 +13,7 @@ import { SecureSendService } from "@/services/SecureSendService";
 import { InvalidPasswordError } from "@/models/errors/ResponseErrors";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { DownloadState, type DownloadStateTuple } from "@/models/DownloadState";
+import ProgressBar from "@/components/ProgressBar.vue";
 
 const props = defineProps<{
   verifyUploadResponse: UploadVerifyResponseDTO;
@@ -150,29 +151,7 @@ const downloadAll = async () => {
               :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${fileName}`"
               >Download</a
             >
-            <div class="w-full rounded-full bg-gray-700 mt-2">
-              <div
-                data-test="progress-bar"
-                class="text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                :class="{
-                  'bg-blue-600':
-                    status[1] === DownloadState.InProgress ||
-                    status[1] === DownloadState.NewFile,
-                  'bg-green-600': status[1] === DownloadState.Completed,
-                  'bg-red-600': status[1] === DownloadState.Failed,
-                }"
-                :style="{
-                  width: `${
-                    status[1] === DownloadState.InProgress ||
-                    status[1] === DownloadState.NewFile
-                      ? status[0]
-                      : `100%`
-                  }`,
-                }"
-              >
-                {{ status[0] }}
-              </div>
-            </div>
+            <ProgressBar :state="status"></ProgressBar>
           </template>
         </FileCard>
       </div>

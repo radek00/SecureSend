@@ -12,6 +12,7 @@ import PauseIcon from "@/assets/icons/PauseIcon.vue";
 import PlayIcon from "@/assets/icons/PlayIcon.vue";
 import OptionsDropdown from "@/components/OptionsDropdown.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
+import ProgressBar from "@/components/ProgressBar.vue";
 
 const emit = defineEmits<{
   onFilesChange: [files: FileList | undefined | null];
@@ -176,32 +177,7 @@ const areOptionsAvailable = (state: UploadState) => {
           <CheckIcon v-if="value[1] === UploadState.Completed"></CheckIcon>
         </template>
         <template #cardBottom>
-          <div class="w-full rounded-full bg-gray-700 mt-2">
-            <div
-              data-test="progress-bar"
-              class="text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-              :class="{
-                'bg-blue-600':
-                  value[1] === UploadState.InProgress ||
-                  value[1] === UploadState.NewFile,
-                'bg-orange-600': value[1] === UploadState.Paused,
-                'bg-green-600': value[1] === UploadState.Completed,
-                'bg-red-600':
-                  value[1] === UploadState.Failed ||
-                  value[1] === UploadState.Cancelled,
-              }"
-              :style="{
-                width: `${
-                  value[1] === UploadState.InProgress ||
-                  value[1] === UploadState.NewFile
-                    ? value[0]
-                    : `100%`
-                }`,
-              }"
-            >
-              {{ value[0] }}
-            </div>
-          </div>
+          <ProgressBar :state="value"></ProgressBar>
         </template>
       </FileCard>
     </TransitionGroup>
