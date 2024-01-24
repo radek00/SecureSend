@@ -96,7 +96,7 @@ describe("FileUploadView", () => {
       true
     );
     expect(submitButton.attributes("disabled")).toBeUndefined();
-    expect(wrapper.find('div[data-test="progress-bar"]').text()).toEqual("0%");
+    expect(wrapper.find('div[data-test="progress-bar"]').text()).toEqual("Upload not started");
     expect(fileInputComponent.find("button span").text()).toEqual(
       "Remove file"
     );

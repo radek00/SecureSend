@@ -63,7 +63,7 @@ const viewSecureUpload = async () => {
   await setUpWorker();
   secureUpload.value.files!.forEach((file) =>
     fileDownloadStatuses.value.set(file.fileName!, [
-      "0%",
+      "Download not started",
       DownloadState.NewFile,
     ])
   );

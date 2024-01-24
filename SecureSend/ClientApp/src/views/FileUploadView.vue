@@ -334,7 +334,7 @@ const onFilesChange = (formFiles: FileList | undefined | null) => {
     for (let i = 0; i < formFiles.length; i++) {
       const file = formFiles[i];
       if (!fileKeys.has(file.name)) {
-        files.value.set(file, [`0%`, UploadState.NewFile]);
+        files.value.set(file, [`Upload not started`, UploadState.NewFile]);
         fileKeys.set(file.name, true);
       }
     }
