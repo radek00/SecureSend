@@ -25,8 +25,7 @@ const props = defineProps<{
 
 const classComputed = computed(() => {
   if (
-    props.state[1] === UploadState.InProgress ||
-    props.state[1] === UploadState.NewFile
+    props.state[1] === UploadState.InProgress
   ) {
     return "bg-blue-600";
   } else if (props.state[1] === UploadState.Completed) {
@@ -34,7 +33,7 @@ const classComputed = computed(() => {
   } else if (props.state[1] === UploadState.Failed) {
     return "bg-red-600";
   }
-  return "";
+  return "bg-slate-600";
 });
 
 const styleComputed = computed(() => {
