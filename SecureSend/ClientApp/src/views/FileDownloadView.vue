@@ -15,6 +15,7 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { DownloadState, type DownloadStateTuple } from "@/models/DownloadState";
 import ProgressBar from "@/components/ProgressBar.vue";
 import { useCheckHasFeature } from "@/utils/composables/useCheckHasFeature";
+import { onUnmounted } from "vue";
 
 const props = defineProps<{
   verifyUploadResponse: UploadVerifyResponseDTO;
@@ -31,11 +32,11 @@ const fileDownloadStatuses = ref<Map<string, DownloadStateTuple>>(
   new Map<string, DownloadStateTuple>()
 );
 
-const broadcast = new BroadcastChannel("progress-channel");
-
 const isDownlodAllAvailable = useCheckHasFeature("showDirectoryPicker");
 
-broadcast.onmessage = (event) => {
+const broadcast = new BroadcastChannel("progress-channel");
+
+const onProgressUpdate = (event: any) => {
   if (event.data.request === "progress") {
     const stateTuple: DownloadStateTuple =
       event.data.value === "100%"
@@ -44,6 +45,7 @@ broadcast.onmessage = (event) => {
     fileDownloadStatuses.value.set(event.data.fileName, stateTuple);
   }
 };
+broadcast.addEventListener("message", onProgressUpdate);
 
 const setUpWorker = async () => {
   navigator.serviceWorker.controller?.postMessage({
@@ -122,6 +124,11 @@ const downloadAll = async () => {
   }
   await Promise.all(promises);
 };
+
+onUnmounted(() => {
+  broadcast.removeEventListener("message", onProgressUpdate);
+  broadcast.close();
+});
 </script>
 <template>
   <div class="flex justify-center items-center pt-14 md:pt-20">
