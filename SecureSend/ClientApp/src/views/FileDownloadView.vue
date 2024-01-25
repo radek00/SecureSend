@@ -101,11 +101,7 @@ const downloadAll = async () => {
         const writableStream = await (
           await directoryHandle.getFileHandle(file.fileName!, { create: true })
         ).createWritable();
-        const response = await fetch(
-          `${endpoints.download}?id=${
-            secureUpload.value!.secureUploadId
-          }&fileName=${file.fileName}`
-        );
+        const response = await SecureSendService.downloadFile(secureUpload.value?.secureUploadId!, file.fileName!)
         await response.body!.pipeTo(writableStream);
         fileDownloadStatuses.value.set(file.fileName!, [
           "Download completed",
