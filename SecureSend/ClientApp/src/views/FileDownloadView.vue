@@ -14,6 +14,7 @@ import { InvalidPasswordError } from "@/models/errors/ResponseErrors";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { DownloadState, type DownloadStateTuple } from "@/models/DownloadState";
 import ProgressBar from "@/components/ProgressBar.vue";
+import { useCheckHasFeature } from "@/utils/composables/useCheckHasFeature";
 
 const props = defineProps<{
   verifyUploadResponse: UploadVerifyResponseDTO;
@@ -31,6 +32,8 @@ const fileDownloadStatuses = ref<Map<string, DownloadStateTuple>>(
 );
 
 const broadcast = new BroadcastChannel("progress-channel");
+
+const isDownlodAllAvailable = useCheckHasFeature("showDirectoryPicker");
 
 broadcast.onmessage = (event) => {
   if (event.data.request === "progress") {
@@ -130,7 +133,7 @@ const downloadAll = async () => {
       <div
         class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
       >
-        <div v-if="true">
+        <div v-if="isDownlodAllAvailable">
           <StyledButton :category="ButtonType.primary" @click="downloadAll()"
             >Download all</StyledButton
           >
