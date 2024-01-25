@@ -31,5 +31,6 @@ export default class StreamTracker {
       value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
       fileName: this.fileName,
     });
+    this.broadcast.close();
   }
 }
