@@ -42,8 +42,6 @@ broadcast.onmessage = (event) => {
         ? ["Download completed", DownloadState.Completed]
         : [event.data.value, DownloadState.InProgress];
     fileDownloadStatuses.value.set(event.data.fileName, stateTuple);
-
-    console.log("progress", fileDownloadStatuses.value);
   }
 };
 
@@ -110,7 +108,6 @@ const downloadAll = async () => {
           "Download completed",
           DownloadState.Completed,
         ]);
-        console.log(fileDownloadStatuses.value);
       } catch {
         fileDownloadStatuses.value.set(file.fileName!, [
           "Error with downloading file",

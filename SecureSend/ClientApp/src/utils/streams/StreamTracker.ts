@@ -6,7 +6,6 @@ export default class StreamTracker {
   constructor(totalSize: number, fileName: string) {
     this.fileName = fileName;
     this.totalChunks = Math.ceil(totalSize / (5 * 1024 * 1024 + 16));
-    console.log(this.totalChunks);
   }
 
   public async transform(
