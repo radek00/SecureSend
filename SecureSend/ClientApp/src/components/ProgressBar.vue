@@ -31,7 +31,7 @@ const classComputed = computed(() => {
   } else if (props.state[1] === UploadState.Failed) {
     return "bg-red-600";
   }
-  return "bg-slate-600";
+  return "bg-slate-700";
 });
 
 const styleComputed = computed(() => {
