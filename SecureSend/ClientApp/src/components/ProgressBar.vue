@@ -24,9 +24,7 @@ const props = defineProps<{
 }>();
 
 const classComputed = computed(() => {
-  if (
-    props.state[1] === UploadState.InProgress
-  ) {
+  if (props.state[1] === UploadState.InProgress) {
     return "bg-blue-600";
   } else if (props.state[1] === UploadState.Completed) {
     return "bg-green-600";
