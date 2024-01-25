@@ -64,11 +64,14 @@ export abstract class SecureSendService {
     return await fetchWrapper.get(`${endpoints.secureSend}?id=${id}`);
   };
 
-  static downloadFile = async (id: string, fileName: string): Promise<Response> => {
-    const response = await fetch(`${endpoints.download}?id=${
-      id
-    }&fileName=${fileName}`);
+  static downloadFile = async (
+    id: string,
+    fileName: string
+  ): Promise<Response> => {
+    const response = await fetch(
+      `${endpoints.download}?id=${id}&fileName=${fileName}`
+    );
     if (!response.ok) throw new Error(response.statusText);
     return response;
-  }
+  };
 }
