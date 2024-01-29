@@ -7,6 +7,7 @@ using SecureSend.Domain.Repositories;
 using SecureSend.Infrastructure.BackgroundTasks;
 using SecureSend.Infrastructure.EF.Context;
 using SecureSend.Infrastructure.EF.Options;
+using SecureSend.Infrastructure.HostedServices;
 using SecureSend.Infrastructure.Middlewares;
 using SecureSend.Infrastructure.Repositories;
 using SecureSend.Infrastructure.Services;
@@ -29,6 +30,8 @@ namespace SecureSend.Infrastructure
             services.AddScoped<ISecureUploadReadService, SecureUploadReadService>();
 
             services.AddScoped<ExceptionMiddleware>();
+
+            services.AddSingleton<IUploadSizeTrackerService, UploadSizeTrackerService>();
 
             var database = configuration.GetSection(("Database")).Get<Databases>();
 
