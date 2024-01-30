@@ -9,14 +9,16 @@ namespace SecureSend.Infrastructure.Services;
 public class UploadSizeTrackerService : IUploadSizeTrackerService
 {
     private readonly ConcurrentDictionary<Guid, double> _uploadSizes = new();
-    private readonly IOptions<FileStorageOptions> _fileStorageOptions;
     private readonly Guid _totalSizeId = Guid.NewGuid();
+    private readonly double _singleUploadLimit;
+    private readonly double _totalUploadLimit;
     private readonly IServiceProvider _serviceProvider;
 
     public UploadSizeTrackerService(IOptions<FileStorageOptions> fileStorageOptions, IServiceProvider serviceProvider)
     {
-        _fileStorageOptions = fileStorageOptions;
         _serviceProvider = serviceProvider;
+        _totalUploadLimit = fileStorageOptions.Value.TotalUploadLimitInGB * 1024 * 1024 * 1024;
+        _singleUploadLimit = fileStorageOptions.Value.SingleUploadLimitInGB * 1024 * 1024 * 1024;
     }
 
     private double GetInitialTotalSizeValue()
@@ -42,8 +44,8 @@ public class UploadSizeTrackerService : IUploadSizeTrackerService
         _uploadSizes.TryGetValue(uploadId, out var currentUploadSize);
         _uploadSizes.TryGetValue(_totalSizeId, out var totalUploadSize);
 
-        return !(currentUploadSize < _fileStorageOptions.Value.SingleUploadLimit) ||
-               !(totalUploadSize < _fileStorageOptions.Value.TotalUploadLimit);
+        return !(currentUploadSize < _singleUploadLimit) ||
+               !(totalUploadSize < _totalUploadLimit);
     }
 
     public bool TryUpdateUploadSize(Guid uploadId, double chunkSize)
