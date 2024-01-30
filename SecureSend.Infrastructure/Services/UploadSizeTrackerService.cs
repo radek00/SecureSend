@@ -33,6 +33,11 @@ public class UploadSizeTrackerService : IUploadSizeTrackerService
         _uploadSizes.TryAdd(_totalSizeId, GetInitialTotalSizeValue());
     }
 
+    public (double singleUploadLimit, double totalUploadLimit) GetUploadLimits()
+    {
+        return (_singleUploadLimit, _totalUploadLimit);
+    }
+
     private void AddOrUpdateUploadSize(Guid uploadId, double chunkSize)
     {
         _uploadSizes.AddOrUpdate(uploadId, chunkSize, (key, oldValue) => oldValue + chunkSize);
