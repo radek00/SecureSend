@@ -2,12 +2,12 @@
 {
     public class UploadedFilesReadModel
     {
-        public int Id { get; set; }
-        public string DisplayFileName { get; set; }
+        public int Id { get; init; }
+        public required string DisplayFileName { get; init; }
 
-        public string RandomFileName { get; set; }
-        public string ContentType { get; set; }
-        public Guid SecureSendUploadId { get; set; }
-        public SecureUploadsReadModel SecureUpload { get; set; }
+        public required string RandomFileName { get; init; }
+        public required string ContentType { get; init; }
+        public required Guid SecureSendUploadId { get; init; }
+        public required SecureUploadsReadModel SecureUpload { get; init; }
     }
 }
