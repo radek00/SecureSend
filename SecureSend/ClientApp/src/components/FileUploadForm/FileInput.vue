@@ -13,6 +13,7 @@ import PlayIcon from "@/assets/icons/PlayIcon.vue";
 import OptionsDropdown from "@/components/OptionsDropdown.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 import ProgressBar from "@/components/ProgressBar.vue";
+import SizeLimit from "@/components/FileUploadForm/SizeLimit.vue";
 
 const emit = defineEmits<{
   onFilesChange: [files: FileList | undefined | null];
@@ -83,127 +84,129 @@ const areOptionsAvailable = (state: UploadState) => {
       />
     </label>
   </div>
-  <div
-    v-else
-    class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
-  >
-    <TransitionGroup name="list">
-      <FileCard
-        v-for="[key, value] in files"
-        :key="key.name"
-        :file-name="key.name"
-        :size="key.size"
-      >
-        <template #cardMiddle>
-          <button
-            v-if="value[1] === UploadState.NewFile && !isLoading"
-            @click="emit('onFileRemove', key)"
-            type="button"
-            class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
-          >
-            <TrashIcon class="w-5 h-3"></TrashIcon>
-            <span class="sr-only">Remove file</span>
-          </button>
-          <div class="hidden md:flex gap-1 justify-between">
+  <div v-else>
+    <SizeLimit :files="files" class="mb-5"></SizeLimit>
+    <div
+      class="flex flex-col gap-5 w-full justify-between h-[300px] overflow-y-auto p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
+    >
+      <TransitionGroup name="list">
+        <FileCard
+          v-for="[key, value] in files"
+          :key="key.name"
+          :file-name="key.name"
+          :size="key.size"
+        >
+          <template #cardMiddle>
             <button
-              data-test="cancel-button"
-              v-if="value[1] === UploadState.InProgress"
-              @click="emit('onCancel', key)"
-              type="button"
-              :disabled="!isUploadSetup"
-              class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
-            >
-              <CloseIcon class="w-5 h-3"></CloseIcon>
-              <span class="sr-only">Cancel</span>
-            </button>
-            <button
-              data-test="pause-button"
-              v-if="value[1] === UploadState.InProgress"
-              @click="emit('onPause', key)"
-              type="button"
-              :disabled="!isUploadSetup"
-              class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
-            >
-              <PauseIcon class="w-5 h-3"></PauseIcon>
-              <span class="sr-only">Pause</span>
-            </button>
-            <button
-              data-test="resume-button"
-              v-if="value[1] === UploadState.Paused"
-              @click="emit('onResume', key)"
-              type="button"
-              :disabled="!isUploadSetup"
-              class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
-            >
-              <PlayIcon class="w-5 h-3"></PlayIcon>
-              <span class="sr-only">Resume</span>
-            </button>
-          </div>
-
-          <OptionsDropdown
-            v-if="areOptionsAvailable(value[1])"
-            class="block md:hidden"
-          >
-            <li
               v-if="value[1] === UploadState.NewFile && !isLoading"
-              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+              @click="emit('onFileRemove', key)"
+              type="button"
+              class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
             >
-              <a href="#" @click="emit('onFileRemove', key)">Remove</a>
-            </li>
-            <li
-              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup && value[1] === UploadState.InProgress"
-            >
-              <a href="#" @click="emit('onCancel', key)">Cancel</a>
-            </li>
-            <li
-              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup && value[1] === UploadState.InProgress"
-            >
-              <a href="#" @click="emit('onPause', key)">Pause</a>
-            </li>
-            <li
-              class="px-4 py-2 hover:bg-gray-600 hover:text-white"
-              v-if="isUploadSetup && value[1] === UploadState.Paused"
-            >
-              <a href="#" @click="emit('onResume', key)">Resume</a>
-            </li>
-          </OptionsDropdown>
+              <TrashIcon class="w-5 h-3"></TrashIcon>
+              <span class="sr-only">Remove file</span>
+            </button>
+            <div class="hidden md:flex gap-1 justify-between">
+              <button
+                data-test="cancel-button"
+                v-if="value[1] === UploadState.InProgress"
+                @click="emit('onCancel', key)"
+                type="button"
+                :disabled="!isUploadSetup"
+                class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+              >
+                <CloseIcon class="w-5 h-3"></CloseIcon>
+                <span class="sr-only">Cancel</span>
+              </button>
+              <button
+                data-test="pause-button"
+                v-if="value[1] === UploadState.InProgress"
+                @click="emit('onPause', key)"
+                type="button"
+                :disabled="!isUploadSetup"
+                class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+              >
+                <PauseIcon class="w-5 h-3"></PauseIcon>
+                <span class="sr-only">Pause</span>
+              </button>
+              <button
+                data-test="resume-button"
+                v-if="value[1] === UploadState.Paused"
+                @click="emit('onResume', key)"
+                type="button"
+                :disabled="!isUploadSetup"
+                class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+              >
+                <PlayIcon class="w-5 h-3"></PlayIcon>
+                <span class="sr-only">Resume</span>
+              </button>
+            </div>
 
-          <LoadingIndicator
-            v-if="value[1] === UploadState.Merging"
-            class="w-8 h-5 mr-2"
-          ></LoadingIndicator>
-          <CheckIcon v-if="value[1] === UploadState.Completed"></CheckIcon>
-        </template>
-        <template #cardBottom>
-          <ProgressBar :state="value"></ProgressBar>
-        </template>
-      </FileCard>
-    </TransitionGroup>
-    <div v-if="files.size > 0 && !isLoading">
-      <label
-        for="add-more-files"
-        type="button"
-        :tabindex="step !== 2 ? -1 : 0"
-        @keyup.enter="() => addMoreFilesInput?.click()"
-        class="w-[fit-content] text-blue-600 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
-      >
-        <PlusIcon class="w-4 h-4"></PlusIcon>
-        <span class="ml-2">Add more files</span>
-      </label>
-      <input
-        @change="
-          $emit('onFilesChange', ($event.target as HTMLInputElement).files)
-        "
-        data-test="add-more-files"
-        id="add-more-files"
-        type="file"
-        multiple
-        class="opacity-0"
-        ref="addMoreFilesInput"
-        tabindex="-1"
-      />
+            <OptionsDropdown
+              v-if="areOptionsAvailable(value[1])"
+              class="block md:hidden"
+            >
+              <li
+                v-if="value[1] === UploadState.NewFile && !isLoading"
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+              >
+                <a href="#" @click="emit('onFileRemove', key)">Remove</a>
+              </li>
+              <li
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup && value[1] === UploadState.InProgress"
+              >
+                <a href="#" @click="emit('onCancel', key)">Cancel</a>
+              </li>
+              <li
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup && value[1] === UploadState.InProgress"
+              >
+                <a href="#" @click="emit('onPause', key)">Pause</a>
+              </li>
+              <li
+                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                v-if="isUploadSetup && value[1] === UploadState.Paused"
+              >
+                <a href="#" @click="emit('onResume', key)">Resume</a>
+              </li>
+            </OptionsDropdown>
+
+            <LoadingIndicator
+              v-if="value[1] === UploadState.Merging"
+              class="w-8 h-5 mr-2"
+            ></LoadingIndicator>
+            <CheckIcon v-if="value[1] === UploadState.Completed"></CheckIcon>
+          </template>
+          <template #cardBottom>
+            <ProgressBar :state="value"></ProgressBar>
+          </template>
+        </FileCard>
+      </TransitionGroup>
+      <div v-if="files.size > 0 && !isLoading">
+        <label
+          for="add-more-files"
+          type="button"
+          :tabindex="step !== 2 ? -1 : 0"
+          @keyup.enter="() => addMoreFilesInput?.click()"
+          class="w-[fit-content] text-blue-600 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
+        >
+          <PlusIcon class="w-4 h-4"></PlusIcon>
+          <span class="ml-2">Add more files</span>
+        </label>
+        <input
+          @change="
+            $emit('onFilesChange', ($event.target as HTMLInputElement).files)
+          "
+          data-test="add-more-files"
+          id="add-more-files"
+          type="file"
+          multiple
+          class="opacity-0"
+          ref="addMoreFilesInput"
+          tabindex="-1"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -83,7 +83,12 @@
           <StyledButton
             class="w-full md:w-auto"
             :category="ButtonType.primary"
-            :disabled="!meta.valid || isLoading || (step === 2 && !files.size)"
+            :disabled="
+              !meta.valid ||
+              isLoading ||
+              (step === 2 && !files.size) ||
+              isLimitExceeded
+            "
             type="submit"
           >
             <span class="flex items-center justify-center">
@@ -122,7 +127,7 @@ import SchemaInput from "@/components/SchemaInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
 import splitFile from "@/utils/splitFile";
-import { computed, inject, ref, type Ref } from "vue";
+import { computed, inject, onBeforeMount, provide, ref, type Ref } from "vue";
 import { useForm } from "vee-validate";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
@@ -135,6 +140,7 @@ import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
 import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
+import { useFileLimits } from "@/utils/composables/useFileLimits";
 
 interface IMappedFormValues {
   expiryDate: string;
@@ -158,6 +164,9 @@ const files = ref(new Map<File, UploadStateTuple>());
 const fileKeys = new Map<string, boolean>();
 const pausedFiles = new Map<File, boolean | ((value?: string) => void)>();
 const controllers = new Map<string, AbortController>();
+
+const { isLimitExceeded, sizeLimit, totalSize } = useFileLimits(files);
+provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
 let downloadUrl: string;
 
