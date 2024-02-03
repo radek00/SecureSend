@@ -6,7 +6,10 @@ const limits = inject<IUseFileLimits>("sizeLimits")!;
 </script>
 
 <template>
-  <div class="text-center" :class="{ 'text-red-500': limits.isLimitExceeded }">
+  <div
+    class="text-center"
+    :class="{ 'text-red-500': limits.isLimitExceeded.value }"
+  >
     Size limit: {{ limits.totalSize }}/{{ limits.sizeLimit }} GB
   </div>
 </template>
