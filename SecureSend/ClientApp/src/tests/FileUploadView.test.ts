@@ -91,6 +91,12 @@ describe("FileUploadView", () => {
     fileInputComponent.vm.$emit("onFilesChange", [file]);
     await wrapper.vm.$nextTick();
     await waitForExpect(() => {
+      expect(
+        fileInputComponent
+          .findComponent(SizeLimit)
+          .find(".text-red-500")
+          .exists()
+      ).toBe(false);
       expect(submitButton.attributes("disabled")).toBeUndefined();
     });
 
