@@ -76,9 +76,11 @@ services:
 version: '3.4'
 networks:
   proxy:
-    external: true
+  secureSend:
+volumes:
+  secureSend:
 services:
-#reverse proxy
+  #reverse proxy
   traefik:
     image: "traefik:v2.4"
     container_name: "traefik"
@@ -107,10 +109,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"   
+      - "8080:8080"
     environment:
       - "CF_API_EMAIL=${API_EMAIL}"
       - "CF_API_KEY=${API_KEY}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${BASE_DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     networks:
       proxy:
     volumes:
@@ -118,25 +127,26 @@ services:
       - "./letsencrypt:/letsencrypt"
   securesend:
     image: chupacabra500/secure_send:latest
-    build:
-      dockerfile: ./Dockerfile
     volumes:
       - secureSend:/app/files
     environment:
-    #db provider
+      #db provider
       - Database=Postgres
-    #postgres options
+      #postgres options
       - PostgresOptions__Host=db
-      - PostgresOptions__Password=example
-      - PostgresOptions__UserId=postgres
+      - PostgresOptions__Password=${POSTGRES_PASSWORD}
+      - PostgresOptions__UserId=${POSTGRES_USER}
       - PostgresOptions__Database=SecureSend
+      #Optional upload limits options. Defaults to no limit if not provided.
+      - FileStorageOptions__TotalUploadLimitInGB=10
+      - FileStorageOptions__SingleUploadLimitInGB=5
     networks:
       - secureSend
       - proxy
     labels:
       - traefik.enable=true
       - traefik.http.services.securesned.loadbalancer.server.port=80
-      - traefik.http.routers.securesend.rule=Host(`securesend.example.com`)
+      - traefik.http.routers.securesend.rule=Host(`securesend.${BASE_DOMAIN}`)"
       - traefik.http.routers.securesend.tls.certresolver=myresolver
       - traefik.http.routers.securesend.entrypoints=websecure
       - traefik.docker.network=proxy
@@ -146,7 +156,7 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
     networks:
