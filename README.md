@@ -54,6 +54,9 @@ services:
       - PostgresOptions__Password=example
       - PostgresOptions__UserId=postgres
       - PostgresOptions__Database=SecureSend
+      #Optional upload limits options. Defaults to no limit if not provided.
+      - FileStorageOptions__TotalUploadLimitInGB=10
+      - FileStorageOptions__SingleUploadLimitInGB=5
     ports:
       - 8080:80
     networks:
