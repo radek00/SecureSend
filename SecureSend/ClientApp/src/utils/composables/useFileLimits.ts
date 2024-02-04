@@ -1,4 +1,4 @@
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import type { Ref, ComputedRef } from "vue";
 import { UploadLimitsService } from "@/services/UploadLimitsService";
 import type { UploadStateTuple } from "@/models/UploadStateTuple";
@@ -12,18 +12,21 @@ export function useFileLimits(
   files: Ref<Map<File, UploadStateTuple>>
 ): IUseFileLimits {
   const sizeLimit = ref<number>(0);
-  onBeforeMount(async () => {
+  onMounted(async () => {
     sizeLimit.value = (
       await UploadLimitsService.getUploadLimits()
     ).singleUploadLimitInGB;
   });
 
   const totalSize = computed(() => {
-    const sizeInBytes = [...files.value.keys()].reduce((acc, current) => {
-      return (acc += current.size);
-    }, 0);
+    if (sizeLimit.value > 0) {
+      const sizeInBytes = [...files.value.keys()].reduce((acc, current) => {
+        return (acc += current.size);
+      }, 0);
 
-    return Math.round((sizeInBytes / (1024 * 1024 * 1024)) * 10) / 10;
+      return Math.round((sizeInBytes / (1024 * 1024 * 1024)) * 10) / 10;
+    }
+    return 0;
   });
 
   const isLimitExceeded = computed(() => totalSize.value > sizeLimit.value);
