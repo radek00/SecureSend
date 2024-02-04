@@ -7,6 +7,7 @@ const limits = inject<IUseFileLimits>("sizeLimits")!;
 
 <template>
   <div
+    v-if="limits.sizeLimit.value > 0"
     class="text-center"
     :class="{ 'text-red-500': limits.isLimitExceeded.value }"
   >
