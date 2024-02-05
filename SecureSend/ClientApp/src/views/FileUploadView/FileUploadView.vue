@@ -125,8 +125,8 @@ import SimpleInput from "@/components/SimpleInput.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
 import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
-import {useFileUploadForm} from "@/views/FileUploadView/useFileUploadForm";
-import {UploadResult, useUpload} from "@/views/FileUploadView/useUpload";
+import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
+import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
@@ -134,15 +134,25 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { openSuccess, openDanger } = useAlert();
 
-const {handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm();
-const {resetUpload, handleUpload, onResume, onPause, onFileRemove, onFilesChange, onCancel, createDownloadUrl, isUploadSetup, files} = useUpload(values);
+const { handleSubmit, meta, values, resetUploadForm, step } =
+  useFileUploadForm();
+const {
+  resetUpload,
+  handleUpload,
+  onResume,
+  onPause,
+  onFileRemove,
+  onFilesChange,
+  onCancel,
+  createDownloadUrl,
+  isUploadSetup,
+  files,
+} = useUpload(values);
 
 let downloadUrl: string;
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 //handlers
-
-
 
 //events
 
@@ -152,32 +162,31 @@ const showUploadResult = async (message: string) => {
   if (data) {
     return;
   }
-}
+};
 
 const onSubmit = handleSubmit(async () => {
   if (step.value === 2) {
-      const result = await handleUpload();
-      switch (result) {
-        case UploadResult.Success:
-          await showUploadResult("Upload successful");
-          formReset();
-          break;
-          
-        case UploadResult.Partial:
-          await showUploadResult("Only some files were uploaded");
-          formReset();
-          break;
-        case UploadResult.AllCanceled:
-          openDanger("At least one file has to be uploaded")
-          break;
-        case UploadResult.Failed:
-          openDanger("Upload failed, try again")
-              formReset()
-              break;
-        default:
-          break;
-              
-      }
+    const result = await handleUpload();
+    switch (result) {
+      case UploadResult.Success:
+        await showUploadResult("Upload successful");
+        formReset();
+        break;
+
+      case UploadResult.Partial:
+        await showUploadResult("Only some files were uploaded");
+        formReset();
+        break;
+      case UploadResult.AllCanceled:
+        openDanger("At least one file has to be uploaded");
+        break;
+      case UploadResult.Failed:
+        openDanger("Upload failed, try again");
+        formReset();
+        break;
+      default:
+        break;
+    }
   } else {
     step.value++;
   }
@@ -194,5 +203,4 @@ const formReset = () => {
   resetUploadForm();
   resetUpload();
 };
-
 </script>

@@ -4,7 +4,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import type { RouteLocationNormalized } from "vue-router";
 import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
 
-const FileUploadView = () => import("@/views/FileUploadView/FileUploadView.vue");
+const FileUploadView = () =>
+  import("@/views/FileUploadView/FileUploadView.vue");
 const FileDownloadView = () => import("@/views/FileDownloadView.vue");
 const ErrorPageView = () => import("@/views/ErrorPageView.vue");
 const LandingView = () => import("@/views/LandingView.vue");
