@@ -13,11 +13,13 @@ namespace SecureSend.Application.Commands.Handlers
     {
         private readonly IFileService _fileService;
         private readonly ISecureSendUploadRepository _repository;
+        private readonly IUploadSizeTrackerService _sizeTrackerService;
 
-        public UploadChunksHandler(IFileService fileService, ISecureSendUploadRepository repository)
+        public UploadChunksHandler(IFileService fileService, ISecureSendUploadRepository repository, IUploadSizeTrackerService sizeTrackerService)
         {
             _fileService = fileService;
             _repository = repository;
+            _sizeTrackerService = sizeTrackerService;
         }
 
         public async Task<Unit> Handle(UploadChunks command, CancellationToken cancellationToken)
@@ -27,6 +29,8 @@ namespace SecureSend.Application.Commands.Handlers
 
             try
             {
+                if (!_sizeTrackerService.TryUpdateUploadSize(command.uploadId, command.chunk.Length))
+                    throw new SizeLimitExceededException();
                 await _fileService.SaveChunkToDisk(chunk, command.uploadId);
 
                 if (chunk.IsLast)

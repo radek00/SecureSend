@@ -1,17 +1,23 @@
 import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import FileUploadView from "@/views/FileUploadView.vue";
+import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 import { mountComponent, waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
 import { UploadState } from "@/models/UploadStateTuple";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
+import { UploadLimitsService } from "@/services/UploadLimitsService";
+import SizeLimit from "@/components/FileUploadForm/SizeLimit.vue";
 
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
   beforeEach(async () => {
+    UploadLimitsService.getUploadLimits = vi
+      .fn()
+      .mockReturnValue({ singleUploadLimitInGB: 1 });
     wrapper = mountComponent(FileUploadView).wrapper;
     await flushPromises();
+    await wrapper.vm.$nextTick();
   });
 
   test("Multistep form flow", async () => {
@@ -70,6 +76,44 @@ describe("FileUploadView", () => {
       expect(
         wrapper.find('div[label="Optional expiry date"]').find("span").text()
       ).toEqual("Expiry date must be earlier than today.");
+    });
+  });
+
+  test("Upload size limits", async () => {
+    const submitButton = wrapper.find('button[type="submit"]');
+
+    await submitButton.trigger("submit");
+    await submitButton.trigger("submit");
+
+    const fileInputComponent = wrapper.findComponent(FileInput);
+    const file = new File(["file content"], "test.txt", { type: "text/plain" });
+    Object.defineProperty(file, "size", { value: 5 });
+    fileInputComponent.vm.$emit("onFilesChange", [file]);
+    await wrapper.vm.$nextTick();
+    await waitForExpect(() => {
+      expect(
+        fileInputComponent
+          .findComponent(SizeLimit)
+          .find(".text-red-500")
+          .exists()
+      ).toBe(false);
+      expect(submitButton.attributes("disabled")).toBeUndefined();
+    });
+
+    const file2 = new File(["file content2"], "test2.txt", {
+      type: "text/plain",
+    });
+    Object.defineProperty(file2, "size", { value: 1024 * 1024 * 1024 * 1024 });
+    fileInputComponent.vm.$emit("onFilesChange", [file2]);
+    await wrapper.vm.$nextTick();
+    await waitForExpect(() => {
+      expect(submitButton.attributes("disabled")).toBeDefined();
+      expect(
+        fileInputComponent
+          .findComponent(SizeLimit)
+          .find(".text-red-500")
+          .exists()
+      ).toBe(true);
     });
   });
 

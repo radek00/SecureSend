@@ -4,6 +4,7 @@ const endpoints = {
   uploadChunks: `${baseUrl}api/SecureSend/uploadChunks`,
   download: `${baseUrl}api/SecureSend/download`,
   cancelUpload: `${baseUrl}api/SecureSend/cancelUpload`,
+  uploadLimits: `${baseUrl}api/uploadLimits`,
 };
 
 export default endpoints;

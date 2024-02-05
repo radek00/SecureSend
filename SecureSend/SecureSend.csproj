@@ -55,8 +55,4 @@
     <ProjectReference Include="..\SecureSend.SqlServerMigrations\SecureSend.SqlServerMigrations.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Files\" />
-  </ItemGroup>
-
 </Project>

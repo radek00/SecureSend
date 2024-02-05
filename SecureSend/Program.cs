@@ -5,8 +5,9 @@ using SecureSend.Infrastructure.EF.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.WebHost.UseKestrel(option => option.AddServerHeader = false);
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -43,7 +44,7 @@ app.UseSpaStaticFiles(new StaticFileOptions()
         headers.CacheControl = new CacheControlHeaderValue
         {
             Public = true,
-            MaxAge = TimeSpan.FromDays(30)
+            MaxAge = TimeSpan.FromDays(400)
         };
 
     }
