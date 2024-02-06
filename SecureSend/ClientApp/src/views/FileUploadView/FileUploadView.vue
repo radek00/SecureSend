@@ -78,7 +78,12 @@
           <StyledButton
             class="w-full md:w-auto"
             :category="ButtonType.primary"
-            :disabled="!meta.valid || isLoading || (step === 2 && !files.size) || isLimitExceeded"
+            :disabled="
+              !meta.valid ||
+              isLoading ||
+              (step === 2 && !files.size) ||
+              isLimitExceeded
+            "
             type="submit"
           >
             <span class="flex items-center justify-center">
@@ -114,7 +119,7 @@
 
 <script setup lang="ts">
 import SchemaInput from "@/components/SchemaInput.vue";
-import {computed, inject, provide, type Ref} from "vue";
+import { computed, inject, provide, type Ref } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
 import StyledButton from "@/components/StyledButton.vue";
@@ -127,7 +132,7 @@ import { useAlert } from "@/utils/composables/useAlert";
 import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
 import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
-import {useFileLimits} from "@/utils/composables/useFileLimits";
+import { useFileLimits } from "@/utils/composables/useFileLimits";
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
