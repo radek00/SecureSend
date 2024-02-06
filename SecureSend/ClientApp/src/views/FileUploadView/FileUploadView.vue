@@ -158,12 +158,7 @@ const {
 const { isLimitExceeded, sizeLimit, totalSize } = useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
-let downloadUrl: string;
-
 const isLoading = inject<Ref<boolean>>("isLoading");
-//handlers
-
-//events
 
 const showUploadResult = async (message: string) => {
   openSuccess(message);
@@ -201,10 +196,8 @@ const onSubmit = handleSubmit(async () => {
   }
 });
 
-//utils
-
 const copyToClipboard = () => {
-  navigator.clipboard.writeText(downloadUrl);
+  navigator.clipboard.writeText(createDownloadUrl());
   openSuccess("Link copied to clipboard");
 };
 

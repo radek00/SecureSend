@@ -23,6 +23,8 @@ export function useUpload(values: IMappedFormValues) {
   const fileKeys = new Map<string, boolean>();
   const pausedFiles = new Map<File, boolean | ((value?: string) => void)>();
   const controllers = new Map<string, AbortController>();
+
+  let downloadUrl: string | null;
   async function setupUpload() {
     await SecureSendService.createSecureUpload({
       uploadId: uuid,
@@ -142,12 +144,6 @@ export function useUpload(values: IMappedFormValues) {
     pausedFiles.set(event.detail.file, true);
   };
 
-  const createDownloadUrl = () => {
-    return window.location.origin
-      .toString()
-      .concat(`/download/${uuid}#${keychain.getSecret()}`);
-  };
-
   async function uploadFiles() {
     const requests: Promise<unknown>[] = [];
     for (const [file] of files.value) {
@@ -212,6 +208,14 @@ export function useUpload(values: IMappedFormValues) {
     }
   };
 
+  const createDownloadUrl = () => {
+    if (downloadUrl) return downloadUrl;
+    downloadUrl = window.location.origin
+      .toString()
+      .concat(`/download/${uuid}#${keychain.getSecret()}`);
+    return downloadUrl;
+  };
+
   const resetUpload = () => {
     uuid = self.crypto.randomUUID();
     files.value.clear();
@@ -223,6 +227,7 @@ export function useUpload(values: IMappedFormValues) {
     pausedFiles.clear();
     isUploadSetup.value = false;
     isLoading!.value = false;
+    downloadUrl = null;
   };
 
   return {
