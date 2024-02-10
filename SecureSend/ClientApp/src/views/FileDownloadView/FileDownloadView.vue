@@ -30,7 +30,6 @@ const viewSecureUpload = async () => {
   const upload = await verifyPassword(
     props.verifyUploadResponse.secureUploadId
   );
-  console.log(upload, isPasswordValid.value);
   if (isPasswordValid.value) {
     secureUpload.value = upload;
     setupDownload(
