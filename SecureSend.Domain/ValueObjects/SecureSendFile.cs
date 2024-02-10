@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.StaticFiles;
-using SecureSend.Domain.Exceptions;
+﻿using SecureSend.Domain.Exceptions;
 using System.Net;
 
 namespace SecureSend.Domain.ValueObjects
