@@ -1,6 +1,6 @@
 import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import FileUploadView from "@/views/FileUploadView.vue";
+import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 import { mountComponent, waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { SecureSendService } from "@/services/SecureSendService";
