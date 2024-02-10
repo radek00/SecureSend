@@ -2,8 +2,8 @@
 {
     public class FileStorageOptions
     {
-        public string Path { get; init; }
-        public double SingleUploadLimitInGB { get; init; }
-        public double TotalUploadLimitInGB { get; init; }
+        public string Path { get; init; } = null!;
+        public double SingleUploadLimitInGB { get; init; } = 0;
+        public double TotalUploadLimitInGB { get; init; } = 0;
     }
 }

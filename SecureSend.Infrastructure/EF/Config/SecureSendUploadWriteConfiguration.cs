@@ -6,13 +6,6 @@ using SecureSend.Domain.ValueObjects;
 
 namespace SecureSend.Infrastructure.EF.Config
 {
-    internal static class SecureSendFields
-    {
-        internal static string uploadDate = "_uploadDate";
-        internal static string expiryDate = "_expiryDate";
-        internal static string isViewed = "_isViewedl";
-        internal static string files = "_files";
-    }
     internal sealed class SecureSendUploadWriteConfiguration: IEntityTypeConfiguration<SecureSendUpload>
     {
         public void Configure(EntityTypeBuilder<SecureSendUpload> builder)
@@ -33,7 +26,7 @@ namespace SecureSend.Infrastructure.EF.Config
 
 
             builder.Property(p => p.ExpiryDate)
-                .HasConversion(expiryDateConverter)
+                .HasConversion(expiryDateConverter!)
                 .HasColumnName("ExpiryDate")
                 .IsRequired(false);
 
@@ -42,7 +35,7 @@ namespace SecureSend.Infrastructure.EF.Config
                 .HasColumnName("IsViewed");
 
             builder.Property(p => p.PasswordHash)
-                .HasConversion(passwordHashConverter)
+                .HasConversion(passwordHashConverter!)
                 .HasColumnName("PasswordHash")
                 .IsRequired(false);
 

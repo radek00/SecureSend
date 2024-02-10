@@ -37,7 +37,7 @@ namespace SecureSend.Infrastructure.Services
 
             var dir = GetOrCreateDirectory(uploadId, chunkDirectory);
 
-            var mergedFilePath = Path.Combine(dir.Parent.FullName, randomFileName);
+            var mergedFilePath = Path.Combine(dir.Parent!.FullName, randomFileName);
             await using (var mergedFile = new FileStream(mergedFilePath, FileMode.Create))
             {
                 foreach (var chunkFile in chunkFiles)
