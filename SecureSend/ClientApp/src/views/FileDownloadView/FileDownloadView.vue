@@ -46,7 +46,7 @@ if (!props.verifyUploadResponse.isProtected) {
 }
 </script>
 <template>
-  <div class="flex justify-center items-center pt-14 md:pt-20">
+  <div class="flex justify-center items-center mt-14 md:mt-20">
     <div
       class="w-11/12 md:w-6/12"
       v-if="!verifyUploadResponse.isProtected || isPasswordValid"
@@ -84,12 +84,6 @@ if (!props.verifyUploadResponse.isProtected) {
       v-else
       class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0 w-full"
     >
-      <a
-        href="#"
-        class="flex items-center mb-6 text-2xl font-semibold text-white"
-      >
-        SecureSend
-      </a>
       <div
         class="w-full p-6 rounded-lg shadow border md:mt-0 sm:max-w-md bg-gray-800 border-gray-700 sm:p-8"
       >
