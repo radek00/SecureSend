@@ -1,4 +1,3 @@
-import type { CreateSecureUpload } from "@/models/CreateSecureUpload";
 import { fetchWrapper } from "@/utils/fetchWrapper";
 import endpoints from "@/config/endpoints";
 import type { UploadSizeLimitsDto } from "@/models/UploadSizeLimitsDto";
