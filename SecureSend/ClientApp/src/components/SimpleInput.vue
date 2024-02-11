@@ -11,7 +11,7 @@
     @input="
       $emit('update:modelValue', ($event.target as HTMLInputElement).value)
     "
-    @change="isDirty = true"
+    @input.once="isDirty = true"
     :name="props.name"
     v-bind="$attrs"
     :disabled="disabled"
