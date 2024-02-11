@@ -38,7 +38,7 @@ public class UploadSizeTrackerService : IUploadSizeTrackerService
 
     public void Reset()
     {
-        var expiredKeys = _uploadSizes.Where(x => x.Value.Item2 <= DateTime.UtcNow.AddSeconds(60)).Select(x => x.Key);
+        var expiredKeys = _uploadSizes.Where(x => x.Value.Item2 <= DateTime.UtcNow.AddHours(-1)).Select(x => x.Key);
         foreach (var key in expiredKeys)
         {
             var result = _uploadSizes.TryRemove(key, out var removedKey);
