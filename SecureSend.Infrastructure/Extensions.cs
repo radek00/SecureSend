@@ -30,15 +30,23 @@ namespace SecureSend.Infrastructure
             services.AddScoped<ISecureUploadReadService, SecureUploadReadService>();
 
             services.AddScoped<ExceptionMiddleware>();
-
-            services.AddSingleton<IUploadSizeTrackerService, UploadSizeTrackerService>();
+            
+            var uploadLimits = configuration.GetSection("FileStorageOptions").Get<FileStorageOptions>();
+            if (uploadLimits!.SingleUploadLimitInGB == 0 || uploadLimits.TotalUploadLimitInGB == 0)
+            {
+                services.AddSingleton<IUploadSizeTrackerService, DummyUploadTrackerService>();
+            }
+            else
+            {
+                services.AddSingleton<IUploadSizeTrackerService, UploadSizeTrackerService>();
+            }
 
             var database = configuration.GetSection(("Database")).Get<Databases>();
 
             if (database == Databases.SqlServer)
             {
                 var options = configuration.GetSection("SqlServerOptions").Get<SqlServerOptions>();
-                var sqlServerConnectionString = $"Server={options!.Server},{options!.Port};Database={options!.Database};Trusted_Connection={options!.TrustedConnection};User ID={options!.UserId};Password={options!.Password};TrustServerCertificate={options!.TrustServerCertificate}";
+                var sqlServerConnectionString = $"Server={options!.Server},{options.Port};Database={options.Database};Trusted_Connection={options.TrustedConnection};User ID={options.UserId};Password={options.Password};TrustServerCertificate={options.TrustServerCertificate}";
                 services.AddDbContext<SecureSendDbWriteContext>(ctx =>
                     ctx.UseSqlServer(sqlServerConnectionString,
                         x => x.MigrationsAssembly("SecureSend.SqlServerMigrations")));
@@ -61,6 +69,7 @@ namespace SecureSend.Infrastructure
 
             services.AddHostedService<AppInitializer>();
             services.AddHostedService<BackgroundFileService>();
+            
             services.AddHostedService<BackgroundFailedUploadRemoverService>();
             return services;
 
