@@ -6,4 +6,5 @@ public interface IUploadSizeTrackerService
     void Setup();
 
     (double singleUploadLimit, double totalUploadLimit) GetUploadLimits();
+    void Reset();
 }

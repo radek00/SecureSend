@@ -25,33 +25,39 @@ namespace SecureSend.Infrastructure.BackgroundTasks
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await RemoveFailedUploads(stoppingToken);
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                using var scope = _serviceProvider.CreateScope();
+                await RemoveFailedUploads(scope, stoppingToken);
+                ResetTrackerService(scope);
+                await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+            }
         }
 
-        private async Task RemoveFailedUploads(CancellationToken token)
+        private async Task RemoveFailedUploads(IServiceScope scope, CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
-            {
+
                 _logger.LogInformation("Removing failed uploads: {@date}", DateTime.UtcNow);
-
-                using (var scope = _serviceProvider.CreateScope())
+                var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
+                var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
+                var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddHours(-1));
+                var emptyUploads = await query.AsNoTracking().ToListAsync(token);
+                foreach (var upload in emptyUploads)
                 {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
-                    var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
-                    var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddHours(-1));
-                    var emptyUploads = await query.AsNoTracking().ToListAsync(token);
-                    foreach (var upload in emptyUploads)
-                    {
-                        _logger.LogInformation("Removing failed upload: {@id}", upload.Id);
-                        fileService.RemoveUpload(upload.Id);
+                    _logger.LogInformation("Removing failed upload: {@id}", upload.Id);
+                    fileService.RemoveUpload(upload.Id);
 
-                    }
-
-                    if (emptyUploads.Any()) await query.ExecuteDeleteAsync(token);
-                    
-                    await Task.Delay(TimeSpan.FromMinutes(30), token);
                 }
-            }
+
+                if (emptyUploads.Any()) await query.ExecuteDeleteAsync(token);
+                
+            
+        }
+
+        private void ResetTrackerService(IServiceScope scope)
+        {
+            var trackerService = scope.ServiceProvider.GetRequiredService<IUploadSizeTrackerService>();
+            trackerService.Reset();
         }
     }
 }
