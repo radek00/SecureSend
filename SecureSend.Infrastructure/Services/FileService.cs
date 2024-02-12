@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using SecureSend.Application.Services;
 using SecureSend.Domain.ValueObjects;
-using SecureSend.Infrastructure.EF.Options;
+using SecureSend.Application.Options;
 
 namespace SecureSend.Infrastructure.Services
 {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SecureSend.Application.Services;
-using SecureSend.Infrastructure.EF.Options;
+using SecureSend.Application.Options;
 
 namespace SecureSend.Infrastructure.Services;
 
