@@ -1,5 +1,6 @@
 using Microsoft.Net.Http.Headers;
 using SecureSend.Application;
+using SecureSend.Application.Options;
 using SecureSend.Infrastructure;
 using SecureSend.Infrastructure.EF.Options;
 

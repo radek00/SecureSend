@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SecureSend.Application.Options;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Repositories;
 using SecureSend.Infrastructure.BackgroundTasks;

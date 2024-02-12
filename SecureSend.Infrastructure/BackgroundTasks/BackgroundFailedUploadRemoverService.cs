@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SecureSend.Application.Services;
 using SecureSend.Infrastructure.EF.Context;
-using SecureSend.Infrastructure.EF.Options;
+using SecureSend.Application.Options;
 
 namespace SecureSend.Infrastructure.BackgroundTasks
 {
