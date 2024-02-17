@@ -24,13 +24,13 @@ public class CancelUploadHandlerTests
         _factory = new SecureSendUploadFactory();
         _fileService = new Mock<IFileService>();
         _commandHandler = new CancelUploadHandler(_fileService.Object, _repository.Object);
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, String.Empty);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, String.Empty);
     }
     
     [Fact]
     public async void Handle_Succeeds()
     {
-        upload.AddFile(new SecureSendFile("test.txt", "text/plain", new long()));
+        upload.AddFile(SecureSendFile.Create("test.txt", "text/plain", new long()));
         var command = new CancelUpload(Guid.NewGuid(), "test.txt");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);

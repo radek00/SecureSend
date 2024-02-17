@@ -5,27 +5,24 @@ namespace SecureSend.Domain.Entities;
 public class SecureSendPasswordHash
 {
     public byte[]? Value { get;}
-    private readonly  HashingService _hashingService;
-    public SecureSendPasswordHash(string? password)
-    {
-        _hashingService = new HashingService();
-        Value = String.IsNullOrEmpty(password) ? null : _hashingService.Hash(password);
-    }
 
     public SecureSendPasswordHash(byte[]? hash)
     {
-        _hashingService = new HashingService();
         Value = hash;
     }
 
     public void VerifyHash(string? password)
     {
-        if (Value is null || String.IsNullOrEmpty(password) || !_hashingService.Verify(password, Value)) throw new InvalidPasswordException();
+        if (Value is null || String.IsNullOrEmpty(password) || !new HashingService().Verify(password, Value)) throw new InvalidPasswordException();
+    }
+
+    public static SecureSendPasswordHash Create(string? password)
+    {
+        var value  = String.IsNullOrEmpty(password) ? null : new HashingService().Hash(password);
+        return new SecureSendPasswordHash(value);
     }
     
     public static implicit operator byte[]?(SecureSendPasswordHash value) => value.Value;
 
-    public static implicit operator SecureSendPasswordHash(byte[] hash) => new(hash);
-
-    public static implicit operator SecureSendPasswordHash(string? password) => new(password);
+    public static implicit operator SecureSendPasswordHash(byte[]? hash) => new(hash);
 }

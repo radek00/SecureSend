@@ -29,7 +29,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async void Handle_Throws_InvalidPasswordException()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, "testing");
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
@@ -42,7 +42,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async void Handle_Succeeds_EmptyPassword()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(-5), false, null);
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, null);
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
@@ -56,7 +56,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async void Handle_Succeeds_Protected()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(5), false, "testing");
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "testing");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);

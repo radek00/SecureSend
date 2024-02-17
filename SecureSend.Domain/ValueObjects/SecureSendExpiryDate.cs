@@ -4,9 +4,14 @@
     {
         public DateTime? Value { get; private set; }
 
-        public SecureSendExpiryDate(DateTime? value = null)
+        public SecureSendExpiryDate(DateTime? value)
         {
-            Value = value?.ToUniversalTime();
+            Value = value;
+        }
+
+        public static SecureSendExpiryDate Create(DateTime? value = null)
+        {
+            return new SecureSendExpiryDate(value?.ToUniversalTime());
         }
 
 
