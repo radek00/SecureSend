@@ -4,9 +4,14 @@
     {
         public DateTime Value { get; private set; }
 
-        public SecureSendUploadDate()
+        public SecureSendUploadDate(DateTime date)
         {
-            Value = DateTime.UtcNow;
+            Value = date;
+        }
+        
+        public static SecureSendUploadDate Create()
+        {
+            return new SecureSendUploadDate(DateTime.UtcNow);
         }
 
         public static implicit operator DateTime(SecureSendUploadDate secureSendUploadDate) => secureSendUploadDate.Value;

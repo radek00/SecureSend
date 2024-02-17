@@ -30,11 +30,11 @@ namespace SecureSend.Application.Commands.Handlers
         {
             var expiryDate = command.expiryDate;
             if (_fileStorageOptions.Value.MaxExpirationInDays != 0 &&
-                expiryDate > DateTime.UtcNow.AddDays(_fileStorageOptions.Value.MaxExpirationInDays))
+                expiryDate > DateTime.UtcNow.Date.AddDays(_fileStorageOptions.Value.MaxExpirationInDays).Date)
                 throw new MaxExpirationExceededException(_fileStorageOptions.Value.MaxExpirationInDays);
             if (_fileStorageOptions.Value.MaxExpirationInDays != 0 && expiryDate == null)
             {
-                expiryDate = DateTime.UtcNow.AddDays(_fileStorageOptions.Value.MaxExpirationInDays);
+                expiryDate = DateTime.UtcNow.Date.AddDays(_fileStorageOptions.Value.MaxExpirationInDays);
             }
             var persisted = await _secureUploadReadService.GetUploadId(command.uploadId, cancellationToken);
             if (persisted is not null && persisted != Guid.Empty) throw new UploadAlreadyExistsException(persisted.Value);
