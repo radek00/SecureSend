@@ -11,7 +11,7 @@
 
         public static SecureSendExpiryDate Create(DateTime? value = null)
         {
-            return new SecureSendExpiryDate(value?.ToUniversalTime());
+            return new SecureSendExpiryDate(value?.Date);
         }
 
 
