@@ -17,7 +17,7 @@ public sealed class VerifyUploadHandler: IQueryHandler<VerifyUpload,UploadVerify
     {
         var upload = await _readService.GetSecureUpload(request.id, cancellationToken);
         if (upload is null) throw new UploadDoesNotExistException(request.id);
-        if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow) throw new UploadExpiredException(upload.ExpiryDate);
+        if (upload.ExpiryDate is not null && upload.ExpiryDate < DateTime.UtcNow.Date) throw new UploadExpiredException(upload.ExpiryDate);
 
         var uploadVerifyDto = new UploadVerifyResponseDTO()
         {
