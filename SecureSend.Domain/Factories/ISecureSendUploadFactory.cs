@@ -5,6 +5,6 @@ namespace SecureSend.Domain.Factories
 {
     public interface ISecureSendUploadFactory
     {
-        SecureSendUpload CreateSecureSendUpload(SecureSendUploadId id, SecureSendUploadDate uploadDate, SecureSendExpiryDate? expiryDate, SecureSendIsViewed isViewedl, SecureSendPasswordHash? password);
+        SecureSendUpload CreateSecureSendUpload(Guid id, DateTime? expiryDate, bool isViewed, string? password);
     }
 }

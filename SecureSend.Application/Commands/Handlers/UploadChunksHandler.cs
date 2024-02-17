@@ -42,7 +42,7 @@ namespace SecureSend.Application.Commands.Handlers
                 }
                 var savedChunks = _fileService.GetChunksList(command.uploadId, chunk.ChunkDirectory).ToList();
                 if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
-                var secureFile = new SecureSendFile(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize);
+                var secureFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize);
                 await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory, secureFile.RandomFileName);
                 
                 

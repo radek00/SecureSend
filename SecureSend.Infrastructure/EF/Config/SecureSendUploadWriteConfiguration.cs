@@ -12,7 +12,7 @@ namespace SecureSend.Infrastructure.EF.Config
         {
             builder.HasKey(x => x.Id);
 
-            var uploadDateConverter = new ValueConverter<SecureSendUploadDate, DateTime>(d => d.Value, d => new SecureSendUploadDate());
+            var uploadDateConverter = new ValueConverter<SecureSendUploadDate, DateTime>(d => d.Value, d => new SecureSendUploadDate(d));
             var expiryDateConverter = new ValueConverter<SecureSendExpiryDate, DateTime?>(d => d.Value, d => new SecureSendExpiryDate(d));
             var isViewedConverter = new ValueConverter<SecureSendIsViewed, bool>(v => v.Value, v => new SecureSendIsViewed(v));
             var passwordHashConverter =

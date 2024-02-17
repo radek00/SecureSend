@@ -10,13 +10,19 @@ namespace SecureSend.Domain.ValueObjects
         public string ContentType { get; }
         public long FileSize { get; }
 
-        public SecureSendFile(string displayFileName, string contentType, long fileSize)
+        public SecureSendFile(string displayFileName, string contentType, long fileSize, string randomFileName)
         {
-            if (string.IsNullOrEmpty(displayFileName)) throw new EmptyFileNameException();
-            DisplayFileName = WebUtility.HtmlEncode(displayFileName);
+            DisplayFileName = displayFileName;
             ContentType = contentType;
             FileSize = fileSize;
-            RandomFileName = Path.GetRandomFileName();
+            RandomFileName = randomFileName;
+        }
+
+        public static SecureSendFile Create(string displayFileName, string contentType, long fileSize)
+        {
+            if (string.IsNullOrEmpty(displayFileName)) throw new EmptyFileNameException();
+            return new SecureSendFile(WebUtility.HtmlEncode(displayFileName), contentType, fileSize,
+                Path.GetRandomFileName());
         }
     }
 }

@@ -8,8 +8,13 @@ namespace SecureSend.Domain.ValueObjects
 
         public SecureSendUploadId(Guid value)
         {
-            if (value == Guid.Empty) throw new EmptySecureSendUploadIdException();
             Value = value;
+        }
+
+        public static SecureSendUploadId Create(Guid value)
+        {
+            if (value == Guid.Empty) throw new EmptySecureSendUploadIdException();
+            return new SecureSendUploadId(value);
         }
 
         public static implicit operator Guid(SecureSendUploadId value) => value.Value;
