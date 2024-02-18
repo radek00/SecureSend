@@ -32,7 +32,10 @@
               :tabindex="step !== 1 ? -1 : 0"
               name="expiryDate"
               type="date"
-              label="Optional expiry date"
+              :max="dateLimit"
+              :label="
+                dateLimit === '' ? 'Optional expiry date' : 'Expire after'
+              "
             ></SchemaInput>
           </div>
           <div
@@ -140,8 +143,6 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { openSuccess, openDanger } = useAlert();
 
-const { handleSubmit, meta, values, resetUploadForm, step } =
-  useFileUploadForm();
 const {
   resetUpload,
   handleUpload,
@@ -153,10 +154,15 @@ const {
   createDownloadUrl,
   isUploadSetup,
   files,
-} = useUpload(values);
+} = useUpload();
 
-const { isLimitExceeded, sizeLimit, totalSize } = useFileLimits(files);
+const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
+  useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
+
+const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
+  dateLimit.value !== ""
+);
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 
@@ -168,9 +174,9 @@ const showUploadResult = async (message: string) => {
   }
 };
 
-const onSubmit = handleSubmit(async () => {
+const onSubmit = handleSubmit(async (values) => {
   if (step.value === 2) {
-    const result = await handleUpload();
+    const result = await handleUpload(values);
     switch (result) {
       case UploadResult.Success:
         await showUploadResult("Upload successful");

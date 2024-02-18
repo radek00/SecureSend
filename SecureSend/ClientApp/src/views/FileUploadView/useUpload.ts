@@ -13,7 +13,7 @@ export enum UploadResult {
   Failed,
   Success,
 }
-export function useUpload(values: IMappedFormValues) {
+export function useUpload() {
   const isLoading = inject<Ref<boolean>>("isLoading");
   const isUploadSetup = ref<boolean>(false);
   let keychain: AuthenticatedSecretKeyCryptographyService;
@@ -25,10 +25,19 @@ export function useUpload(values: IMappedFormValues) {
   const controllers = new Map<string, AbortController>();
 
   let downloadUrl: string | null;
-  async function setupUpload() {
+  async function setupUpload(values: IMappedFormValues) {
+    const currentDate = new Date();
+    const utcDate =
+      currentDate.getUTCFullYear() +
+      "-" +
+      ("0" + (currentDate.getUTCMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + currentDate.getUTCDate()).slice(-2);
     await SecureSendService.createSecureUpload({
       uploadId: uuid,
-      expiryDate: values.expiryDate ? values.expiryDate : null,
+      expiryDate: values.expiryDate
+        ? new Date(values.expiryDate).toISOString()
+        : null,
       password: values.password,
     });
     keychain = new AuthenticatedSecretKeyCryptographyService(
@@ -171,10 +180,10 @@ export function useUpload(values: IMappedFormValues) {
     }
   }
 
-  const handleUpload = async () => {
+  const handleUpload = async (values: IMappedFormValues) => {
     isLoading!.value = true;
     if (!isUploadSetup.value) {
-      await setupUpload();
+      await setupUpload(values);
       isUploadSetup.value = true;
     }
     try {
