@@ -4,8 +4,8 @@
     :for="props.name"
     class="block mb-2 text-sm font-medium"
     :class="{ 'text-gray-400': disabled, 'text-white': !disabled }"
-    >{{ props.label }}</label
-  >
+    >{{ props.label }}<slot name="label"></slot
+  ></label>
   <input
     :value="value"
     @input="

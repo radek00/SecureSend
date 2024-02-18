@@ -37,9 +37,11 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
   });
 
   const getInitialValues = (): IMappedFormValues => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
     return {
       password: "",
-      expiryDate: "",
+      expiryDate: date.toISOString().split("T")[0],
       isPasswordRequired: false,
     };
   };
@@ -47,7 +49,7 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
   const { handleSubmit, meta, resetForm, values } = useForm({
     validationSchema: currentSchema,
     initialValues: getInitialValues(),
-    keepValuesOnUnmount: true,
+    validateOnMount: false,
   });
 
   const resetUploadForm = () => {

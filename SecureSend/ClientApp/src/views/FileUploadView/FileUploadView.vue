@@ -34,10 +34,17 @@
               name="expiryDate"
               type="date"
               :label="
-                dateLimit === '' ? 'Optional expiration date:' : 'Expire after'
+                dateLimit === '' ? 'Optional expiration date:' : `Expire after`
               "
               data-test="expirationDate"
-            ></SchemaInput>
+            >
+              <template #label>
+                <span
+                  class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                  >{{ `Max allowed: ${dateLimit}` }}</span
+                >
+              </template>
+            </SchemaInput>
           </div>
           <div
             class="w-full shrink-0 transition-transform duration-700 px-[10px]"
@@ -174,7 +181,7 @@ const showUploadResult = async (message: string) => {
   }
 };
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit(async (values, actions) => {
   if (step.value === 2) {
     const result = await handleUpload(values);
     switch (result) {

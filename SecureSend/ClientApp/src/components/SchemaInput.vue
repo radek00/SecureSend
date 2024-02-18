@@ -18,6 +18,10 @@ const { errorMessage, value, meta } = useField(() => props.name);
       :errorMessage="errorMessage"
       :isValid="meta.valid"
       :disabled="disabled"
-    ></SimpleInput>
+    >
+      <template #label>
+        <slot name="label"></slot>
+      </template>
+    </SimpleInput>
   </div>
 </template>

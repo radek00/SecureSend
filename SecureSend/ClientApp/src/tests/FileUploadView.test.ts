@@ -71,10 +71,11 @@ describe("FileUploadView", () => {
 
     const dateInput = wrapper.find('input[type="date"]');
     await dateInput.setValue("2021-12-01");
-
-    await waitForExpect(() => {
+    await waitForExpect(async () => {
       expect(
-        wrapper.find('div[data-test="expirationDate"]').find("span").text()
+        wrapper
+          .find('div[data-test="expirationDate"] p[data-test="error-message"]')
+          .text()
       ).toEqual("Expiry date must be later than today.");
     });
   });
@@ -259,11 +260,14 @@ describe("Form validation when size limits are set", () => {
 
     const dateInput = wrapper.find('input[type="date"]');
     await dateInput.setValue("2024-02-24");
-    await wrapper.vm.$nextTick();
+    await flushPromises();
     await waitForExpect(() => {
+      console.log(wrapper.html());
       expect(
-        wrapper.find('div[data-test="expirationDate"]').find("span").text()
+        wrapper
+          .find('div[data-test="expirationDate"] p[data-test="error-message"]')
+          .text()
       ).toEqual("Max allowed expiration date is: 2022-02-23");
-    });
+    }, 500);
   });
 });
