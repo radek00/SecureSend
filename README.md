@@ -23,10 +23,11 @@ SecureSend is a simple file sharing solution with end to end encryption and serv
 
 * End to end encryption
 * Support for large files
-* Set expiry date for upload
+* Ability to set expiration date for uploads
 * Easy to self-host with Docker
 * Upload pause/resume
 * Password protected uploads
+* Configurable upload size and expiration limits
 * Postgres and SqlServer support
 
 ## Run with Docker
@@ -57,6 +58,7 @@ services:
       #Optional upload limits options. Defaults to no limit if not provided.
       - FileStorageOptions__TotalUploadLimitInGB=10
       - FileStorageOptions__SingleUploadLimitInGB=5
+      - FileStorageOptions__MaxExpirationInDays=3
     ports:
       - 8080:80
     networks:
@@ -143,6 +145,7 @@ services:
       #Optional upload limits options. Defaults to no limit if not provided.
       - FileStorageOptions__TotalUploadLimitInGB=10
       - FileStorageOptions__SingleUploadLimitInGB=5
+      - FileStorageOptions__MaxExpirationInDays=3
     networks:
       - secureSend
       - proxy
