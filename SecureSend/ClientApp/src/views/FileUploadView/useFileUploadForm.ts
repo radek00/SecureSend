@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import {computed, onMounted, type Ref, ref} from "vue";
 import { useForm } from "vee-validate";
 
 export interface IMappedFormValues {
@@ -7,8 +7,9 @@ export interface IMappedFormValues {
   isPasswordRequired: boolean;
 }
 
-export function useFileUploadForm(isExpiryLimitSet: boolean) {
+export function useFileUploadForm(dateLimit: Ref<string>) {
   const step = ref<number>(0);
+  const currentDate = new Date();
 
   const stepZeroschema = {
     password(value: string) {
@@ -20,9 +21,11 @@ export function useFileUploadForm(isExpiryLimitSet: boolean) {
 
   const stepOneSchema = {
     expiryDate(value: string) {
-      if (new Date(value) <= new Date())
+      if (dateLimit.value !== "" && !value) return "Expiry date is required";
+      const checkedDate = new Date(value);
+      if (checkedDate <= currentDate)
         return "Expiry date must be later than today.";
-      if (isExpiryLimitSet && !value) return "Expiry date is required";
+      if (dateLimit.value !== "" && checkedDate > new Date(dateLimit.value)) return `Max allowed expiration date is: ${dateLimit.value}`
       return true;
     },
   };

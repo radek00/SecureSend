@@ -13,7 +13,8 @@
             <SchemaInput
               name="password"
               type="password"
-              label="Encryption password"
+              label="Encryption password:"
+              data-test="password"
               :disabled="!values.isPasswordRequired"
             ></SchemaInput>
             <CheckboxSchemaInput
@@ -32,10 +33,10 @@
               :tabindex="step !== 1 ? -1 : 0"
               name="expiryDate"
               type="date"
-              :max="dateLimit"
               :label="
-                dateLimit === '' ? 'Optional expiry date' : 'Expire after'
+                dateLimit === '' ? 'Optional expiration date:' : 'Expire after'
               "
+              data-test="expirationDate"
             ></SchemaInput>
           </div>
           <div
@@ -161,7 +162,7 @@ const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
 const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
-  dateLimit.value !== ""
+  dateLimit
 );
 
 const isLoading = inject<Ref<boolean>>("isLoading");
