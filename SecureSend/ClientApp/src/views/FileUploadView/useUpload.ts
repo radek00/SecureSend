@@ -26,13 +26,6 @@ export function useUpload() {
 
   let downloadUrl: string | null;
   async function setupUpload(values: IMappedFormValues) {
-    const currentDate = new Date();
-    const utcDate =
-      currentDate.getUTCFullYear() +
-      "-" +
-      ("0" + (currentDate.getUTCMonth() + 1)).slice(-2) +
-      "-" +
-      ("0" + currentDate.getUTCDate()).slice(-2);
     await SecureSendService.createSecureUpload({
       uploadId: uuid,
       expiryDate: values.expiryDate
