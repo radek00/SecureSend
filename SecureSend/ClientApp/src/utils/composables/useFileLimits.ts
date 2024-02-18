@@ -7,15 +7,30 @@ export interface IUseFileLimits {
   totalSize: ComputedRef<number>;
   sizeLimit: Ref<number>;
   isLimitExceeded: ComputedRef<boolean>;
+  dateLimit: Ref<string>;
 }
 export function useFileLimits(
   files: Ref<Map<File, UploadStateTuple>>
 ): IUseFileLimits {
   const sizeLimit = ref<number>(0);
+  const dateLimit = ref<string>("");
   onMounted(async () => {
-    sizeLimit.value = (
-      await UploadLimitsService.getUploadLimits()
-    ).singleUploadLimitInGB;
+    const limits = await UploadLimitsService.getUploadLimits();
+
+    sizeLimit.value = limits.singleUploadLimitInGB;
+
+    if (limits.maxExpirationInDays > 0) {
+      const currentDate = new Date();
+
+      currentDate.setDate(currentDate.getDate() + limits.maxExpirationInDays);
+
+      dateLimit.value =
+        currentDate.getFullYear() +
+        "-" +
+        ("0" + (currentDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + currentDate.getDate()).slice(-2);
+    }
   });
 
   const totalSize = computed(() => {
@@ -31,5 +46,5 @@ export function useFileLimits(
 
   const isLimitExceeded = computed(() => totalSize.value > sizeLimit.value);
 
-  return { totalSize, sizeLimit, isLimitExceeded };
+  return { totalSize, sizeLimit, isLimitExceeded, dateLimit };
 }

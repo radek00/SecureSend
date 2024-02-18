@@ -7,7 +7,7 @@ export interface IMappedFormValues {
   isPasswordRequired: boolean;
 }
 
-export function useFileUploadForm() {
+export function useFileUploadForm(isExpiryLimitSet: boolean) {
   const step = ref<number>(0);
 
   const stepZeroschema = {
@@ -21,7 +21,8 @@ export function useFileUploadForm() {
   const stepOneSchema = {
     expiryDate(value: string) {
       if (new Date(value) <= new Date())
-        return "Expiry date must be earlier than today.";
+        return "Expiry date must be later than today.";
+      if (isExpiryLimitSet && !value) return "Expiry date is required";
       return true;
     },
   };

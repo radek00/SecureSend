@@ -75,7 +75,7 @@ describe("FileUploadView", () => {
     await waitForExpect(() => {
       expect(
         wrapper.find('div[label="Optional expiry date"]').find("span").text()
-      ).toEqual("Expiry date must be earlier than today.");
+      ).toEqual("Expiry date must be later than today.");
     });
   });
 
