@@ -1,4 +1,4 @@
-import {computed, onMounted, type Ref, ref} from "vue";
+import { computed, type Ref, ref } from "vue";
 import { useForm } from "vee-validate";
 
 export interface IMappedFormValues {
@@ -25,7 +25,8 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
       const checkedDate = new Date(value);
       if (checkedDate <= currentDate)
         return "Expiry date must be later than today.";
-      if (dateLimit.value !== "" && checkedDate > new Date(dateLimit.value)) return `Max allowed expiration date is: ${dateLimit.value}`
+      if (dateLimit.value !== "" && checkedDate > new Date(dateLimit.value))
+        return `Max allowed expiration date is: ${dateLimit.value}`;
       return true;
     },
   };

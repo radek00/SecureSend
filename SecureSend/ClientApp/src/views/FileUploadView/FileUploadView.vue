@@ -161,9 +161,8 @@ const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
   useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
-const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
-  dateLimit
-);
+const { handleSubmit, meta, values, resetUploadForm, step } =
+  useFileUploadForm(dateLimit);
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 
