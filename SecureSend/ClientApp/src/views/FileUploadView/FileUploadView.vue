@@ -181,7 +181,7 @@ const showUploadResult = async (message: string) => {
   }
 };
 
-const onSubmit = handleSubmit(async (values, actions) => {
+const onSubmit = handleSubmit(async (values) => {
   if (step.value === 2) {
     const result = await handleUpload(values);
     switch (result) {
