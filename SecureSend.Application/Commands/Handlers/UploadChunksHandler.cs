@@ -26,6 +26,7 @@ namespace SecureSend.Application.Commands.Handlers
             {
                 
                 _fileService.RemoveUpload(command.uploadId);
+                _sizeTrackerService.Remove(command.uploadId);
                 var persisted = await _repository.GetAsync(command.uploadId, cancellationToken);
                 if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
                 throw new SizeLimitExceededException();

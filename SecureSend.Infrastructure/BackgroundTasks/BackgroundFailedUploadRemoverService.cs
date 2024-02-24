@@ -29,7 +29,6 @@ namespace SecureSend.Infrastructure.BackgroundTasks
             {
                 using var scope = _serviceProvider.CreateScope();
                 await RemoveFailedUploads(scope, stoppingToken);
-                ResetTrackerService(scope);
                 await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
             }
         }
@@ -42,22 +41,19 @@ namespace SecureSend.Infrastructure.BackgroundTasks
                 var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
                 var query = dbContext.SecureSendUploads.Where(u => !u.Files.Any() && u.UploadDate <= DateTime.UtcNow.AddHours(-1));
                 var emptyUploads = await query.AsNoTracking().ToListAsync(token);
+                
+                var trackerService = scope.ServiceProvider.GetRequiredService<IUploadSizeTrackerService>();
                 foreach (var upload in emptyUploads)
                 {
                     _logger.LogInformation("Removing failed upload: {@id}", upload.Id);
                     fileService.RemoveUpload(upload.Id);
+                    trackerService.Remove(upload.Id);
 
                 }
 
                 if (emptyUploads.Any()) await query.ExecuteDeleteAsync(token);
                 
             
-        }
-
-        private void ResetTrackerService(IServiceScope scope)
-        {
-            var trackerService = scope.ServiceProvider.GetRequiredService<IUploadSizeTrackerService>();
-            trackerService.Reset();
         }
     }
 }
