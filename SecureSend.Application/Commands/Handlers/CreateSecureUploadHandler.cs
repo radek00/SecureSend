@@ -16,16 +16,20 @@ namespace SecureSend.Application.Commands.Handlers
         private readonly ISecureUploadReadService _secureUploadReadService;
         private readonly IOptions<FileStorageOptions> _fileStorageOptions;
         private readonly IUploadSizeTrackerService _sizeTrackerService;
+        private readonly IFileService _fileService;
 
         public CreateSecureUploadHandler(ISecureSendUploadRepository secureSendUploadRepository,
                                          ISecureSendUploadFactory secureSendUploadFactory,
-                                         ISecureUploadReadService secureUploadReadService, IOptions<FileStorageOptions> fileStorageOptions, IUploadSizeTrackerService sizeTrackerService)
+                                         ISecureUploadReadService secureUploadReadService,
+                                         IOptions<FileStorageOptions> fileStorageOptions, IUploadSizeTrackerService sizeTrackerService,
+                                         IFileService fileService)
         {
             _secureSendUploadRepository = secureSendUploadRepository;
             _secureSendUploadFactory = secureSendUploadFactory;
             _secureUploadReadService = secureUploadReadService;
             _fileStorageOptions = fileStorageOptions;
             _sizeTrackerService = sizeTrackerService;
+            _fileService = fileService;
         }
 
         public async Task<Unit> Handle (CreateSecureUpload command, CancellationToken cancellationToken)
@@ -42,6 +46,7 @@ namespace SecureSend.Application.Commands.Handlers
             if (persisted is not null && persisted != Guid.Empty) throw new UploadAlreadyExistsException(persisted.Value);
             _sizeTrackerService.TryUpdateUploadSize(command.uploadId, 0);
             var secureUpload = _secureSendUploadFactory.CreateSecureSendUpload(command.uploadId, expiryDate, false, command.password);
+            _fileService.SetupUploadDirectory(command.uploadId);
             await _secureSendUploadRepository.AddAsync(secureUpload, cancellationToken);
             return Unit.Value;
 
