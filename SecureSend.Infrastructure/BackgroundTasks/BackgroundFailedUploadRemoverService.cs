@@ -29,7 +29,7 @@ namespace SecureSend.Infrastructure.BackgroundTasks
             {
                 using var scope = _serviceProvider.CreateScope();
                 await RemoveFailedUploads(scope, stoppingToken);
-                await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
             }
         }
 

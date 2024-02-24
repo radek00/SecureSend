@@ -36,9 +36,11 @@ namespace SecureSend.Infrastructure.BackgroundTasks
                     var query = dbContext.SecureSendUploads.Where(u => u.ExpiryDate < DateTime.UtcNow);
                     var expiredUploads = await query.AsNoTracking().ToListAsync(token);
 
+                    var trackerService = scope.ServiceProvider.GetRequiredService<IUploadSizeTrackerService>();
                     foreach (var upload in expiredUploads)
                     {
                         fileService.RemoveUpload(upload.Id);
+                        trackerService.Remove(upload.Id);
                         _logger.LogInformation("Removing expired upload: {@id}", upload.Id);
                     }
 
