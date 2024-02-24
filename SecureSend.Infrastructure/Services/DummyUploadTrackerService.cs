@@ -18,7 +18,7 @@ public class DummyUploadTrackerService: IUploadSizeTrackerService
         return (0, 0);
     }
 
-    public void Reset()
+    public void Remove(Guid uploadId)
     {
     }
 }

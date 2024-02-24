@@ -36,15 +36,11 @@ public class UploadSizeTrackerService : IUploadSizeTrackerService
         _uploadSizes.TryAdd(_totalSizeId, (GetInitialTotalSizeValue(), DateTime.UtcNow));
     }
 
-    public void Reset()
+    public void Remove(Guid uploadId)
     {
-        var expiredKeys = _uploadSizes.Where(x => x.Value.Item2 <= DateTime.UtcNow.AddHours(-1)).Select(x => x.Key);
-        foreach (var key in expiredKeys)
-        {
-            var result = _uploadSizes.TryRemove(key, out var removedKey);
-            _logger.LogInformation("Removing {upload} from tracker service {status}. Initial creation date: {}, Size: {}", key, result ? "succeeded" :  "failed", removedKey.Item2, removedKey.Item1);
-        }
-        Setup();
+        var result = _uploadSizes.TryRemove(uploadId, out var removed);
+        _uploadSizes.AddOrUpdate(_totalSizeId, (0, DateTime.UtcNow), (key, oldValue) => (oldValue.Item1 - removed.Item1, oldValue.Item2));
+        _logger.LogInformation("Removing {upload} from tracker service {status}. Initial creation date: {}, Size: {}", uploadId, result ? "succeeded" :  "failed", removed.Item2, removed.Item1);
     }
 
     public (double singleUploadLimit, double totalUploadLimit) GetUploadLimits()
