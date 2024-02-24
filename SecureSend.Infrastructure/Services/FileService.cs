@@ -2,6 +2,7 @@
 using SecureSend.Application.Services;
 using SecureSend.Domain.ValueObjects;
 using SecureSend.Application.Options;
+using SecureSend.Infrastructure.Exceptions;
 
 namespace SecureSend.Infrastructure.Services
 {
@@ -17,7 +18,7 @@ namespace SecureSend.Infrastructure.Services
 
         public FileStream? DownloadFile(Guid uploadId, string fileName)
         {
-            var directory = GetDirectory(uploadId);
+            var directory = GetUploadDirectory(uploadId);
 
             var file = directory?.GetFiles().FirstOrDefault(f => f.Name == fileName);
 
@@ -26,16 +27,15 @@ namespace SecureSend.Infrastructure.Services
 
         public async Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId)
         {
-            var directory = GetOrCreateDirectory(uploadId, chunk.ChunkDirectory);
+            var directory = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
             await using var output = System.IO.File.OpenWrite($"{directory.FullName}/{chunk.ChunkName}");
             await chunk.Chunk.CopyToAsync(output);
         }
 
         public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory, string randomFileName)
         {
-
-
-            var dir = GetOrCreateDirectory(uploadId, chunkDirectory);
+            
+            var dir = GetChunkDirectory(uploadId, chunkDirectory);
 
             var mergedFilePath = Path.Combine(dir.Parent!.FullName, randomFileName);
             await using (var mergedFile = new FileStream(mergedFilePath, FileMode.Create))
@@ -51,7 +51,7 @@ namespace SecureSend.Infrastructure.Services
 
         public IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory)
         {
-            var directory = GetOrCreateDirectory(uploadId, chunkDirectory).FullName;
+            var directory = GetChunkDirectory(uploadId, chunkDirectory).FullName;
             var chunkFiles = Directory.GetFiles(directory)
                                       .Select(x => Path.GetFileName(x))
                                       .OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f).Split('_')[0]))
@@ -59,12 +59,14 @@ namespace SecureSend.Infrastructure.Services
             return chunkFiles;
         }
 
-        private DirectoryInfo GetOrCreateDirectory(Guid uploadId, string chunkDirectory)
+        private DirectoryInfo GetChunkDirectory(Guid uploadId, string chunkDirectory)
         {
-            return System.IO.Directory.CreateDirectory($"{_fileStorageOptions.Value.Path}/{uploadId}/{chunkDirectory}");
+            var uploadDirectory = GetUploadDirectory(uploadId);
+            if (uploadDirectory is null) throw new MissingUploadDirectoryException(uploadId);
+            return Directory.CreateDirectory($"{_fileStorageOptions.Value.Path}/{uploadId}/{chunkDirectory}");
         }
 
-        private DirectoryInfo? GetDirectory(Guid uploadId)
+        private DirectoryInfo? GetUploadDirectory(Guid uploadId)
         {
             if (Directory.Exists($"{_fileStorageOptions.Value.Path}/{uploadId}")) return Directory.CreateDirectory($"{_fileStorageOptions.Value.Path}/{uploadId}");
             return null;
@@ -72,14 +74,14 @@ namespace SecureSend.Infrastructure.Services
 
         public void RemoveUpload(Guid uploadId)
         {
-            var directory = GetDirectory(uploadId);
+            var directory = GetUploadDirectory(uploadId);
 
             if (directory != null) Directory.Delete(directory.FullName, true);
         }
 
         public void RemoveFileFromUpload(Guid uploadId, string fileName)
         {
-            var fileDir = GetDirectory(uploadId)?.GetDirectories()
+            var fileDir = GetUploadDirectory(uploadId)?.GetDirectories()
                 .FirstOrDefault(x => x.Name == Path.GetFileNameWithoutExtension(fileName));
             if (fileDir is not null) Directory.Delete(fileDir.FullName, true);
         }
@@ -88,6 +90,11 @@ namespace SecureSend.Infrastructure.Services
         {
             var di = new DirectoryInfo(_fileStorageOptions.Value.Path);
             return di.EnumerateFiles("*", SearchOption.AllDirectories).Sum(fi => fi.Length);
+        }
+
+        public void SetupUploadDirectory(Guid uploadId)
+        {
+            Directory.CreateDirectory($"{_fileStorageOptions.Value.Path}/{uploadId}");
         }
     }
 }

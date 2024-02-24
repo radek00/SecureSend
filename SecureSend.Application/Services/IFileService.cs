@@ -14,5 +14,7 @@ namespace SecureSend.Application.Services
         void RemoveUpload(Guid uploadId);
         void RemoveFileFromUpload(Guid uploadId, string fileName);
         double GetCurrentUploadDirectorySize();
+
+        void SetupUploadDirectory(Guid uploadId);
     }
 }
