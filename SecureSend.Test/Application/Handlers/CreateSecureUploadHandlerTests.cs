@@ -20,6 +20,7 @@ public class CreateSecureUploadHandlerTests
     private readonly Mock<ISecureUploadReadService> _secureUploadReadService;
     private readonly ICommandHandler<CreateSecureUpload, Unit> _commandHandler;
     private readonly Mock<IOptions<FileStorageOptions>> _fileStorageOptions;
+    private readonly Mock<IUploadSizeTrackerService> _sizeTrackerService;
 
     private readonly FileStorageOptions _sampleOptions = new FileStorageOptions()
     {
@@ -33,8 +34,9 @@ public class CreateSecureUploadHandlerTests
         _secureSendUploadFactory = new Mock<ISecureSendUploadFactory>();
         _secureUploadReadService = new Mock<ISecureUploadReadService>();
         _fileStorageOptions = new Mock<IOptions<FileStorageOptions>>();
+        _sizeTrackerService = new Mock<IUploadSizeTrackerService>();
         _commandHandler = new CreateSecureUploadHandler(_secureSendUploadRepository.Object, _secureSendUploadFactory.Object,
-            _secureUploadReadService.Object, _fileStorageOptions.Object);
+            _secureUploadReadService.Object, _fileStorageOptions.Object, _sizeTrackerService.Object);
     }
     
 
