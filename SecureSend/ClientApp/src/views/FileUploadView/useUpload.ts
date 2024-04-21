@@ -65,8 +65,8 @@ export function useUpload() {
         currentChunk === totalChunks
           ? ["Upload completed", UploadState.Completed]
           : currentChunk === totalChunks - 1
-          ? ["Finishing upload...", UploadState.Merging]
-          : [`${progress}%`, UploadState.InProgress];
+            ? ["Finishing upload...", UploadState.Merging]
+            : [`${progress}%`, UploadState.InProgress];
       files.value.set(file, stateTuple);
     } catch (error: any) {
       if (

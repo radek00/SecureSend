@@ -65,7 +65,9 @@ if (!props.verifyUploadResponse.isProtected) {
           v-for="[fileName, status] in fileDownloadStatuses"
           :key="fileName"
           :file-name="fileName"
-          :size="secureUpload!.files!.find((f) => f.fileName === fileName)?.fileSize"
+          :size="
+            secureUpload!.files!.find((f) => f.fileName === fileName)?.fileSize
+          "
         >
           <template #cardBottom>
             <a
