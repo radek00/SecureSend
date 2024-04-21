@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:80
 ENV FileStorageOptions__Path=/app/files
