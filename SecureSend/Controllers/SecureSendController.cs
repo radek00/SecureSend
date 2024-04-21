@@ -30,7 +30,7 @@ namespace SecureSend.Controllers
         public async Task<FileStreamResult> DownloadFile([FromQuery] DownloadFile file, CancellationToken token)
         {
             var fileStream = await _sender.Send(file, token);
-            Response.Headers.Add("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
+            Response.Headers.Append("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
             return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
         }
         
