@@ -79,7 +79,7 @@ public class SecureSendUploadTests
     [Fact]
     public void VerifyHash_Throws_InvalidPasswordException()
     {
-        var exception = Record.Exception(() => upload.PasswordHash.VerifyHash("wrong password"));
+        var exception = Record.Exception(() => upload!.PasswordHash!.VerifyHash("wrong password"));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPasswordException>(exception);
     }
@@ -87,6 +87,6 @@ public class SecureSendUploadTests
     [Fact]
     public void VerifyHash_Succeeds()
     {
-        upload.PasswordHash.VerifyHash("testing");
+        upload!.PasswordHash!.VerifyHash("testing");
     }
 }
