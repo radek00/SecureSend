@@ -17,13 +17,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@tsconfig/node20": "^20.1.4",
     "vee-validate": "^4.9.6",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
+    "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.12.7",
     "@types/wicg-file-system-access": "^2023.10.4",
     "@vitejs/plugin-vue": "^5.0.4",
