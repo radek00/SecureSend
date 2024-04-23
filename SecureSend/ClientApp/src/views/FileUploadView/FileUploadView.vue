@@ -1,7 +1,7 @@
 <template>
-  <div class="flex justify-center items-center pt-10 md:pt-20">
+  <div class="flex flex-col lg:flex-row justify-center pt-10 md:pt-20 gap-5">
     <div
-      class="w-11/12 lg:w-6/12 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+      class="w-11/12 lg:w-5/12 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800 self-center"
     >
       <form @submit="onSubmit" class="flex flex-col justify-between gap-4">
         <FormStepper class="px-[10px]" :step="step"></FormStepper>
@@ -125,6 +125,11 @@
         </template>
       </ConfirmModalVue>
     </div>
+    <div
+      class="p-6 border rounded-lg shadow bg-gray-700 border-gray-800 w-11/12 lg:w-2/12 self-center lg:self-baseline"
+    >
+      <UploadHistory></UploadHistory>
+    </div>
   </div>
 </template>
 
@@ -144,6 +149,8 @@ import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
 import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 import { useFileLimits } from "@/utils/composables/useFileLimits";
+import FileCard from "@/components/FileCard.vue";
+import UploadHistory from "@/components/UploadHistory.vue";
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
