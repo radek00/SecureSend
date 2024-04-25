@@ -126,7 +126,7 @@
       </ConfirmModalVue>
     </div>
     <div
-      class="p-6 border rounded-lg shadow bg-gray-700 border-gray-800 w-11/12 lg:w-2/12 self-center lg:self-baseline"
+      class="self-center lg:self-baseline w-full max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
     >
       <UploadHistory></UploadHistory>
     </div>
