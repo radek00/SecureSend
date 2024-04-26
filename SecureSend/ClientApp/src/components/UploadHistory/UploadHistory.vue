@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import DropdownIcon from "@/assets/icons/DropdownIcon.vue";
-import CopyIcon from "@/assets/icons/CopyIcon.vue";
-import FileCard from "@/components/FileCard.vue";
 import HistoryElement from "@/components/UploadHistory/HistoryElement.vue";
+import type { HistoryItem } from "@/models/HistoryItem";
+
+defineProps<{
+  uploads: HistoryItem[];
+}>();
 </script>
 
 <template>
-  <div class="flex items-center justify-between mb-4">
+  <div class="flex items-center justify-between mb-4" v-if="uploads">
     <h5 class="text-xl font-bold leading-none text-white">Upload history</h5>
   </div>
   <div class="overflow-auto max-h-40 lg:max-h-96 p-2">
     <ul role="list" class="divide-y divide-gray-700">
-      <HistoryElement upload="{}"></HistoryElement>
-      <HistoryElement upload="{}"></HistoryElement>
-      <HistoryElement upload="{}"></HistoryElement>
-      <HistoryElement upload="{}"></HistoryElement>
+      <HistoryElement
+        v-for="upload in uploads"
+        :upload="upload"
+      ></HistoryElement>
     </ul>
   </div>
 </template>

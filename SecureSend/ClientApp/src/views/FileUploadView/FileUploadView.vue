@@ -127,8 +127,9 @@
     </div>
     <div
       class="self-start w-full max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
+      v-if="existingHistory.length > 0"
     >
-      <UploadHistory></UploadHistory>
+      <UploadHistory :uploads="existingHistory"></UploadHistory>
     </div>
   </div>
 </template>
@@ -151,6 +152,10 @@ import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 import { useFileLimits } from "@/utils/composables/useFileLimits";
 import FileCard from "@/components/FileCard.vue";
 import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
+import { aD } from "vitest/dist/reporters-LqC_WI4d";
+import type { SecureFileDto } from "@/models/SecureFileDto";
+import type { HistoryItem } from "@/models/HistoryItem";
+import { useLocalStorage } from "@/utils/composables/useLocalStorage";
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
@@ -178,7 +183,11 @@ provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 const { handleSubmit, meta, values, resetUploadForm, step } =
   useFileUploadForm(dateLimit);
 
+const { setItem, getItem } = useLocalStorage();
+
 const isLoading = inject<Ref<boolean>>("isLoading");
+
+const existingHistory = getItem<HistoryItem[]>("uploads") ?? [];
 
 const showUploadResult = async (message: string) => {
   openSuccess(message);
@@ -193,11 +202,13 @@ const onSubmit = handleSubmit(async (values) => {
     const result = await handleUpload(values);
     switch (result) {
       case UploadResult.Success:
+        addToHistory();
         await showUploadResult("Upload successful");
         formReset();
         break;
 
       case UploadResult.Partial:
+        addToHistory();
         await showUploadResult("Only some files were uploaded");
         formReset();
         break;
@@ -215,6 +226,20 @@ const onSubmit = handleSubmit(async (values) => {
     step.value++;
   }
 });
+
+const addToHistory = () => {
+  const uploadedFiles: Partial<SecureFileDto>[] = [];
+  files.value.forEach((_value, file) => {
+    uploadedFiles.push({ fileName: file.name, fileSize: file.size });
+  });
+  existingHistory.push({
+    link: createDownloadUrl(),
+    uploadDate: new Date(),
+    files: uploadedFiles,
+  });
+  console.log(existingHistory);
+  setItem<HistoryItem[]>("uploads", existingHistory);
+};
 
 const copyToClipboard = () => {
   navigator.clipboard.writeText(createDownloadUrl());

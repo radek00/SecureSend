@@ -2,14 +2,21 @@
 import FileCard from "@/components/FileCard.vue";
 import CopyIcon from "@/assets/icons/CopyIcon.vue";
 import DropdownIcon from "@/assets/icons/DropdownIcon.vue";
-import type { SecureUploadDto } from "@/models/SecureUploadDto";
 import { useToggle } from "@/utils/composables/useTogglle";
+import type { HistoryItem } from "@/models/HistoryItem";
+import { useAlert } from "@/utils/composables/useAlert";
 
-const props = defineProps<{
-  upload?: SecureUploadDto;
+defineProps<{
+  upload: HistoryItem;
 }>();
 
 const { value, toggle } = useToggle(false);
+
+const { openSuccess } = useAlert();
+const copyToClipboard = (link: string) => {
+  navigator.clipboard.writeText(link);
+  openSuccess("Link copied to clipboard");
+};
 </script>
 
 <template>
@@ -23,39 +30,30 @@ const { value, toggle } = useToggle(false);
         </a>
       </div>
       <div class="flex-1 min-w-0 ms-4">
-        <p class="text-sm font-medium truncate text-white">23.04.2024</p>
-        <p class="text-sm truncate text-gray-400">5 files</p>
+        <p class="text-sm font-medium truncate text-white">
+          {{ new Date(upload.uploadDate).toDateString() }}
+        </p>
+        <p class="text-sm truncate text-gray-400">
+          {{ upload.files.length }} files
+        </p>
       </div>
       <div class="inline-flex items-center text-base font-semibold text-white">
         <button
           class="text-gray-400 bg-gray-800 border-gray-600 hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center border"
+          @click="copyToClipboard(upload.link)"
         >
           <span id="default-message" class="inline-flex items-center">
             <CopyIcon></CopyIcon>
-            <span class="text-xs font-semibold">Copy</span>
+            <span class="text-xs font-semibold">Copy link</span>
           </span>
         </button>
       </div>
     </div>
     <ul class="ml-[1.6rem] mt-3 flex flex-col gap-3" v-if="value">
-      <li>
+      <li v-for="file in upload.files">
         <FileCard
-          file-name="hello.exe"
-          :size="5000"
-          class="bg-slate-700"
-        ></FileCard>
-      </li>
-      <li>
-        <FileCard
-          file-name="hello.exe"
-          :size="5000"
-          class="bg-slate-700"
-        ></FileCard>
-      </li>
-      <li>
-        <FileCard
-          file-name="hello.exe"
-          :size="5000"
+          :file-name="file.fileName!"
+          :size="file.fileSize"
           class="bg-slate-700"
         ></FileCard>
       </li>
