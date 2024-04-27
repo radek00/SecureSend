@@ -8,6 +8,8 @@ import { UploadState } from "@/models/UploadStateTuple";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { UploadLimitsService } from "@/services/UploadLimitsService";
 import SizeLimit from "@/components/FileUploadForm/SizeLimit.vue";
+import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
+import FileCard from "@/components/FileCard.vue";
 
 describe("FileUploadView", () => {
   let wrapper: VueWrapper<any>;
@@ -262,12 +264,54 @@ describe("Form validation when size limits are set", () => {
     await dateInput.setValue("2024-02-24");
     await flushPromises();
     await waitForExpect(() => {
-      console.log(wrapper.html());
       expect(
         wrapper
           .find('div[data-test="expirationDate"] p[data-test="error-message"]')
           .text()
       ).toEqual("Max allowed expiration date is: 2022-02-23");
     }, 500);
+  });
+
+  test("History item gets added after successful or partially successful upload", async () => {
+    SecureSendService.createSecureUpload = vi.fn().mockImplementation(() => {});
+    SecureSendService.uploadChunk = vi.fn().mockReturnValue({});
+
+    const file = new File(["file content"], "test.txt", { type: "text/plain" });
+    const submitButton = wrapper.find('button[type="submit"]');
+
+    await submitButton.trigger("submit");
+    await submitButton.trigger("submit");
+
+    const fileInputComponent = wrapper.findComponent(FileInput);
+    fileInputComponent.vm.$emit("onFilesChange", [file]);
+    await wrapper.vm.$nextTick();
+
+    await submitButton.trigger("submit");
+
+    await waitForExpect(async () => {
+      const closeButton = wrapper.find(
+        'button[data-test="close-modal-button"]'
+      );
+      await closeButton.trigger("click");
+    });
+
+    //check if item gets added
+    const historyComponent = wrapper.findComponent(UploadHistory);
+    expect(historyComponent.exists()).toBe(true);
+    expect(
+      historyComponent.find(`p[data-test="history-title"]`).text()
+    ).toEqual("Sun Feb 20 2022");
+
+    //check if list is collapsed
+    const expandButton = historyComponent.find(
+      `button[data-test="history-expand"]`
+    );
+    expect(historyComponent.findComponent(FileCard).exists()).toBe(false);
+
+    //check if correct file card appears after expanding
+    await expandButton.trigger("click");
+    const fileCard = historyComponent.findComponent(FileCard);
+    expect(fileCard.exists()).toBe(true);
+    expect(fileCard.text()).toContain("test.txt");
   });
 });

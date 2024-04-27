@@ -24,13 +24,17 @@ const copyToClipboard = (link: string) => {
     <div class="flex items-center">
       <div class="flex-shrink-0" @click="toggle()">
         <button
+          data-test="history-expand"
           class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
         >
           <DropdownIcon :class="{ 'rotate-180': value }"></DropdownIcon>
         </button>
       </div>
       <div class="flex-1 min-w-0 ms-4">
-        <p class="text-sm font-medium truncate text-white">
+        <p
+          class="text-sm font-medium truncate text-white"
+          data-test="history-title"
+        >
           {{ new Date(upload.uploadDate).toDateString() }}
         </p>
         <p class="text-sm truncate text-gray-400">

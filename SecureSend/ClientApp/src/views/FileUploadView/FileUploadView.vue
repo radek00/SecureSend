@@ -235,7 +235,6 @@ const addToHistory = () => {
     uploadDate: new Date(),
     files: uploadedFiles,
   });
-  console.log(storageItem.value);
   setItem();
 };
 
