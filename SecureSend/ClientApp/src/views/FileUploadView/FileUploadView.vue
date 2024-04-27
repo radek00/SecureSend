@@ -1,7 +1,9 @@
 <template>
-  <div class="flex flex-col lg:flex-row justify-center pt-10 md:pt-20 gap-5">
+  <div
+    class="flex flex-col lg:flex-row justify-center pt-10 md:pt-20 gap-5 items-center lg:items-start"
+  >
     <div
-      class="w-11/12 lg:w-5/12 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800 self-baseline"
+      class="w-11/12 lg:w-5/12 h-11/12 p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
     >
       <form @submit="onSubmit" class="flex flex-col justify-between gap-4">
         <FormStepper class="px-[10px]" :step="step"></FormStepper>
@@ -126,7 +128,7 @@
       </ConfirmModalVue>
     </div>
     <div
-      class="self-start w-full max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
+      class="w-11/12 max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
       v-if="storageItem.length > 0"
     >
       <UploadHistory :uploads="storageItem"></UploadHistory>
