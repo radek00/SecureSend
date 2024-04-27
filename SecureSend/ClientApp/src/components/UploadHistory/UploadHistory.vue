@@ -14,7 +14,8 @@ defineProps<{
   <div class="overflow-auto max-h-40 lg:max-h-96 p-2">
     <ul role="list" class="divide-y divide-gray-700">
       <HistoryElement
-        v-for="upload in uploads"
+        v-for="(upload, idx) in uploads"
+        :key="idx"
         :upload="upload"
       ></HistoryElement>
     </ul>
