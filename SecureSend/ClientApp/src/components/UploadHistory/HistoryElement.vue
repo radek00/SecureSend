@@ -50,7 +50,7 @@ const copyToClipboard = (link: string) => {
       </div>
     </div>
     <ul class="ml-[1.6rem] mt-3 flex flex-col gap-3" v-if="value">
-      <li v-for="file in upload.files">
+      <li v-for="(file, idx) in upload.files" :key="idx">
         <FileCard
           :file-name="file.fileName!"
           :size="file.fileSize"
