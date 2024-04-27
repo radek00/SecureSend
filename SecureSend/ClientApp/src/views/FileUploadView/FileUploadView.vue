@@ -127,9 +127,9 @@
     </div>
     <div
       class="self-start w-full max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
-      v-if="existingHistory.length > 0"
+      v-if="storageItem.length > 0"
     >
-      <UploadHistory :uploads="existingHistory"></UploadHistory>
+      <UploadHistory :uploads="storageItem"></UploadHistory>
     </div>
   </div>
 </template>
@@ -150,9 +150,7 @@ import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
 import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
 import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 import { useFileLimits } from "@/utils/composables/useFileLimits";
-import FileCard from "@/components/FileCard.vue";
 import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
-import { aD } from "vitest/dist/reporters-LqC_WI4d";
 import type { SecureFileDto } from "@/models/SecureFileDto";
 import type { HistoryItem } from "@/models/HistoryItem";
 import { useLocalStorage } from "@/utils/composables/useLocalStorage";
@@ -183,11 +181,9 @@ provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 const { handleSubmit, meta, values, resetUploadForm, step } =
   useFileUploadForm(dateLimit);
 
-const { setItem, getItem } = useLocalStorage();
+const { setItem, storageItem } = useLocalStorage<HistoryItem[]>("uploads", []);
 
 const isLoading = inject<Ref<boolean>>("isLoading");
-
-const existingHistory = getItem<HistoryItem[]>("uploads") ?? [];
 
 const showUploadResult = async (message: string) => {
   openSuccess(message);
@@ -232,13 +228,13 @@ const addToHistory = () => {
   files.value.forEach((_value, file) => {
     uploadedFiles.push({ fileName: file.name, fileSize: file.size });
   });
-  existingHistory.push({
+  storageItem.value.push({
     link: createDownloadUrl(),
     uploadDate: new Date(),
     files: uploadedFiles,
   });
-  console.log(existingHistory);
-  setItem<HistoryItem[]>("uploads", existingHistory);
+  console.log(storageItem.value);
+  setItem();
 };
 
 const copyToClipboard = () => {

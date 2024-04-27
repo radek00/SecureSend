@@ -1,14 +1,20 @@
-export function useLocalStorage() {
-  function getItem<T>(key: string): T | null {
+import { ref } from "vue";
+import type { Ref } from "vue";
+
+export function useLocalStorage<T>(key: string, initialValue?: T) {
+  const storageItem = ref<T | undefined>(initialValue) as Ref<T>;
+  function getItem(key: string) {
     const value = localStorage.getItem(key);
     if (value) {
-      return JSON.parse(value);
+      const item = JSON.parse(value);
+      storageItem.value = item;
     }
-    return null;
   }
 
-  function setItem<T>(key: string, value: T) {
-    localStorage.setItem(key, JSON.stringify(value));
+  function setItem() {
+    localStorage.setItem(key, JSON.stringify(storageItem.value));
   }
-  return { getItem, setItem };
+
+  getItem(key);
+  return { setItem, storageItem };
 }
