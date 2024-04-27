@@ -23,11 +23,11 @@ const copyToClipboard = (link: string) => {
   <li class="py-3 sm:py-4">
     <div class="flex items-center">
       <div class="flex-shrink-0" @click="toggle()">
-        <a
-          class="text-sm underline cursor-pointer text-blue-500 hover:no-underline flex items-center gap-2 mt-2"
+        <button
+          class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
         >
           <DropdownIcon :class="{ 'rotate-180': value }"></DropdownIcon>
-        </a>
+        </button>
       </div>
       <div class="flex-1 min-w-0 ms-4">
         <p class="text-sm font-medium truncate text-white">
