@@ -1,5 +1,6 @@
 import { computed, type Ref, ref } from "vue";
 import { useForm } from "vee-validate";
+import { toUTCDate } from "@/utils/utils";
 
 export interface IMappedFormValues {
   expiryDate: string;
@@ -9,7 +10,7 @@ export interface IMappedFormValues {
 
 export function useFileUploadForm(dateLimit: Ref<string>) {
   const step = ref<number>(0);
-  const currentDate = new Date();
+  const currentDate = toUTCDate(new Date());
 
   const stepZeroschema = {
     password(value: string) {
@@ -37,7 +38,7 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
   });
 
   const getInitialValues = (): IMappedFormValues => {
-    const date = new Date();
+    const date = toUTCDate(new Date());
     date.setDate(date.getDate() + 1);
     return {
       password: "",
