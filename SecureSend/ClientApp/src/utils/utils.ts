@@ -6,3 +6,9 @@ export function fileSize(size: number) {
     ["B", "kB", "MB", "GB", "TB"][i]
   );
 }
+
+export function toUTCDate(date: Date) {
+  return new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+}
