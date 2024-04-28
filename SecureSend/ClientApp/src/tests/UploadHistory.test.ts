@@ -1,4 +1,4 @@
-import { VueWrapper, flushPromises } from "@vue/test-utils";
+import { VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 import { mountComponent, waitForExpect } from "@/tests/utils";
@@ -31,7 +31,7 @@ async function prepareForHistoryTest(wrapper: VueWrapper<any>) {
 
   return wrapper.findComponent(UploadHistory);
 }
-describe("Form validation when size limits are set", () => {
+describe("Upload history", () => {
   //vi.useFakeTimers();
   beforeEach(async () => {
     vi.setSystemTime(new Date(2022, 1, 20));
