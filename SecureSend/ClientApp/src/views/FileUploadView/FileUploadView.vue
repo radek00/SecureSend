@@ -184,6 +184,9 @@ const { handleSubmit, meta, values, resetUploadForm, step } =
   useFileUploadForm(dateLimit);
 
 const { setItem, storageItem } = useLocalStorage<HistoryItem[]>("uploads", []);
+storageItem.value = storageItem.value.filter(
+  (item) => new Date(item.expirationDate) > new Date()
+);
 
 const isLoading = inject<Ref<boolean>>("isLoading");
 
@@ -232,8 +235,9 @@ const addToHistory = () => {
   });
   storageItem.value.push({
     link: createDownloadUrl(),
-    uploadDate: new Date(),
+    uploadDate: new Date().toDateString(),
     files: uploadedFiles,
+    expirationDate: values.expiryDate,
   });
   setItem();
 };
