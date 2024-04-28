@@ -2,6 +2,7 @@ import type { SecureFileDto } from "@/models/SecureFileDto";
 
 export interface HistoryItem {
   link: string;
-  uploadDate: Date;
+  uploadDate: string;
+  expirationDate: string;
   files: Partial<SecureFileDto>[];
 }
