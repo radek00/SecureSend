@@ -38,7 +38,7 @@ const copyToClipboard = (link: string) => {
           {{ new Date(upload.uploadDate).toDateString() }}
         </p>
         <p class="text-sm truncate text-gray-400">
-          {{ upload.files.length }} files
+          Expires on {{ new Date(upload.expirationDate).toDateString() }}
         </p>
       </div>
       <div class="inline-flex items-center text-base font-semibold text-white">
