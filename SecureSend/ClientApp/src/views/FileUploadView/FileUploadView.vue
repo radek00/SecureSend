@@ -128,7 +128,7 @@
       </ConfirmModalVue>
     </div>
     <div
-      class="w-11/12 max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700"
+      class="w-11/12 max-w-md p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
       v-if="storageItem.length > 0"
     >
       <UploadHistory :uploads="storageItem"></UploadHistory>
