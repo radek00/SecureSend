@@ -3,9 +3,8 @@ import { SecureSendService } from "@/services/SecureSendService";
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteLocationNormalized } from "vue-router";
 import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
+import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 
-const FileUploadView = () =>
-  import("@/views/FileUploadView/FileUploadView.vue");
 const FileDownloadView = () =>
   import("@/views/FileDownloadView/FileDownloadView.vue");
 const ErrorPageView = () => import("@/views/ErrorPageView.vue");
