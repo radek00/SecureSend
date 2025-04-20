@@ -9,29 +9,29 @@ importers:
   .:
     dependencies:
       vee-validate:
-        specifier: ^4.9.6
+        specifier: ^4.15.0
         version: 4.15.0(vue@3.5.13(typescript@5.8.3))
       vue:
-        specifier: ^3.3.2
+        specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
       vue-router:
-        specifier: ^4.2.0
+        specifier: ^4.5.0
         version: 4.5.0(vue@3.5.13(typescript@5.8.3))
     devDependencies:
       '@rushstack/eslint-patch':
-        specifier: ^1.2.0
+        specifier: ^1.11.0
         version: 1.11.0
       '@tsconfig/node20':
-        specifier: ^20.1.4
+        specifier: ^20.1.5
         version: 20.1.5
       '@types/node':
-        specifier: ^20.12.7
+        specifier: ^20.17.30
         version: 20.17.30
       '@types/wicg-file-system-access':
-        specifier: ^2023.10.4
+        specifier: ^2023.10.6
         version: 2023.10.6
       '@vitejs/plugin-vue':
-        specifier: ^5.0.4
+        specifier: ^5.2.3
         version: 5.2.3(vite@5.4.18(@types/node@20.17.30))(vue@3.5.13(typescript@5.8.3))
       '@vue/eslint-config-prettier':
         specifier: ^7.1.0
@@ -40,49 +40,49 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0(eslint-plugin-vue@9.33.0(eslint@8.57.1))(eslint@8.57.1)(typescript@5.8.3)
       '@vue/test-utils':
-        specifier: ^2.4.3
+        specifier: ^2.4.6
         version: 2.4.6
       '@vue/tsconfig':
         specifier: ^0.5.1
         version: 0.5.1
       autoprefixer:
-        specifier: ^10.4.14
+        specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.3)
       eslint:
-        specifier: ^8.39.0
+        specifier: ^8.57.1
         version: 8.57.1
       eslint-plugin-vue:
-        specifier: ^9.11.0
+        specifier: ^9.33.0
         version: 9.33.0(eslint@8.57.1)
       happy-dom:
-        specifier: ^14.7.1
+        specifier: ^14.12.3
         version: 14.12.3
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
       postcss:
-        specifier: ^8.4.24
+        specifier: ^8.5.3
         version: 8.5.3
       prettier:
-        specifier: ^3.2.5
+        specifier: ^3.5.3
         version: 3.5.3
       tailwindcss:
-        specifier: ^3.3.2
+        specifier: ^3.4.17
         version: 3.4.17
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^5.2.10
+        specifier: ^5.4.18
         version: 5.4.18(@types/node@20.17.30)
       vite-plugin-mkcert:
-        specifier: ^1.15.0
+        specifier: ^1.17.8
         version: 1.17.8(vite@5.4.18(@types/node@20.17.30))
       vitest:
-        specifier: ^2.0.2
+        specifier: ^2.1.9
         version: 2.1.9(@types/node@20.17.30)(happy-dom@14.12.3)
       vue-tsc:
-        specifier: ^2.0.13
+        specifier: ^2.2.8
         version: 2.2.8(typescript@5.8.3)
 
 packages:
