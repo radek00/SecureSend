@@ -12,7 +12,7 @@
     "prettier": "npx prettier --write .",
     "build-app": "vite build",
     "build-worker": "vite build --mode worker",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint . --fix",
     "prettier-verify": "prettier . --check --config ./.prettierrc.json",
     "test": "vitest"
   },
@@ -22,18 +22,17 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.11.0",
-    "@tsconfig/node20": "^20.1.5",
+    "@tsconfig/node22": "^22.0.1",
     "@types/node": "^22.14.1",
     "@types/wicg-file-system-access": "^2023.10.6",
     "@vitejs/plugin-vue": "^5.2.3",
-    "@vue/eslint-config-prettier": "^7.1.0",
-    "@vue/eslint-config-typescript": "^12.0.0",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.21",
-    "eslint": "^8.57.1",
-    "eslint-plugin-vue": "^9.33.0",
+    "eslint": "^9.25.0",
+    "eslint-plugin-vue": "^10.0.0",
     "happy-dom": "^17.4.4",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.5.3",
@@ -43,6 +42,7 @@
     "vite": "^6.3.2",
     "vite-plugin-mkcert": "^1.17.8",
     "vitest": "^3.1.1",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^2.2.8",
+    "jiti": "^2.4.2"
   }
 }
