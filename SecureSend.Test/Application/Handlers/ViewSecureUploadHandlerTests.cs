@@ -27,7 +27,7 @@ public class ViewSecureUploadHandlerTests
     #endregion
     
     [Fact]
-    public async void Handle_Throws_InvalidPasswordException()
+    public async Task Handle_Throws_InvalidPasswordException()
     {
         var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
@@ -40,7 +40,7 @@ public class ViewSecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Succeeds_EmptyPassword()
+    public async Task Handle_Succeeds_EmptyPassword()
     {
         var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, null);
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
@@ -54,7 +54,7 @@ public class ViewSecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Succeeds_Protected()
+    public async Task Handle_Succeeds_Protected()
     {
         var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "testing");

@@ -24,7 +24,7 @@ public class VerifySecureUploadHandlerTests
     #endregion
     
     [Fact]
-    public async void Handle_Throws_UploadDoesNotExistException()
+    public async Task Handle_Throws_UploadDoesNotExistException()
     {
         var query = new VerifyUpload(Guid.NewGuid());
         _readService.Setup(x => x.GetSecureUpload(query.id, It.IsAny<CancellationToken>()))!
@@ -37,7 +37,7 @@ public class VerifySecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Throws_UploadExpiredException()
+    public async Task Handle_Throws_UploadExpiredException()
     {
         var upload = new SecureUploadsReadModel()
         {
@@ -54,7 +54,7 @@ public class VerifySecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Returns_Protected()
+    public async Task Handle_Returns_Protected()
     {
         var upload = new SecureUploadsReadModel()
         {
@@ -72,7 +72,7 @@ public class VerifySecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Returns_NotProtected()
+    public async Task Handle_Returns_NotProtected()
     {
         var upload = new SecureUploadsReadModel()
         {

@@ -28,7 +28,7 @@ public class CancelUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Succeeds()
+    public async Task Handle_Succeeds()
     {
         upload.AddFile(SecureSendFile.Create("test.txt", "text/plain", new long()));
         var command = new CancelUpload(Guid.NewGuid(), "test.txt");

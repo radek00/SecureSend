@@ -26,7 +26,7 @@ public class DeleteSecureUploadHandlerTest
     #endregion
     
     [Fact]
-    public async void Handle_Succeeds()
+    public async Task Handle_Succeeds()
     {
         var command = new DeleteSecureUpload(Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>())).ReturnsAsync(new SecureSendUpload());
@@ -35,7 +35,7 @@ public class DeleteSecureUploadHandlerTest
     }
     
     [Fact]
-    public async void Handle_Throws_UploadDoesNotExistException()
+    public async Task Handle_Throws_UploadDoesNotExistException()
     {
         var command = new DeleteSecureUpload(Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))

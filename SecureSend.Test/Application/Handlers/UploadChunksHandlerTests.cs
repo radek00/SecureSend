@@ -44,7 +44,7 @@ public class UploadChunksHandlerTests
     #endregion
     
     [Fact]
-    public async void Handle_Succeeds()
+    public async Task Handle_Succeeds()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
@@ -59,7 +59,7 @@ public class UploadChunksHandlerTests
     }
     
     [Fact]
-    public async void Handle_Throws_UploadDoesNotExistException()
+    public async Task Handle_Throws_UploadDoesNotExistException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
@@ -73,7 +73,7 @@ public class UploadChunksHandlerTests
     }
     
     [Fact]
-    public async void Handle_Throws_InvalidChunkCountException()
+    public async Task Handle_Throws_InvalidChunkCountException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
@@ -88,7 +88,7 @@ public class UploadChunksHandlerTests
     }
     
     [Fact]
-    public async void Handle_Throws_SizeLimitExceededException()
+    public async Task Handle_Throws_SizeLimitExceededException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
         SetupLimitCheck(false, command.uploadId, command.chunk.Length);
