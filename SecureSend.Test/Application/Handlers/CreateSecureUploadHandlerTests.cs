@@ -45,7 +45,7 @@ public class CreateSecureUploadHandlerTests
     #endregion
     
     [Fact]
-    public async void Handle_Succeeds()
+    public async Task Handle_Succeeds()
     {
         _fileStorageOptions.Setup(op => op.Value).Returns(_sampleOptions);
         var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
@@ -57,7 +57,7 @@ public class CreateSecureUploadHandlerTests
         Assert.Null(exception);
     }
     [Fact]
-    public async void Handle_Throws_UploadAlreadyExistsException()
+    public async Task Handle_Throws_UploadAlreadyExistsException()
     {
         _fileStorageOptions.Setup(op => op.Value).Returns(_sampleOptions);
         var command = new CreateSecureUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
@@ -72,7 +72,7 @@ public class CreateSecureUploadHandlerTests
     }
 
     [Fact]
-    public async void Handle_Throws_MaxExpirationExceededException()
+    public async Task Handle_Throws_MaxExpirationExceededException()
     {
         _sampleOptions.MaxExpirationInDays = 3;
         _fileStorageOptions.Setup(op => op.Value).Returns(_sampleOptions);
@@ -88,7 +88,7 @@ public class CreateSecureUploadHandlerTests
     }
     
     [Fact]
-    public async void Handle_Succeeds_When_ExpiryDate_Is_Null()
+    public async Task Handle_Succeeds_When_ExpiryDate_Is_Null()
     {
         _sampleOptions.MaxExpirationInDays = 3;
         _fileStorageOptions.Setup(op => op.Value).Returns(_sampleOptions);
