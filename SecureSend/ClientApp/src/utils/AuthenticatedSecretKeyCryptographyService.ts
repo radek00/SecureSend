@@ -139,7 +139,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
         tagLength: this.tagLengthInBytes * 8,
       },
       this.cryptoKey,
-      data.buffer
+      data.buffer as ArrayBuffer
     );
   }
 
