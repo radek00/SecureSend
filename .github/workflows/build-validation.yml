@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 env:
-  DOTNET_VERSION: '7.x' # The .NET SDK version to use
+  DOTNET_VERSION: '9.x' # The .NET SDK version to use
 
 jobs:
   build:
@@ -17,9 +17,9 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -32,28 +32,35 @@ jobs:
       - name: Test
         run:  dotnet test --no-restore --verbosity normal
 
-      - name: Setup Node
-        uses: actions/setup-node@v3.7.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 18.x
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache-dependency-path: ./SecureSend/ClientApp/pnpm-lock.yaml
+          cache: 'pnpm'
 
       - name: Install npm packages
         working-directory: ./SecureSend/ClientApp
-        run: npm install
+        run: pnpm install
 
       - name: Prettier verify
         working-directory: ./SecureSend/ClientApp
-        run: npm run prettier-verify
+        run: pnpm run prettier-verify
 
       - name: Eslint verify
         working-directory: ./SecureSend/ClientApp
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Test Vitest
         working-directory: ./SecureSend/ClientApp
-        run: npm run test
+        run: pnpm run test
 
       - name: Build Vite project
         working-directory: ./SecureSend/ClientApp
-        run: npm run build
+        run: pnpm run build
 
