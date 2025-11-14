@@ -1,4 +1,4 @@
-import { VueWrapper, flushPromises, DOMWrapper } from "@vue/test-utils";
+import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 import { mountComponent, waitForExpect } from "@/tests/utils";
@@ -65,11 +65,10 @@ describe("Upload form", () => {
 
     await submitButton.trigger("submit");
 
-    const dateInput: DOMWrapper<HTMLElement & HTMLInputElement> =
-      wrapper.find('input[type="date"]');
+    const dateInput = wrapper.find('input[type="date"]');
 
     //check default value
-    expect(dateInput.element.value).toEqual("2022-02-21");
+    expect((dateInput.element as unknown as HTMLInputElement).value).toEqual("2022-02-21");
 
     await dateInput.setValue("2021-12-01");
     await waitForExpect(async () => {
