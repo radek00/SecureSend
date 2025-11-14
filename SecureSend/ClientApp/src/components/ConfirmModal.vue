@@ -25,12 +25,12 @@ const trapFocus = (element: HTMLElement) => {
 
     if (e.shiftKey) {
       if (document.activeElement === firstFocusableEl) {
-        lastFocusableEl.focus();
+        lastFocusableEl?.focus();
         e.preventDefault();
       }
     } else {
       if (document.activeElement === lastFocusableEl) {
-        firstFocusableEl.focus();
+        firstFocusableEl?.focus();
         e.preventDefault();
       }
     }

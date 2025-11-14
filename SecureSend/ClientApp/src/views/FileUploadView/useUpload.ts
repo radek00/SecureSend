@@ -129,9 +129,9 @@ export function useUpload() {
     if (formFiles) {
       for (let i = 0; i < formFiles.length; i++) {
         const file = formFiles[i];
-        if (!fileKeys.has(file.name)) {
-          files.value.set(file, [`Upload not started`, UploadState.NewFile]);
-          fileKeys.set(file.name, true);
+        if (!fileKeys.has(file!.name)) {
+          files.value.set(file!, [`Upload not started`, UploadState.NewFile]);
+          fileKeys.set(file!.name, true);
         }
       }
     }

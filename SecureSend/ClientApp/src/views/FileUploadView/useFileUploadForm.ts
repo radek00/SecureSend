@@ -42,7 +42,7 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     date.setDate(date.getDate() + 1);
     return {
       password: "",
-      expiryDate: date.toISOString().split("T")[0],
+      expiryDate: date.toISOString().split("T")[0]!,
       isPasswordRequired: false,
     };
   };

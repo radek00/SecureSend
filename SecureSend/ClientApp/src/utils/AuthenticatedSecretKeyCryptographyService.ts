@@ -12,7 +12,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
   private derivedKey!: ArrayBuffer;
   private readonly masterKey: string | Uint8Array;
 
-  private readonly salt: Uint8Array;
+  private readonly salt: Uint8Array<ArrayBuffer>;
   private nonceBase!: ArrayBuffer;
   public seq: number;
 
@@ -32,12 +32,12 @@ export default class AuthenticatedSecretKeyCryptographyService {
         this.salt = arrayKey.slice(
           0,
           AuthenticatedSecretKeyCryptographyService.SALT_LENGTH_IN_BYTES
-        );
+        ) as Uint8Array<ArrayBuffer>;
         this.masterKey = arrayKey.slice(
           AuthenticatedSecretKeyCryptographyService.SALT_LENGTH_IN_BYTES
         );
       } else {
-        this.salt = arrayKey;
+        this.salt = arrayKey as Uint8Array<ArrayBuffer>;
         this.masterKey = password;
       }
     } else {
@@ -152,7 +152,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
         tagLength: this.tagLengthInBytes * 8,
       },
       this.cryptoKey,
-      data
+      data as Uint8Array<ArrayBuffer>
     );
   }
 
@@ -176,7 +176,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
   private async deriveHkdfKeyMaterial() {
     const keyMaterial = await crypto.subtle.importKey(
       "raw",
-      this.masterKey as Uint8Array,
+      this.masterKey as BufferSource,
       "HKDF",
       false,
       ["deriveBits"]
