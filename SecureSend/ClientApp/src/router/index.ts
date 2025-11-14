@@ -37,7 +37,7 @@ const routes = [
         (to.params.verifyUploadResponse as unknown as UploadVerifyResponseDTO) =
           await SecureSendService.verifySecureUpload(to.params.id as string);
         const keys = to.hash.split("_");
-        to.params.b64Key = keys[0].slice(1);
+        to.params.b64Key = keys[0]!.slice(1);
       } catch (error) {
         if (error instanceof UploadExpiredError) {
           return {
