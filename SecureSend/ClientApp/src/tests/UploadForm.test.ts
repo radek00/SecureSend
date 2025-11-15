@@ -68,7 +68,9 @@ describe("Upload form", () => {
     const dateInput = wrapper.find('input[type="date"]');
 
     //check default value
-    expect((dateInput.element as unknown as HTMLInputElement).value).toEqual("2022-02-21");
+    expect((dateInput.element as unknown as HTMLInputElement).value).toEqual(
+      "2022-02-21"
+    );
 
     await dateInput.setValue("2021-12-01");
     await waitForExpect(async () => {
