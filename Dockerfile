@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:80
 ENV FileStorageOptions__Path=/app/files
@@ -8,11 +8,11 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 RUN curl -SLO https://deb.nodesource.com/nsolid_setup_deb.sh
 RUN chmod 500 nsolid_setup_deb.sh
-RUN ./nsolid_setup_deb.sh 21
+RUN ./nsolid_setup_deb.sh 24
 RUN apt-get install nodejs -y
 RUN corepack enable
 RUN corepack prepare pnpm@latest --activate
