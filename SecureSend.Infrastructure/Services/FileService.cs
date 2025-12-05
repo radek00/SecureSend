@@ -3,6 +3,7 @@ using SecureSend.Application.Services;
 using SecureSend.Domain.ValueObjects;
 using SecureSend.Application.Options;
 using SecureSend.Infrastructure.Exceptions;
+using System.Collections.Concurrent;
 
 namespace SecureSend.Infrastructure.Services
 {
@@ -10,6 +11,8 @@ namespace SecureSend.Infrastructure.Services
     internal sealed class FileService : IFileService
     {
         private readonly IOptions<FileStorageOptions> _fileStorageOptions;
+        private static readonly ConcurrentDictionary<Guid, int> _uploadCounters = new();
+        private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
 
         public FileService(IOptions<FileStorageOptions> fileStorageOptions)
         {
@@ -30,6 +33,59 @@ namespace SecureSend.Infrastructure.Services
             var directory = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
             await using var output = System.IO.File.OpenWrite($"{directory.FullName}/{chunk.ChunkName}");
             await chunk.Chunk.CopyToAsync(output);
+        }
+
+        public async Task<bool> MergeChunks(Guid uploadId, string chunkDirectory, int totalChunks)
+        {
+            var uploadLock = _locks.GetOrAdd(uploadId, _ => new SemaphoreSlim(1, 1));
+            await uploadLock.WaitAsync();
+
+            try
+            {
+                var dir = GetChunkDirectory(uploadId, chunkDirectory);
+                var mergedFilePath = Path.Combine(dir.FullName, "merged");
+
+                var nextChunk = _uploadCounters.GetOrAdd(uploadId, 1);
+
+                while (nextChunk <= totalChunks)
+                {
+                    var chunkFile = dir.GetFiles($"{nextChunk}_*").FirstOrDefault();
+                    if (chunkFile == null) break;
+
+                    await using (var chunkStream = new FileStream(chunkFile.FullName, FileMode.Open, FileAccess.Read, FileShare.None))
+                    await using (var mergedStream = new FileStream(mergedFilePath, FileMode.Append, FileAccess.Write, FileShare.None))
+                    {
+                        await chunkStream.CopyToAsync(mergedStream);
+                    }
+                    chunkFile.Delete();
+                    nextChunk++;
+                }
+
+                _uploadCounters[uploadId] = nextChunk;
+                return nextChunk > totalChunks;
+            }
+            finally
+            {
+                uploadLock.Release();
+            }
+        }
+
+        public Task FinalizeUpload(Guid uploadId, string chunkDirectory, string fileName)
+        {
+            var dir = GetChunkDirectory(uploadId, chunkDirectory);
+            var mergedFilePath = Path.Combine(dir.FullName, "merged");
+            var finalPath = Path.Combine(dir.Parent!.FullName, fileName);
+
+            if (File.Exists(mergedFilePath))
+            {
+                File.Move(mergedFilePath, finalPath);
+            }
+            Directory.Delete(dir.FullName, true);
+
+            _uploadCounters.TryRemove(uploadId, out _);
+            _locks.TryRemove(uploadId, out _);
+
+            return Task.CompletedTask;
         }
 
         public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory, string randomFileName)

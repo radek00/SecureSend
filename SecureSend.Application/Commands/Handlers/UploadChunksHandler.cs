@@ -32,8 +32,9 @@ namespace SecureSend.Application.Commands.Handlers
                 throw new SizeLimitExceededException();
             }
             await _fileService.SaveChunkToDisk(chunk, command.uploadId);
+            var isComplete = await _fileService.MergeChunks(command.uploadId, chunk.ChunkDirectory, chunk.TotalChunks);
 
-            if (chunk.IsLast)
+            if (isComplete)
             {
                 var persisted = await _repository.GetAsync(command.uploadId, cancellationToken);
                 if (persisted is null)
@@ -41,10 +42,9 @@ namespace SecureSend.Application.Commands.Handlers
                     _fileService.RemoveUpload(command.uploadId);
                     throw new UploadDoesNotExistException(command.uploadId);
                 }
-                var savedChunks = _fileService.GetChunksList(command.uploadId, chunk.ChunkDirectory).ToList();
-                if (savedChunks.Count() != chunk.TotalChunks) throw new InvalidChunkCountException(savedChunks.Count(), chunk.TotalChunks);
+                
                 var secureFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize);
-                await _fileService.MergeFiles(persisted.Id, savedChunks, chunk.ChunkDirectory, secureFile.RandomFileName);
+                await _fileService.FinalizeUpload(persisted.Id, chunk.ChunkDirectory, secureFile.RandomFileName);
                 
                 
                 persisted.AddFile(secureFile);
