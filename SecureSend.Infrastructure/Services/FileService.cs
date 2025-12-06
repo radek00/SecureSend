@@ -112,16 +112,6 @@ namespace SecureSend.Infrastructure.Services
             await chunk.Chunk.CopyToAsync(output);
         }
 
-        public IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory)
-        {
-            var directory = GetChunkDirectory(uploadId, chunkDirectory).FullName;
-            var chunkFiles = Directory.GetFiles(directory)
-                                      .Select(x => Path.GetFileName(x))
-                                      .OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f).Split('_')[0]))
-                                      .ToList();
-            return chunkFiles;
-        }
-
         private DirectoryInfo GetChunkDirectory(Guid uploadId, string chunkDirectory)
         {
             var uploadDirectory = GetUploadDirectory(uploadId);
