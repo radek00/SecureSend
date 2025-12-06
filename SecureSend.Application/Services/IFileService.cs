@@ -6,7 +6,6 @@ namespace SecureSend.Application.Services
     public interface IFileService
     {
         FileStream? DownloadFile(Guid uploadId, string fileName);
-        IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory);
         Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize);
 
         void RemoveUpload(Guid uploadId);
