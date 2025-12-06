@@ -85,20 +85,20 @@ namespace SecureSend.Infrastructure.Services
             }
         }
 
-        private async Task AppendChunk(string filePath, IFormFile chunk)
+        private static async Task AppendChunk(string filePath, IFormFile chunk)
         {
             await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None);
             await chunk.CopyToAsync(stream);
         }
 
-        private async Task AppendFile(string filePath, string chunkFilePath)
+        private static async Task AppendFile(string filePath, string chunkFilePath)
         {
             await using var chunkStream = new FileStream(chunkFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
             await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None);
             await chunkStream.CopyToAsync(stream);
         }
 
-        private async Task SaveChunkFile(DirectoryInfo chunkDir, SecureUploadChunk chunk)
+        private static async Task SaveChunkFile(DirectoryInfo chunkDir, SecureUploadChunk chunk)
         {
             await using var output = System.IO.File.OpenWrite($"{chunkDir.FullName}/{chunk.ChunkName}");
             await chunk.Chunk.CopyToAsync(output);
