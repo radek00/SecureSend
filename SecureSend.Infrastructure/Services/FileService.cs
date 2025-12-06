@@ -11,8 +11,14 @@ namespace SecureSend.Infrastructure.Services
     internal sealed class FileService : IFileService
     {
         private readonly IOptions<FileStorageOptions> _fileStorageOptions;
-        private static readonly ConcurrentDictionary<Guid, int> _uploadCounters = new();
-        private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
+        
+        private class UploadState
+        {
+            public SemaphoreSlim Lock { get; } = new(1, 1);
+            public int NextChunk { get; set; } = 1;
+        }
+
+        private static readonly ConcurrentDictionary<Guid, UploadState> _uploadStates = new();
 
         public FileService(IOptions<FileStorageOptions> fileStorageOptions)
         {
@@ -37,19 +43,17 @@ namespace SecureSend.Infrastructure.Services
 
         public async Task<bool> MergeChunks(Guid uploadId, string chunkDirectory, int totalChunks)
         {
-            var uploadLock = _locks.GetOrAdd(uploadId, _ => new SemaphoreSlim(1, 1));
-            await uploadLock.WaitAsync();
+            var state = _uploadStates.GetOrAdd(uploadId, _ => new UploadState());
+            await state.Lock.WaitAsync();
 
             try
             {
                 var dir = GetChunkDirectory(uploadId, chunkDirectory);
                 var mergedFilePath = Path.Combine(dir.FullName, "merged");
 
-                var nextChunk = _uploadCounters.GetOrAdd(uploadId, 1);
-
-                while (nextChunk <= totalChunks)
+                while (state.NextChunk <= totalChunks)
                 {
-                    var chunkFile = dir.GetFiles($"{nextChunk}_*").FirstOrDefault();
+                    var chunkFile = dir.GetFiles($"{state.NextChunk}_*").FirstOrDefault();
                     if (chunkFile == null) break;
 
                     await using (var chunkStream = new FileStream(chunkFile.FullName, FileMode.Open, FileAccess.Read, FileShare.None))
@@ -58,15 +62,14 @@ namespace SecureSend.Infrastructure.Services
                         await chunkStream.CopyToAsync(mergedStream);
                     }
                     chunkFile.Delete();
-                    nextChunk++;
+                    state.NextChunk++;
                 }
 
-                _uploadCounters[uploadId] = nextChunk;
-                return nextChunk > totalChunks;
+                return state.NextChunk > totalChunks;
             }
             finally
             {
-                uploadLock.Release();
+                state.Lock.Release();
             }
         }
 
@@ -82,8 +85,7 @@ namespace SecureSend.Infrastructure.Services
             }
             Directory.Delete(dir.FullName, true);
 
-            _uploadCounters.TryRemove(uploadId, out _);
-            _locks.TryRemove(uploadId, out _);
+            _uploadStates.TryRemove(uploadId, out _);
 
             return Task.CompletedTask;
         }
