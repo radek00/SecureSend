@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using SecureSend.Application.Services;
 using SecureSend.Domain.ValueObjects;
 using SecureSend.Application.Options;
@@ -16,9 +17,10 @@ namespace SecureSend.Infrastructure.Services
         {
             public SemaphoreSlim Lock { get; } = new(1, 1);
             public int NextChunk { get; set; } = 1;
+            public required SecureSendFile SecureSendFile { get; set; }
         }
 
-        private static readonly ConcurrentDictionary<Guid, UploadState> _uploadStates = new();
+        private static readonly ConcurrentDictionary<string, UploadState> _uploadStates = new();
 
         public FileService(IOptions<FileStorageOptions> fileStorageOptions)
         {
@@ -34,38 +36,48 @@ namespace SecureSend.Infrastructure.Services
             return file != null ? new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true) : null;
         }
 
-        public async Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId)
+        public async Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize)
         {
-            var directory = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
-            await using var output = System.IO.File.OpenWrite($"{directory.FullName}/{chunk.ChunkName}");
-            await chunk.Chunk.CopyToAsync(output);
-        }
+            var state = _uploadStates.GetOrAdd(chunk.ChunkDirectory, _ => new UploadState
+            {
+                SecureSendFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, totalFileSize)
+            });
 
-        public async Task<bool> MergeChunks(Guid uploadId, string chunkDirectory, int totalChunks)
-        {
-            var state = _uploadStates.GetOrAdd(uploadId, _ => new UploadState());
             await state.Lock.WaitAsync();
-
             try
             {
-                var dir = GetChunkDirectory(uploadId, chunkDirectory);
-                var mergedFilePath = Path.Combine(dir.FullName, "merged");
+                var uploadDir = GetUploadDirectory(uploadId);
+                var chunkDir = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
+                var finalFilePath = Path.Combine(uploadDir!.FullName, state.SecureSendFile.RandomFileName);
 
-                while (state.NextChunk <= totalChunks)
+                if (chunk.ChunkNumber == state.NextChunk)
                 {
-                    var chunkFile = dir.GetFiles($"{state.NextChunk}_*").FirstOrDefault();
-                    if (chunkFile == null) break;
-
-                    await using (var chunkStream = new FileStream(chunkFile.FullName, FileMode.Open, FileAccess.Read, FileShare.None))
-                    await using (var mergedStream = new FileStream(mergedFilePath, FileMode.Append, FileAccess.Write, FileShare.None))
-                    {
-                        await chunkStream.CopyToAsync(mergedStream);
-                    }
-                    chunkFile.Delete();
+                    await AppendChunk(finalFilePath, chunk.Chunk);
                     state.NextChunk++;
+
+                    while (state.NextChunk <= chunk.TotalChunks)
+                    {
+                        var nextChunkFile = chunkDir.GetFiles($"{state.NextChunk}_*").FirstOrDefault();
+                        if (nextChunkFile == null) break;
+
+                        await AppendFile(finalFilePath, nextChunkFile.FullName);
+                        nextChunkFile.Delete();
+                        state.NextChunk++;
+                    }
+                }
+                else
+                {
+                    await SaveChunkFile(chunkDir, chunk);
                 }
 
-                return state.NextChunk > totalChunks;
+                if (state.NextChunk > chunk.TotalChunks)
+                {
+                    chunkDir.Delete(true);
+                    _uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                    return state.SecureSendFile;
+                }
+
+                return null;
             }
             finally
             {
@@ -73,38 +85,23 @@ namespace SecureSend.Infrastructure.Services
             }
         }
 
-        public Task FinalizeUpload(Guid uploadId, string chunkDirectory, string fileName)
+        private async Task AppendChunk(string filePath, IFormFile chunk)
         {
-            var dir = GetChunkDirectory(uploadId, chunkDirectory);
-            var mergedFilePath = Path.Combine(dir.FullName, "merged");
-            var finalPath = Path.Combine(dir.Parent!.FullName, fileName);
-
-            if (File.Exists(mergedFilePath))
-            {
-                File.Move(mergedFilePath, finalPath);
-            }
-            Directory.Delete(dir.FullName, true);
-
-            _uploadStates.TryRemove(uploadId, out _);
-
-            return Task.CompletedTask;
+            await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None);
+            await chunk.CopyToAsync(stream);
         }
 
-        public async Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory, string randomFileName)
+        private async Task AppendFile(string filePath, string chunkFilePath)
         {
-            
-            var dir = GetChunkDirectory(uploadId, chunkDirectory);
+            await using var chunkStream = new FileStream(chunkFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+            await using var stream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None);
+            await chunkStream.CopyToAsync(stream);
+        }
 
-            var mergedFilePath = Path.Combine(dir.Parent!.FullName, randomFileName);
-            await using (var mergedFile = new FileStream(mergedFilePath, FileMode.Create))
-            {
-                foreach (var chunkFile in chunkFiles)
-                {
-                    await using var chunkStream = new FileStream(Path.Combine(dir.FullName, chunkFile), FileMode.Open);
-                    await chunkStream.CopyToAsync(mergedFile);
-                }
-            }
-            Directory.Delete(dir.FullName, true);
+        private async Task SaveChunkFile(DirectoryInfo chunkDir, SecureUploadChunk chunk)
+        {
+            await using var output = System.IO.File.OpenWrite($"{chunkDir.FullName}/{chunk.ChunkName}");
+            await chunk.Chunk.CopyToAsync(output);
         }
 
         public IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory)
