@@ -8,6 +8,7 @@ using SecureSend.Application.Services;
 using SecureSend.Domain.Entities;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.Repositories;
+using SecureSend.Domain.ValueObjects;
 
 namespace SecureSend.Test.Application.Handlers;
 
@@ -44,42 +45,71 @@ public class UploadChunksHandlerTests
     #endregion
     
     [Fact]
-    public async Task Handle_Succeeds()
+    public async Task Handle_Succeeds_When_Last_Chunk_Merged()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
+        var secureFile = SecureSendFile.Create("file.txt", "text/plain", command.totalFileSize);
+        
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
-        _fileService.Setup(x => x.GetChunksList(command.uploadId, It.IsAny<string>()))
-            .Returns(new List<string> { "1", "2", "3", "4", "5" });
+        
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+            .ReturnsAsync(secureFile);
+            
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
 
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
+        
         Assert.Null(exception);
         Assert.Single(upload.Files);
+        _repository.Verify(x => x.SaveChanges(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_Succeeds_When_Not_Last_Chunk()
+    {
+        var command = new UploadChunks(Guid.NewGuid(), 1, 5, _file.Object, 96648224, Guid.NewGuid());
+        
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+            .ReturnsAsync((SecureSendFile?)null);
+            
+        SetupLimitCheck(true, command.uploadId, command.chunk.Length);
+
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
+        
+        Assert.Null(exception);
+        Assert.Empty(upload.Files);
+        _repository.Verify(x => x.SaveChanges(It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Fact]
     public async Task Handle_Throws_UploadDoesNotExistException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
+        var secureFile = SecureSendFile.Create("file.txt", "text/plain", command.totalFileSize);
+
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(default(SecureSendUpload));
+            
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+            .ReturnsAsync(secureFile);
+            
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
 
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<UploadDoesNotExistException>(exception);
-
+        _fileService.Verify(x => x.RemoveUpload(command.uploadId), Times.Once);
     }
     
     [Fact]
     public async Task Handle_Throws_InvalidChunkCountException()
     {
         var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
-        _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(upload);
-        _fileService.Setup(x => x.GetChunksList(It.IsAny<Guid>(), It.IsAny<string>()))
-            .Returns(new List<string> { "1", "2" });
+        
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+            .ThrowsAsync(new InvalidChunkCountException(5, 4));
+            
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
 
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
