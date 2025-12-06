@@ -5,6 +5,7 @@ using SecureSend.Domain.ValueObjects;
 using SecureSend.Application.Options;
 using SecureSend.Infrastructure.Exceptions;
 using System.Collections.Concurrent;
+using SecureSend.Application.Exceptions;
 
 namespace SecureSend.Infrastructure.Services
 {
@@ -18,6 +19,7 @@ namespace SecureSend.Infrastructure.Services
             public SemaphoreSlim Lock { get; } = new(1, 1);
             public int NextChunk { get; set; } = 1;
             public required SecureSendFile SecureSendFile { get; set; }
+            public required int TotalChunks { get; set; }
         }
 
         private static readonly ConcurrentDictionary<string, UploadState> _uploadStates = new();
@@ -40,8 +42,14 @@ namespace SecureSend.Infrastructure.Services
         {
             var state = _uploadStates.GetOrAdd(chunk.ChunkDirectory, _ => new UploadState
             {
-                SecureSendFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, totalFileSize)
+                SecureSendFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, totalFileSize),
+                TotalChunks = chunk.TotalChunks
             });
+
+            if (state.TotalChunks != chunk.TotalChunks)
+            {
+                throw new InvalidChunkCountException(chunk.TotalChunks, state.TotalChunks);
+            }
 
             await state.Lock.WaitAsync();
             try
@@ -55,7 +63,7 @@ namespace SecureSend.Infrastructure.Services
                     await AppendChunk(finalFilePath, chunk.Chunk);
                     state.NextChunk++;
 
-                    while (state.NextChunk <= chunk.TotalChunks)
+                    while (state.NextChunk <= state.TotalChunks)
                     {
                         var nextChunkFile = chunkDir.GetFiles($"{state.NextChunk}_*").FirstOrDefault();
                         if (nextChunkFile == null) break;
@@ -70,7 +78,7 @@ namespace SecureSend.Infrastructure.Services
                     await SaveChunkFile(chunkDir, chunk);
                 }
 
-                if (state.NextChunk > chunk.TotalChunks)
+                if (state.NextChunk > state.TotalChunks)
                 {
                     chunkDir.Delete(true);
                     _uploadStates.TryRemove(chunk.ChunkDirectory, out _);
