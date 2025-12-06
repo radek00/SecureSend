@@ -7,10 +7,7 @@ namespace SecureSend.Application.Services
     {
         FileStream? DownloadFile(Guid uploadId, string fileName);
         IEnumerable<string> GetChunksList(Guid uploadId, string chunkDirectory);
-        Task MergeFiles(Guid uploadId, IEnumerable<string> chunkFiles, string chunkDirectory, string randomFileName);
-        Task<bool> MergeChunks(Guid uploadId, string chunkDirectory, int totalChunks);
-        Task FinalizeUpload(Guid uploadId, string chunkDirectory, string fileName);
-        Task SaveChunkToDisk(SecureUploadChunk chunk, Guid uploadId);
+        Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize);
 
         void RemoveUpload(Guid uploadId);
         void RemoveFileFromUpload(Guid uploadId, string fileName);

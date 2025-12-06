@@ -31,10 +31,9 @@ namespace SecureSend.Application.Commands.Handlers
                 if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
                 throw new SizeLimitExceededException();
             }
-            await _fileService.SaveChunkToDisk(chunk, command.uploadId);
-            var isComplete = await _fileService.MergeChunks(command.uploadId, chunk.ChunkDirectory, chunk.TotalChunks);
+            var secureFile = await _fileService.HandleChunk(chunk, command.uploadId, command.totalFileSize);
 
-            if (isComplete)
+            if (secureFile is not null)
             {
                 var persisted = await _repository.GetAsync(command.uploadId, cancellationToken);
                 if (persisted is null)
@@ -42,10 +41,6 @@ namespace SecureSend.Application.Commands.Handlers
                     _fileService.RemoveUpload(command.uploadId);
                     throw new UploadDoesNotExistException(command.uploadId);
                 }
-                
-                var secureFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, command.totalFileSize);
-                await _fileService.FinalizeUpload(persisted.Id, chunk.ChunkDirectory, secureFile.RandomFileName);
-                
                 
                 persisted.AddFile(secureFile);
                 await _repository.SaveChanges(cancellationToken);
