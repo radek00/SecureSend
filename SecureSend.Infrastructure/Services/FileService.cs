@@ -48,12 +48,13 @@ namespace SecureSend.Infrastructure.Services
                 TotalChunks = chunk.TotalChunks
             });
 
+            await state.Lock.WaitAsync();
+
             if (state.TotalChunks != chunk.TotalChunks)
             {
                 throw new InvalidChunkCountException(chunk.TotalChunks, state.TotalChunks);
             }
 
-            await state.Lock.WaitAsync();
             try
             {
                 var uploadDir = GetUploadDirectory(uploadId);
