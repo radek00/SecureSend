@@ -6,6 +6,7 @@ using SecureSend.Application.Options;
 using SecureSend.Infrastructure.Exceptions;
 using System.Collections.Concurrent;
 using SecureSend.Application.Exceptions;
+using SecureSend.Domain.Exceptions;
 
 namespace SecureSend.Infrastructure.Services
 {
@@ -86,6 +87,11 @@ namespace SecureSend.Infrastructure.Services
                 }
 
                 return null;
+            }
+            catch
+            {
+                _uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                throw;
             }
             finally
             {
