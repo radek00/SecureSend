@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using SecureSend.Application.Services;
 using SecureSend.Infrastructure.EF.Context;
 using SecureSend.Application.Options;
+using static SecureSend.Infrastructure.Services.FileService;
 
 namespace SecureSend.Infrastructure.BackgroundTasks
 {
@@ -45,6 +46,7 @@ namespace SecureSend.Infrastructure.BackgroundTasks
                 var trackerService = scope.ServiceProvider.GetRequiredService<IUploadSizeTrackerService>();
                 foreach (var upload in emptyUploads)
                 {
+                    _uploadStates.TryRemove(upload.Id, out _);
                     _logger.LogInformation("Removing failed upload: {@id}", upload.Id);
                     fileService.RemoveUpload(upload.Id);
                     trackerService.Remove(upload.Id);

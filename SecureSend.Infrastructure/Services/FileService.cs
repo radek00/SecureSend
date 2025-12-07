@@ -15,7 +15,7 @@ namespace SecureSend.Infrastructure.Services
     {
         private readonly IOptions<FileStorageOptions> _fileStorageOptions;
         
-        private class UploadState
+        internal class UploadState
         {
             public SemaphoreSlim Lock { get; } = new(1, 1);
             public int NextChunk { get; set; } = 1;
@@ -23,7 +23,7 @@ namespace SecureSend.Infrastructure.Services
             public required int TotalChunks { get; set; }
         }
 
-        private static readonly ConcurrentDictionary<string, UploadState> _uploadStates = new();
+        internal static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<string, UploadState>> _uploadStates = new();
 
         public FileService(IOptions<FileStorageOptions> fileStorageOptions)
         {
@@ -41,7 +41,8 @@ namespace SecureSend.Infrastructure.Services
 
         public async Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize)
         {
-            var state = _uploadStates.GetOrAdd(chunk.ChunkDirectory, _ => new UploadState
+            var uploadStates = _uploadStates.GetOrAdd(uploadId, _ => new ConcurrentDictionary<string, UploadState>());
+            var state = uploadStates.GetOrAdd(chunk.ChunkDirectory, _ => new UploadState
             {
                 SecureSendFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, totalFileSize),
                 TotalChunks = chunk.TotalChunks
@@ -82,7 +83,8 @@ namespace SecureSend.Infrastructure.Services
                 if (state.NextChunk > state.TotalChunks)
                 {
                     chunkDir.Delete(true);
-                    _uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                    uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                    if (uploadStates.IsEmpty) _uploadStates.TryRemove(uploadId, out _);
                     return state.SecureSendFile;
                 }
 
@@ -90,7 +92,8 @@ namespace SecureSend.Infrastructure.Services
             }
             catch
             {
-                _uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                uploadStates.TryRemove(chunk.ChunkDirectory, out _);
+                if (uploadStates.IsEmpty) _uploadStates.TryRemove(uploadId, out _);
                 throw;
             }
             finally
