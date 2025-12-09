@@ -19,7 +19,7 @@ const { errorMessage, value, meta, handleChange, checked } = useField(
 );
 </script>
 <template>
-  <div class="mb-6">
+  <div class="mt-3">
     <SimpleCheckboxInput
       :checked="checked"
       :value="value"
