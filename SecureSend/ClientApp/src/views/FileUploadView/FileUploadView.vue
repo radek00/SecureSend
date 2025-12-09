@@ -122,7 +122,10 @@
         ></SimpleInput>
       </template>
       <template #footer>
-        <StyledButton @click="copyToClipboard()" :category="ButtonType.primary"
+        <StyledButton
+          type="button"
+          @click="copyToClipboard()"
+          :category="ButtonType.primary"
           >Copy to clipboard</StyledButton
         >
       </template>
