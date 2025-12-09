@@ -9,7 +9,7 @@ const props = defineProps<{
 const { errorMessage, value, meta } = useField(() => props.name);
 </script>
 <template>
-  <div class="mb-6">
+  <div>
     <SimpleInput
       :value="value"
       v-model="value"
