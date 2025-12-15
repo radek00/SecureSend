@@ -8,7 +8,9 @@ export interface IMappedFormValues {
   isPasswordRequired: boolean;
 }
 
-export function useFileUploadForm(dateLimit: Ref<string>) {
+export function useFileUploadForm(
+  dateLimit: Ref<string>,
+) {
   const step = ref<number>(0);
   const currentDate = toUTCDate(new Date());
 
@@ -36,6 +38,16 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     if (step.value === 0) return stepZeroschema;
     return stepOneSchema;
   });
+
+  // const stepOneSchema = {
+  // };
+
+  // const schema = {}
+  // // const currentSchema = computed(() => {
+  // //   if (isDesktop.value) return { ...stepZeroschema, ...stepOneSchema };
+  // //   if (step.value === 0) return stepZeroschema;
+  // //   return stepOneSchema;
+  // // });
 
   const getInitialValues = (): IMappedFormValues => {
     const date = toUTCDate(new Date());
@@ -67,3 +79,9 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     step,
   };
 }
+
+//todo
+//reset button should be enabled when files are not empty
+//better way to determine desktop
+//handle proper schema change on step change
+

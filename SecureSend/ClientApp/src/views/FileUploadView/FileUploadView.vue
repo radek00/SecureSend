@@ -1,116 +1,243 @@
 <template>
-  <form
-    @submit="onSubmit"
-    class="flex flex-col lg:flex-row justify-center pt-10 md:pt-20 gap-5 items-start w-full max-w-7xl mx-auto px-4"
-  >
-    <!-- Left Column: Settings & History -->
-    <div class="w-full lg:w-1/3 flex flex-col gap-5">
-      <!-- Settings Panel -->
-      <div class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800">
-        <h2
-          class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
-        >
-          SETTINGS
-        </h2>
-        <div class="flex flex-col gap-8">
-          <div>
-            <SchemaInput
-              name="password"
-              type="password"
-              label="Encryption password:"
-              data-test="password"
-              :disabled="!values.isPasswordRequired"
-            ></SchemaInput>
-            <CheckboxSchemaInput
-              name="isPasswordRequired"
-              :checked-value="true"
-              label="Password required"
-              autofocus
-            ></CheckboxSchemaInput>
-          </div>
-          <SchemaInput
-            name="expiryDate"
-            type="date"
-            :label="
-              dateLimit === '' ? 'Optional expiration date:' : `Expire after`
-            "
-            data-test="expirationDate"
-          >
-            <template #label>
-              <span
-                class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
-                >{{ `Max allowed: ${dateLimit}` }}</span
-              >
-            </template>
-          </SchemaInput>
-          <StyledButton
-            type="button"
-            :disabled="!meta.dirty || isLoading"
-            :category="ButtonType.cancel"
-            class="w-full"
-            @click="formReset()"
-            >Reset</StyledButton
-          >
-        </div>
-      </div>
-
-      <!-- Upload History Panel -->
+  <div class="w-full flex justify-center">
+    <!-- Mobile View -->
+    <div
+      class="w-11/12 h-11/12 flex-col items-center pt-10 gap-5 flex lg:hidden"
+    >
       <div
-        class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+        class="w-full p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+      >
+        <form @submit="onSubmit" class="flex flex-col justify-between gap-4">
+          <FormStepper class="px-[10px]" :step="step"></FormStepper>
+          <div class="flex overflow-hidden items-center h-auto">
+            <div
+              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              :style="{ transform }"
+            >
+              <SchemaInput
+                name="password"
+                type="password"
+                label="Encryption password:"
+                data-test="password"
+                :disabled="!values.isPasswordRequired"
+              ></SchemaInput>
+              <CheckboxSchemaInput
+                name="isPasswordRequired"
+                :checked-value="true"
+                label="Password required"
+                :tabindex="step !== 0 ? -1 : 0"
+                autofocus
+              ></CheckboxSchemaInput>
+            </div>
+            <div
+              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              :style="{ transform }"
+            >
+              <SchemaInput
+                :tabindex="step !== 1 ? -1 : 0"
+                name="expiryDate"
+                type="date"
+                :label="
+                  dateLimit === ''
+                    ? 'Optional expiration date:'
+                    : `Expire after`
+                "
+                data-test="expirationDate"
+              >
+                <template #label>
+                  <span
+                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                    >{{ `Max allowed: ${dateLimit}` }}</span
+                  >
+                </template>
+              </SchemaInput>
+            </div>
+            <div
+              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              :style="{ transform }"
+            >
+              <FileInput
+                v-show="step === 2"
+                :step="step"
+                :files="files"
+                :is-upload-setup="isUploadSetup"
+                @on-files-change="(value) => onFilesChange(value)"
+                @on-cancel="(value) => onCancel(value)"
+                @on-pause="(value) => onPause(value)"
+                @on-resume="(value) => onResume(value)"
+                @on-file-remove="(value) => onFileRemove(value)"
+              ></FileInput>
+            </div>
+          </div>
+          <div
+            class="flex gap-3 flex-col-reverse justify-between items-center px-[10px]"
+          >
+            <div class="flex gap-3 flex-col w-full">
+              <StyledButton
+                type="button"
+                class="w-full"
+                :category="ButtonType.primary"
+                :disabled="step === 0 || isLoading || isUploadSetup"
+                @click="step -= 1"
+                >Back</StyledButton
+              >
+              <StyledButton
+                type="button"
+                :disabled="(step === 0 && !meta.dirty) || isLoading"
+                :category="ButtonType.cancel"
+                class="w-full"
+                @click="formReset()"
+                >Reset</StyledButton
+              >
+            </div>
+            <StyledButton
+              class="w-full"
+              :category="ButtonType.primary"
+              :disabled="
+                !meta.valid ||
+                isLoading ||
+                (step === 2 && !files.size) ||
+                isLimitExceeded
+              "
+              type="submit"
+            >
+              <span class="flex items-center justify-center">
+                {{ step < 2 ? "Next" : "Upload" }}
+                <LoadingIndicator
+                  v-if="isLoading"
+                  class="w-5 h-5 ml-2"
+                ></LoadingIndicator>
+              </span>
+            </StyledButton>
+          </div>
+        </form>
+      </div>
+      <div
+        class="w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
         v-if="storageItem.length > 0"
       >
-        <h2
-          class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
-        >
-          UPLOAD HISTORY
-        </h2>
         <UploadHistory :uploads="storageItem"></UploadHistory>
       </div>
     </div>
 
-    <!-- Right Column: File Upload & Queue -->
-    <div class="w-full lg:w-2/3 flex flex-col gap-5">
-      <div
-        class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
-      >
-        <div>
+    <!-- Desktop View -->
+    <form
+      @submit="(e) => {
+        e.preventDefault();
+          step = 2;
+          onSubmit();
+        }"
+      class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start w-full max-w-7xl mx-auto px-4"
+    >
+      <!-- Left Column: Settings & History -->
+      <div class="w-1/3 flex flex-col gap-5">
+        <!-- Settings Panel -->
+        <div class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800">
           <h2
             class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
           >
-            FILE UPLOAD AREA
+            SETTINGS
           </h2>
-          <FileInput
-            :step="2"
-            :files="files"
-            :is-upload-setup="isUploadSetup"
-            @on-files-change="(value) => onFilesChange(value)"
-            @on-cancel="(value) => onCancel(value)"
-            @on-pause="(value) => onPause(value)"
-            @on-resume="(value) => onResume(value)"
-            @on-file-remove="(value) => onFileRemove(value)"
-          ></FileInput>
+          <div class="flex flex-col gap-8">
+            <div>
+              <SchemaInput
+                name="password"
+                type="password"
+                label="Encryption password:"
+                data-test="password"
+                :disabled="!values.isPasswordRequired"
+              ></SchemaInput>
+              <CheckboxSchemaInput
+                name="isPasswordRequired"
+                :checked-value="true"
+                label="Password required"
+                autofocus
+              ></CheckboxSchemaInput>
+            </div>
+            <SchemaInput
+              name="expiryDate"
+              type="date"
+              :label="
+                dateLimit === '' ? 'Optional expiration date:' : `Expire after`
+              "
+              data-test="expirationDate"
+            >
+              <template #label>
+                <span
+                  class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                  >{{ `Max allowed: ${dateLimit}` }}</span
+                >
+              </template>
+            </SchemaInput>
+            <StyledButton
+              type="button"
+              :disabled="!meta.dirty || isLoading"
+              :category="ButtonType.cancel"
+              class="w-full"
+              @click="formReset()"
+              >Reset</StyledButton
+            >
+          </div>
         </div>
 
-        <div class="mt-5">
-          <StyledButton
-            class="w-full py-4 text-lg"
-            :category="ButtonType.primary"
-            :disabled="
-              !meta.valid || isLoading || !files.size || isLimitExceeded
-            "
-            type="submit"
+        <!-- Upload History Panel -->
+        <div
+          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+          v-if="storageItem.length > 0"
+        >
+          <h2
+            class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
           >
-            <span class="flex items-center justify-center">
-              Upload
-              <LoadingIndicator
-                v-if="isLoading"
-                class="w-5 h-5 ml-2"
-              ></LoadingIndicator>
-            </span>
-          </StyledButton>
+            UPLOAD HISTORY
+          </h2>
+          <UploadHistory :uploads="storageItem"></UploadHistory>
         </div>
       </div>
-    </div>
+
+      <!-- Right Column: File Upload & Queue -->
+      <div class="w-2/3 flex flex-col gap-5">
+        <div
+          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
+        >
+          <div>
+            <h2
+              class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+            >
+              FILE UPLOAD AREA
+            </h2>
+            <FileInput
+              :step="2"
+              :files="files"
+              :is-upload-setup="isUploadSetup"
+              @on-files-change="(value) => onFilesChange(value)"
+              @on-cancel="(value) => onCancel(value)"
+              @on-pause="(value) => onPause(value)"
+              @on-resume="(value) => onResume(value)"
+              @on-file-remove="(value) => onFileRemove(value)"
+            ></FileInput>
+          </div>
+
+          <div class="mt-5">
+            <StyledButton
+              class="w-full py-4 text-lg"
+              :category="ButtonType.primary"
+              :disabled="
+                !meta.valid || isLoading || !files.size || isLimitExceeded
+              "
+              type="submit"
+            >
+              <span class="flex items-center justify-center">
+                Upload
+                <LoadingIndicator
+                  v-if="isLoading"
+                  class="w-5 h-5 ml-2"
+                ></LoadingIndicator>
+              </span>
+            </StyledButton>
+          </div>
+        </div>
+      </div>
+    </form>
 
     <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
       <template #header>Share your files</template>
@@ -130,13 +257,22 @@
         >
       </template>
     </ConfirmModalVue>
-  </form>
+  </div>
 </template>
 
 <script setup lang="ts">
 import SchemaInput from "@/components/SchemaInput.vue";
-import { inject, provide, type Ref } from "vue";
+import {
+  computed,
+  inject,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  type Ref,
+} from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
+import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
 import StyledButton from "@/components/StyledButton.vue";
 import { ButtonType } from "@/models/enums/ButtonType";
 import ConfirmModalVue from "@/components/ConfirmModal.vue";
@@ -174,8 +310,18 @@ const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
   useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
-const { handleSubmit, meta, values, resetUploadForm } =
-  useFileUploadForm(dateLimit);
+// const isDesktop = ref(window.innerWidth >= 1024);
+// const updateIsDesktop = () => {
+//   isDesktop.value = window.innerWidth >= 1024;
+// };
+// onMounted(() => window.addEventListener("resize", updateIsDesktop));
+// onUnmounted(() => window.removeEventListener("resize", updateIsDesktop));
+
+const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
+  dateLimit
+);
+
+const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
 const { setItem, storageItem } = useLocalStorage<HistoryItem[]>("uploads", []);
 storageItem.value = storageItem.value.filter(
@@ -193,28 +339,32 @@ const showUploadResult = async (message: string) => {
 };
 
 const onSubmit = handleSubmit(async (values) => {
-  const result = await handleUpload(values);
-  switch (result) {
-    case UploadResult.Success:
-      addToHistory();
-      await showUploadResult("Upload successful");
-      formReset();
-      break;
+  if (step.value === 2) {
+    const result = await handleUpload(values);
+    switch (result) {
+      case UploadResult.Success:
+        addToHistory();
+        await showUploadResult("Upload successful");
+        formReset();
+        break;
 
-    case UploadResult.Partial:
-      addToHistory();
-      await showUploadResult("Only some files were uploaded");
-      formReset();
-      break;
-    case UploadResult.AllCanceled:
-      openDanger("At least one file has to be uploaded");
-      break;
-    case UploadResult.Failed:
-      openDanger("Upload failed, try again");
-      formReset();
-      break;
-    default:
-      break;
+      case UploadResult.Partial:
+        addToHistory();
+        await showUploadResult("Only some files were uploaded");
+        formReset();
+        break;
+      case UploadResult.AllCanceled:
+        openDanger("At least one file has to be uploaded");
+        break;
+      case UploadResult.Failed:
+        openDanger("Upload failed, try again");
+        formReset();
+        break;
+      default:
+        break;
+    }
+  } else {
+    step.value++;
   }
 });
 
@@ -238,7 +388,9 @@ const copyToClipboard = () => {
 };
 
 const formReset = () => {
+  if (step.value == 2) {
+    resetUpload();
+  }
   resetUploadForm();
-  resetUpload();
 };
 </script>
