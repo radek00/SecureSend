@@ -4,8 +4,8 @@
       :name="name"
       v-bind="$attrs"
       :checked="checked"
-      @input="
-        $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+      @change="
+        $emit('update:modelValue', ($event.target as HTMLInputElement).checked)
       "
       id="default-checkbox"
       type="checkbox"
