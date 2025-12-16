@@ -35,19 +35,11 @@ export function useFileUploadForm(
   };
 
   const currentSchema = computed(() => {
+    //todo: better way to determine desktop
+    if (window.innerWidth >= 1024) return { ...stepZeroschema, ...stepOneSchema };
     if (step.value === 0) return stepZeroschema;
     return stepOneSchema;
   });
-
-  // const stepOneSchema = {
-  // };
-
-  // const schema = {}
-  // // const currentSchema = computed(() => {
-  // //   if (isDesktop.value) return { ...stepZeroschema, ...stepOneSchema };
-  // //   if (step.value === 0) return stepZeroschema;
-  // //   return stepOneSchema;
-  // // });
 
   const getInitialValues = (): IMappedFormValues => {
     const date = toUTCDate(new Date());
