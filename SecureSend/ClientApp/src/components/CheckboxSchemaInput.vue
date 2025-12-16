@@ -23,7 +23,7 @@ const { errorMessage, value, meta, handleChange, checked } = useField(
     <SimpleCheckboxInput
       :checked="checked"
       :value="value"
-      @update:model-value="() => handleChange(checkedValue)"
+      @update:model-value="handleChange"
       :name="name"
       v-bind="$attrs"
       :errorMessage="errorMessage"
