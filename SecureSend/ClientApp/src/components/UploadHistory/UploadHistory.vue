@@ -8,8 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="flex items-center justify-between mb-4" v-if="uploads">
-  </div>
+  <div class="flex items-center justify-between mb-4" v-if="uploads"></div>
   <div class="overflow-auto max-h-40 lg:max-h-96 pr-4">
     <ul role="list" class="divide-y divide-gray-700">
       <HistoryElement

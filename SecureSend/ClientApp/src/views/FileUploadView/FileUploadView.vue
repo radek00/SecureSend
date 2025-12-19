@@ -117,26 +117,30 @@
         class="w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
         v-if="storageItem.length > 0"
       >
-                <h2
-            class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
-          >
-            Settings
-          </h2>
+        <h2
+          class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+        >
+          Settings
+        </h2>
         <UploadHistory :uploads="storageItem"></UploadHistory>
       </div>
     </section>
 
     <!-- Desktop View -->
-     <section class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start max-w-7xl w-screen mx-auto">
+    <section
+      class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start max-w-7xl w-screen mx-auto"
+    >
       <!-- Left Column: Settings & History -->
       <div class="w-1/3 flex flex-col gap-5">
         <!-- Settings Panel -->
         <form
-          @submit="(e) => {
-            e.preventDefault();
-            step = 2;
-            onSubmit();
-          }"
+          @submit="
+            (e) => {
+              e.preventDefault();
+              step = 2;
+              onSubmit();
+            }
+          "
           class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
         >
           <h2
@@ -231,7 +235,11 @@
                 !meta.valid || isLoading || !files.size || isLimitExceeded
               "
               type="submit"
-              @click="step = 2; $event.preventDefault(); onSubmit()"
+              @click="
+                step = 2;
+                $event.preventDefault();
+                onSubmit();
+              "
             >
               <span class="flex items-center justify-center">
                 Upload
@@ -245,8 +253,6 @@
         </div>
       </div>
     </section>
-
-
 
     <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
       <template #header>Share your files</template>
@@ -326,9 +332,8 @@ provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 // onMounted(() => window.addEventListener("resize", updateIsDesktop));
 // onUnmounted(() => window.removeEventListener("resize", updateIsDesktop));
 
-const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
-  dateLimit
-);
+const { handleSubmit, meta, values, resetUploadForm, step } =
+  useFileUploadForm(dateLimit);
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 
