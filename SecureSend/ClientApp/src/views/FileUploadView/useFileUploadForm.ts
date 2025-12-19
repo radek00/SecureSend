@@ -8,9 +8,7 @@ export interface IMappedFormValues {
   isPasswordRequired: boolean;
 }
 
-export function useFileUploadForm(
-  dateLimit: Ref<string>,
-) {
+export function useFileUploadForm(dateLimit: Ref<string>) {
   const step = ref<number>(0);
   const currentDate = toUTCDate(new Date());
 
@@ -36,7 +34,8 @@ export function useFileUploadForm(
 
   const currentSchema = computed(() => {
     //todo: better way to determine desktop
-    if (window.innerWidth >= 1024) return { ...stepZeroschema, ...stepOneSchema };
+    if (window.innerWidth >= 1024)
+      return { ...stepZeroschema, ...stepOneSchema };
     if (step.value === 0) return stepZeroschema;
     return stepOneSchema;
   });
@@ -76,4 +75,3 @@ export function useFileUploadForm(
 //reset button should be enabled when files are not empty
 //better way to determine desktop
 //handle proper schema change on step change
-
