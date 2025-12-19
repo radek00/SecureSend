@@ -1,7 +1,8 @@
 <template>
+  {{ values }}
   <div class="w-full flex justify-center">
     <!-- Mobile View -->
-    <div
+    <section
       class="w-11/12 h-11/12 flex-col items-center pt-10 gap-5 flex lg:hidden"
     >
       <div
@@ -116,27 +117,32 @@
         class="w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
         v-if="storageItem.length > 0"
       >
+                <h2
+            class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+          >
+            Settings
+          </h2>
         <UploadHistory :uploads="storageItem"></UploadHistory>
       </div>
-    </div>
+    </section>
 
     <!-- Desktop View -->
-    <form
-      @submit="(e) => {
-        e.preventDefault();
-          step = 2;
-          onSubmit();
-        }"
-      class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start w-full max-w-7xl mx-auto px-4"
-    >
+     <section class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start max-w-7xl w-screen mx-auto">
       <!-- Left Column: Settings & History -->
       <div class="w-1/3 flex flex-col gap-5">
         <!-- Settings Panel -->
-        <div class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800">
+        <form
+          @submit="(e) => {
+            e.preventDefault();
+            step = 2;
+            onSubmit();
+          }"
+          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+        >
           <h2
             class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
           >
-            SETTINGS
+            Settings
           </h2>
           <div class="flex flex-col gap-8">
             <div>
@@ -178,7 +184,7 @@
               >Reset</StyledButton
             >
           </div>
-        </div>
+        </form>
 
         <!-- Upload History Panel -->
         <div
@@ -188,7 +194,7 @@
           <h2
             class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
           >
-            UPLOAD HISTORY
+            Upload history
           </h2>
           <UploadHistory :uploads="storageItem"></UploadHistory>
         </div>
@@ -203,7 +209,7 @@
             <h2
               class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
             >
-              FILE UPLOAD AREA
+              Files
             </h2>
             <FileInput
               :step="2"
@@ -225,6 +231,7 @@
                 !meta.valid || isLoading || !files.size || isLimitExceeded
               "
               type="submit"
+              @click="step = 2; $event.preventDefault(); onSubmit()"
             >
               <span class="flex items-center justify-center">
                 Upload
@@ -237,7 +244,9 @@
           </div>
         </div>
       </div>
-    </form>
+    </section>
+
+
 
     <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
       <template #header>Share your files</template>
