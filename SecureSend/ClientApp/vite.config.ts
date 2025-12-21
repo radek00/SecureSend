@@ -5,7 +5,6 @@ import vue from "@vitejs/plugin-vue";
 import mkcert from "vite-plugin-mkcert";
 import packageJson from "./package.json";
 
-
 const baseConfig: UserConfig = {
   plugins: [
     vue(),

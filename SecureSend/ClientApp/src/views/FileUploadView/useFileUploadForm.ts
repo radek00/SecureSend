@@ -70,8 +70,3 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     step,
   };
 }
-
-//todo
-//reset button should be enabled when files are not empty
-//better way to determine desktop
-//handle proper schema change on step change
