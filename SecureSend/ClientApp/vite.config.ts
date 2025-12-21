@@ -1,11 +1,10 @@
 import { fileURLToPath, URL } from "node:url";
-import { readFileSync } from "node:fs";
 
 import { defineConfig, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import mkcert from "vite-plugin-mkcert";
+import packageJson from "./package.json";
 
-const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 const baseConfig: UserConfig = {
   plugins: [
