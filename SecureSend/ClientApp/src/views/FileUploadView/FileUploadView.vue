@@ -1,9 +1,8 @@
 <template>
-  {{ values }}
   <div class="w-full flex justify-center">
     <!-- Mobile View -->
     <section
-      class="w-11/12 h-11/12 flex-col items-center pt-10 gap-5 flex lg:hidden"
+      class="w-11/12 h-11/12 flex-col items-center mt-10 gap-5 flex lg:hidden"
     >
       <div
         class="w-full p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
@@ -117,10 +116,8 @@
         class="w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
         v-if="storageItem.length > 0"
       >
-        <h2
-          class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
-        >
-          Settings
+        <h2 class="text-xl font-bold text-white border-b border-gray-700 pb-2">
+          Upload history
         </h2>
         <UploadHistory :uploads="storageItem"></UploadHistory>
       </div>
@@ -128,7 +125,7 @@
 
     <!-- Desktop View -->
     <section
-      class="hidden lg:flex flex-row justify-center pt-20 gap-5 items-start max-w-7xl w-screen mx-auto"
+      class="hidden lg:flex flex-row justify-center p-10 gap-5 items-start max-w-7xl w-screen mx-auto"
     >
       <!-- Left Column: Settings & History -->
       <div class="w-1/3 flex flex-col gap-5">
@@ -196,7 +193,7 @@
           v-if="storageItem.length > 0"
         >
           <h2
-            class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+            class="text-xl font-bold text-white border-b border-gray-700 pb-2"
           >
             Upload history
           </h2>
