@@ -1,11 +1,23 @@
 import { fileURLToPath, URL } from "node:url";
+import { readFileSync } from "node:fs";
 
 import { defineConfig, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import mkcert from "vite-plugin-mkcert";
 
+const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
+
 const baseConfig: UserConfig = {
-  plugins: [vue(), mkcert()],
+  plugins: [
+    vue(),
+    mkcert(),
+    {
+      name: "html-transform",
+      transformIndexHtml(html) {
+        return html.replace(/%APP_VERSION%/g, packageJson.version);
+      },
+    },
+  ],
   envDir: "./environment",
   base: "/",
   resolve: {
