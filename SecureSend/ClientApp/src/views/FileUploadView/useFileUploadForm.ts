@@ -5,7 +5,7 @@ import { toUTCDate } from "@/utils/utils";
 export interface IMappedFormValues {
   expiryDate: string;
   password: string;
-  isPasswordRequired: boolean;
+  isPasswordRequired: boolean[];
 }
 
 export function useFileUploadForm(dateLimit: Ref<string>) {
@@ -14,7 +14,12 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
 
   const stepZeroschema = {
     password(value: string) {
-      if (!values.isPasswordRequired) return true;
+      //vee-validate thinks that checkboxes are an array since there are two rendered at the same time (mobile and desktop)
+      if (
+        values.isPasswordRequired[values.isPasswordRequired.length - 1] ===
+        false
+      )
+        return true;
       if (value) return true;
       return "Password is required.";
     },
@@ -46,7 +51,7 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     return {
       password: "",
       expiryDate: date.toISOString().split("T")[0]!,
-      isPasswordRequired: false,
+      isPasswordRequired: [false],
     };
   };
 
