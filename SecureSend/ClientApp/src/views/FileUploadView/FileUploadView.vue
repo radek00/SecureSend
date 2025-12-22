@@ -1,8 +1,11 @@
 <template>
+  {{ values }}
+  {{ meta }}
   <div class="w-full flex justify-center">
     <!-- Mobile View -->
     <section
-      class="w-11/12 h-11/12 flex-col items-center mt-10 gap-5 flex lg:hidden"
+      v-if="!isDesktop(screenType)"
+      class="w-11/12 h-11/12 flex-col items-center mt-10 gap-5 flex"
     >
       <div
         class="w-full p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
@@ -125,7 +128,8 @@
 
     <!-- Desktop View -->
     <section
-      class="hidden lg:flex flex-row justify-center p-10 gap-5 items-start max-w-7xl w-screen mx-auto"
+      v-else
+      class="flex flex-row justify-center p-10 gap-5 items-start max-w-7xl w-screen mx-auto"
     >
       <!-- Left Column: Settings & History -->
       <div class="w-1/3 flex flex-col gap-5">
@@ -274,15 +278,7 @@
 
 <script setup lang="ts">
 import SchemaInput from "@/components/SchemaInput.vue";
-import {
-  computed,
-  inject,
-  onMounted,
-  onUnmounted,
-  provide,
-  ref,
-  type Ref,
-} from "vue";
+import { computed, inject, provide, type Ref } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import FormStepper from "@/components/FileUploadForm/FormStepper.vue";
 import StyledButton from "@/components/StyledButton.vue";
@@ -300,6 +296,7 @@ import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
 import type { SecureFileDto } from "@/models/SecureFileDto";
 import type { HistoryItem } from "@/models/HistoryItem";
 import { useLocalStorage } from "@/utils/composables/useLocalStorage";
+import { useScreenSize } from "@/utils/composables/useScreenSize";
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
@@ -322,12 +319,7 @@ const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
   useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
-// const isDesktop = ref(window.innerWidth >= 1024);
-// const updateIsDesktop = () => {
-//   isDesktop.value = window.innerWidth >= 1024;
-// };
-// onMounted(() => window.addEventListener("resize", updateIsDesktop));
-// onUnmounted(() => window.removeEventListener("resize", updateIsDesktop));
+const { screenType, isDesktop } = useScreenSize();
 
 const { handleSubmit, meta, values, resetUploadForm, step } =
   useFileUploadForm(dateLimit);
