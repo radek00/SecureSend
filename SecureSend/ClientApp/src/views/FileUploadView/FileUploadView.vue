@@ -277,6 +277,9 @@
 </template>
 
 <script setup lang="ts">
+//todo:
+//remove setting step to 2/use isDesktop flag
+//add desktop tests
 import SchemaInput from "@/components/SchemaInput.vue";
 import { computed, inject, provide, type Ref } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
@@ -321,8 +324,10 @@ provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
 const { screenType, isDesktop } = useScreenSize();
 
-const { handleSubmit, meta, values, resetUploadForm, step } =
-  useFileUploadForm(dateLimit);
+const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
+  dateLimit,
+  screenType
+);
 
 const transform = computed(() => `translateX(-${step.value * 100}%)`);
 

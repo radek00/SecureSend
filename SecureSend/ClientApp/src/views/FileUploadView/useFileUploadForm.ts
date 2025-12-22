@@ -1,25 +1,25 @@
 import { computed, type Ref, ref } from "vue";
 import { useForm } from "vee-validate";
 import { toUTCDate } from "@/utils/utils";
+import { ScreenType } from "@/utils/composables/useScreenSize";
 
 export interface IMappedFormValues {
   expiryDate: string;
   password: string;
-  isPasswordRequired: boolean[];
+  isPasswordRequired: boolean;
 }
 
-export function useFileUploadForm(dateLimit: Ref<string>) {
+export function useFileUploadForm(
+  dateLimit: Ref<string>,
+  screenType: Ref<ScreenType>
+) {
   const step = ref<number>(0);
   const currentDate = toUTCDate(new Date());
 
   const stepZeroschema = {
     password(value: string) {
       //vee-validate thinks that checkboxes are an array since there are two rendered at the same time (mobile and desktop)
-      if (
-        values.isPasswordRequired[values.isPasswordRequired.length - 1] ===
-        false
-      )
-        return true;
+      if (!values.isPasswordRequired) return true;
       if (value) return true;
       return "Password is required.";
     },
@@ -38,8 +38,11 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
   };
 
   const currentSchema = computed(() => {
-    //todo: better way to determine desktop
-    if (window.innerWidth >= 1024)
+    if (
+      screenType.value === ScreenType.LG ||
+      screenType.value === ScreenType.XL ||
+      screenType.value === ScreenType.XXL
+    )
       return { ...stepZeroschema, ...stepOneSchema };
     if (step.value === 0) return stepZeroschema;
     return stepOneSchema;
@@ -51,7 +54,7 @@ export function useFileUploadForm(dateLimit: Ref<string>) {
     return {
       password: "",
       expiryDate: date.toISOString().split("T")[0]!,
-      isPasswordRequired: [false],
+      isPasswordRequired: false,
     };
   };
 
