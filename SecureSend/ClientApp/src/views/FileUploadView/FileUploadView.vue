@@ -135,13 +135,7 @@
       <div class="w-1/3 flex flex-col gap-5">
         <!-- Settings Panel -->
         <form
-          @submit="
-            (e) => {
-              e.preventDefault();
-              step = 2;
-              onSubmit();
-            }
-          "
+          @submit="onSubmit"
           class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
         >
           <h2
@@ -236,11 +230,7 @@
                 !meta.valid || isLoading || !files.size || isLimitExceeded
               "
               type="submit"
-              @click="
-                step = 2;
-                $event.preventDefault();
-                onSubmit();
-              "
+              @click="onSubmit"
             >
               <span class="flex items-center justify-center">
                 Upload
@@ -299,7 +289,7 @@ import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
 import type { SecureFileDto } from "@/models/SecureFileDto";
 import type { HistoryItem } from "@/models/HistoryItem";
 import { useLocalStorage } from "@/utils/composables/useLocalStorage";
-import { useScreenSize } from "@/utils/composables/useScreenSize";
+import { isDesktop, useScreenSize } from "@/utils/composables/useScreenSize";
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
@@ -322,7 +312,7 @@ const { isLimitExceeded, sizeLimit, totalSize, dateLimit } =
   useFileLimits(files);
 provide("sizeLimits", { sizeLimit, totalSize, isLimitExceeded });
 
-const { screenType, isDesktop } = useScreenSize();
+const { screenType } = useScreenSize();
 
 const { handleSubmit, meta, values, resetUploadForm, step } = useFileUploadForm(
   dateLimit,
@@ -346,31 +336,41 @@ const showUploadResult = async (message: string) => {
   }
 };
 
+const handleUploadResult = async (result: UploadResult) => {
+  switch (result) {
+    case UploadResult.Success:
+      addToHistory();
+      await showUploadResult("Upload successful");
+      formReset();
+      break;
+
+    case UploadResult.Partial:
+      addToHistory();
+      await showUploadResult("Only some files were uploaded");
+      formReset();
+      break;
+    case UploadResult.AllCanceled:
+      openDanger("At least one file has to be uploaded");
+      break;
+    case UploadResult.Failed:
+      openDanger("Upload failed, try again");
+      formReset();
+      break;
+    default:
+      break;
+  }
+};
+
 const onSubmit = handleSubmit(async (values) => {
+  if (isDesktop(screenType.value)) {
+    const result = await handleUpload(values);
+    await handleUploadResult(result);
+    return;
+  }
+
   if (step.value === 2) {
     const result = await handleUpload(values);
-    switch (result) {
-      case UploadResult.Success:
-        addToHistory();
-        await showUploadResult("Upload successful");
-        formReset();
-        break;
-
-      case UploadResult.Partial:
-        addToHistory();
-        await showUploadResult("Only some files were uploaded");
-        formReset();
-        break;
-      case UploadResult.AllCanceled:
-        openDanger("At least one file has to be uploaded");
-        break;
-      case UploadResult.Failed:
-        openDanger("Upload failed, try again");
-        formReset();
-        break;
-      default:
-        break;
-    }
+    await handleUploadResult(result);
   } else {
     step.value++;
   }
@@ -396,9 +396,7 @@ const copyToClipboard = () => {
 };
 
 const formReset = () => {
-  if (step.value == 2) {
-    resetUpload();
-  }
+  resetUpload();
   resetUploadForm();
 };
 </script>

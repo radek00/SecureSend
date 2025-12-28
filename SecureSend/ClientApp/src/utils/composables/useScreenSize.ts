@@ -17,6 +17,14 @@ const breakpoints = {
   "2xl": 1536,
 } as const;
 
+export function isDesktop(screenType: ScreenType) {
+  return (
+    screenType === ScreenType.LG ||
+    screenType === ScreenType.XL ||
+    screenType === ScreenType.XXL
+  );
+}
+
 export function useScreenSize() {
   const getScreenType = (width: number): ScreenType => {
     if (width >= breakpoints["2xl"]) return ScreenType.XXL;
@@ -28,14 +36,6 @@ export function useScreenSize() {
   };
 
   const screenType = ref<ScreenType>(getScreenType(window.innerWidth));
-
-  const isDesktop = (screenType: ScreenType) => {
-    return (
-      screenType === ScreenType.LG ||
-      screenType === ScreenType.XL ||
-      screenType === ScreenType.XXL
-    );
-  };
 
   const handleResize = () => {
     screenType.value = getScreenType(window.innerWidth);
@@ -51,6 +51,5 @@ export function useScreenSize() {
 
   return {
     screenType,
-    isDesktop,
   };
 }
