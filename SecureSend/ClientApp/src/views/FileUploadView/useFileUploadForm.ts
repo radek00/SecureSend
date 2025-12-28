@@ -1,7 +1,7 @@
 import { computed, type Ref, ref } from "vue";
 import { useForm } from "vee-validate";
 import { toUTCDate } from "@/utils/utils";
-import { ScreenType } from "@/utils/composables/useScreenSize";
+import { isDesktop, ScreenType } from "@/utils/composables/useScreenSize";
 
 export interface IMappedFormValues {
   expiryDate: string;
@@ -38,11 +38,7 @@ export function useFileUploadForm(
   };
 
   const currentSchema = computed(() => {
-    if (
-      screenType.value === ScreenType.LG ||
-      screenType.value === ScreenType.XL ||
-      screenType.value === ScreenType.XXL
-    )
+    if (isDesktop(screenType.value))
       return { ...stepZeroschema, ...stepOneSchema };
     if (step.value === 0) return stepZeroschema;
     return stepOneSchema;
