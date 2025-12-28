@@ -1,6 +1,4 @@
 <template>
-  {{ values }}
-  {{ meta }}
   <div class="w-full flex justify-center">
     <!-- Mobile View -->
     <section
