@@ -28,7 +28,7 @@ describe("Desktop view tests", () => {
     await wrapper.vm.$nextTick();
   });
 
-  test("Desktop view has all controls presnt", async () => {
+  test("Desktop view has all controls present", async () => {
     const passwordInput = wrapper.find('input[data-test="password"]');
     expect(passwordInput.exists()).toBe(true);
 
