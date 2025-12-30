@@ -18,7 +18,6 @@ describe("Desktop view tests", () => {
       ...actual,
       useScreenSize: () => ({
         screenType: ref(actual.ScreenType.LG),
-        isDesktop: () => false,
       }),
     };
   });
