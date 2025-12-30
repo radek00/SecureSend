@@ -8,7 +8,6 @@ vi.mock("@/utils/composables/useScreenSize", async (importOriginal) => {
     ...actual,
     useScreenSize: () => ({
       screenType: ref(actual.ScreenType.XS), // Mobile screen by default
-      isDesktop: () => false,
     }),
   };
 });
