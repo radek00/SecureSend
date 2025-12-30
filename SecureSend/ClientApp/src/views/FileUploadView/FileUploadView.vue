@@ -84,7 +84,9 @@
               >
               <StyledButton
                 type="button"
-                :disabled="(step === 0 && !meta.dirty && !files.size) || isLoading"
+                :disabled="
+                  (step === 0 && !meta.dirty && !files.size) || isLoading
+                "
                 :category="ButtonType.cancel"
                 class="w-full"
                 data-test="reset-button"
@@ -130,16 +132,11 @@
       v-else
       class="flex flex-row justify-center p-10 gap-5 items-start max-w-7xl w-screen mx-auto"
     >
-      <form
-        @submit="onSubmit"
-        class="flex flex-row gap-5 items-start w-full"
-      >
+      <form @submit="onSubmit" class="flex flex-row gap-5 items-start w-full">
         <!-- Left Column: Settings & History -->
         <div class="w-1/3 flex flex-col gap-5">
           <!-- Settings Panel -->
-          <div
-            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
-          >
+          <div class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800">
             <h2
               class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
             >
@@ -165,7 +162,9 @@
                 name="expiryDate"
                 type="date"
                 :label="
-                  dateLimit === '' ? 'Optional expiration date:' : `Expire after`
+                  dateLimit === ''
+                    ? 'Optional expiration date:'
+                    : `Expire after`
                 "
                 data-test="expirationDate"
               >
