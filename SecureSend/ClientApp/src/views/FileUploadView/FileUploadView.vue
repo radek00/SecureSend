@@ -87,6 +87,7 @@
                 :disabled="(step === 0 && !meta.dirty) || isLoading"
                 :category="ButtonType.cancel"
                 class="w-full"
+                data-test="reset-button"
                 @click="formReset()"
                 >Reset</StyledButton
               >
@@ -177,6 +178,7 @@
               :disabled="!meta.dirty || isLoading"
               :category="ButtonType.cancel"
               class="w-full"
+              data-test="reset-button"
               @click="formReset()"
               >Reset</StyledButton
             >
