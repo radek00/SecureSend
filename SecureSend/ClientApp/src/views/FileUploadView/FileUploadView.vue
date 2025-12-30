@@ -136,7 +136,9 @@
         <!-- Left Column: Settings & History -->
         <div class="w-1/3 flex flex-col gap-5">
           <!-- Settings Panel -->
-          <div class="p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800">
+          <div
+            class="p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800"
+          >
             <h2
               class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
             >
