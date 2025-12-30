@@ -18,7 +18,6 @@ export function useFileUploadForm(
 
   const stepZeroschema = {
     password(value: string) {
-      //vee-validate thinks that checkboxes are an array since there are two rendered at the same time (mobile and desktop)
       if (!values.isPasswordRequired) return true;
       if (value) return true;
       return "Password is required.";
