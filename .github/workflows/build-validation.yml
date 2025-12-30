@@ -3,6 +3,7 @@ name: build
 on:
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '10.x' # The .NET SDK version to use
