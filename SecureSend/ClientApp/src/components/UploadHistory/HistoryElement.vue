@@ -22,7 +22,7 @@ const copyToClipboard = (link: string) => {
 <template>
   <li class="py-3 sm:py-4">
     <div class="flex items-center">
-      <div class="flex-shrink-0" @click="toggle()">
+      <div class="shrink-0" @click="toggle()">
         <button
           data-test="history-expand"
           class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
