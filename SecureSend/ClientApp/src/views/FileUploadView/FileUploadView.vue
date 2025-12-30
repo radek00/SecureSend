@@ -84,7 +84,7 @@
               >
               <StyledButton
                 type="button"
-                :disabled="(step === 0 && !meta.dirty) || isLoading"
+                :disabled="(step === 0 && !meta.dirty && !files.size) || isLoading"
                 :category="ButtonType.cancel"
                 class="w-full"
                 data-test="reset-button"
@@ -178,7 +178,7 @@
               </SchemaInput>
               <StyledButton
                 type="button"
-                :disabled="!meta.dirty || isLoading"
+                :disabled="(!meta.dirty && !files.size) || isLoading"
                 :category="ButtonType.cancel"
                 class="w-full"
                 data-test="reset-button"
