@@ -130,119 +130,122 @@
       v-else
       class="flex flex-row justify-center p-10 gap-5 items-start max-w-7xl w-screen mx-auto"
     >
-      <!-- Left Column: Settings & History -->
-      <div class="w-1/3 flex flex-col gap-5">
-        <!-- Settings Panel -->
-        <form
-          @submit="onSubmit"
-          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
-        >
-          <h2
-            class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+      <form
+        @submit="onSubmit"
+        class="flex flex-row gap-5 items-start w-full"
+      >
+        <!-- Left Column: Settings & History -->
+        <div class="w-1/3 flex flex-col gap-5">
+          <!-- Settings Panel -->
+          <div
+            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
           >
-            Settings
-          </h2>
-          <div class="flex flex-col gap-8">
-            <div>
-              <SchemaInput
-                name="password"
-                type="password"
-                label="Encryption password:"
-                data-test="password"
-                :disabled="!values.isPasswordRequired"
-              ></SchemaInput>
-              <CheckboxSchemaInput
-                name="isPasswordRequired"
-                :checked-value="true"
-                label="Password required"
-                autofocus
-              ></CheckboxSchemaInput>
-            </div>
-            <SchemaInput
-              name="expiryDate"
-              type="date"
-              :label="
-                dateLimit === '' ? 'Optional expiration date:' : `Expire after`
-              "
-              data-test="expirationDate"
-            >
-              <template #label>
-                <span
-                  class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
-                  >{{ `Max allowed: ${dateLimit}` }}</span
-                >
-              </template>
-            </SchemaInput>
-            <StyledButton
-              type="button"
-              :disabled="!meta.dirty || isLoading"
-              :category="ButtonType.cancel"
-              class="w-full"
-              data-test="reset-button"
-              @click="formReset()"
-              >Reset</StyledButton
-            >
-          </div>
-        </form>
-
-        <!-- Upload History Panel -->
-        <div
-          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
-          v-if="storageItem.length > 0"
-        >
-          <h2
-            class="text-xl font-bold text-white border-b border-gray-700 pb-2"
-          >
-            Upload history
-          </h2>
-          <UploadHistory :uploads="storageItem"></UploadHistory>
-        </div>
-      </div>
-
-      <!-- Right Column: File Upload & Queue -->
-      <div class="w-2/3 flex flex-col gap-5">
-        <div
-          class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
-        >
-          <div>
             <h2
               class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
             >
-              Files
+              Settings
             </h2>
-            <FileInput
-              :step="2"
-              :files="files"
-              :is-upload-setup="isUploadSetup"
-              @on-files-change="(value) => onFilesChange(value)"
-              @on-cancel="(value) => onCancel(value)"
-              @on-pause="(value) => onPause(value)"
-              @on-resume="(value) => onResume(value)"
-              @on-file-remove="(value) => onFileRemove(value)"
-            ></FileInput>
+            <div class="flex flex-col gap-8">
+              <div>
+                <SchemaInput
+                  name="password"
+                  type="password"
+                  label="Encryption password:"
+                  data-test="password"
+                  :disabled="!values.isPasswordRequired"
+                ></SchemaInput>
+                <CheckboxSchemaInput
+                  name="isPasswordRequired"
+                  :checked-value="true"
+                  label="Password required"
+                  autofocus
+                ></CheckboxSchemaInput>
+              </div>
+              <SchemaInput
+                name="expiryDate"
+                type="date"
+                :label="
+                  dateLimit === '' ? 'Optional expiration date:' : `Expire after`
+                "
+                data-test="expirationDate"
+              >
+                <template #label>
+                  <span
+                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                    >{{ `Max allowed: ${dateLimit}` }}</span
+                  >
+                </template>
+              </SchemaInput>
+              <StyledButton
+                type="button"
+                :disabled="!meta.dirty || isLoading"
+                :category="ButtonType.cancel"
+                class="w-full"
+                data-test="reset-button"
+                @click="formReset()"
+                >Reset</StyledButton
+              >
+            </div>
           </div>
 
-          <div class="mt-5">
-            <StyledButton
-              class="w-full py-4 text-lg"
-              :category="ButtonType.primary"
-              :disabled="
-                !meta.valid || isLoading || !files.size || isLimitExceeded
-              "
-              type="submit"
-              @click="onSubmit"
+          <!-- Upload History Panel -->
+          <div
+            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+            v-if="storageItem.length > 0"
+          >
+            <h2
+              class="text-xl font-bold text-white border-b border-gray-700 pb-2"
             >
-              <span class="flex items-center justify-center">
-                Upload
-                <LoadingIndicator
-                  v-if="isLoading"
-                  class="w-5 h-5 ml-2"
-                ></LoadingIndicator>
-              </span>
-            </StyledButton>
+              Upload history
+            </h2>
+            <UploadHistory :uploads="storageItem"></UploadHistory>
           </div>
         </div>
-      </div>
+
+        <!-- Right Column: File Upload & Queue -->
+        <div class="w-2/3 flex flex-col gap-5">
+          <div
+            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
+          >
+            <div>
+              <h2
+                class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
+              >
+                Files
+              </h2>
+              <FileInput
+                :step="2"
+                :files="files"
+                :is-upload-setup="isUploadSetup"
+                @on-files-change="(value) => onFilesChange(value)"
+                @on-cancel="(value) => onCancel(value)"
+                @on-pause="(value) => onPause(value)"
+                @on-resume="(value) => onResume(value)"
+                @on-file-remove="(value) => onFileRemove(value)"
+              ></FileInput>
+            </div>
+
+            <div class="mt-5">
+              <StyledButton
+                class="w-full py-4 text-lg"
+                :category="ButtonType.primary"
+                :disabled="
+                  !meta.valid || isLoading || !files.size || isLimitExceeded
+                "
+                type="submit"
+              >
+                <span class="flex items-center justify-center">
+                  Upload
+                  <LoadingIndicator
+                    v-if="isLoading"
+                    class="w-5 h-5 ml-2"
+                  ></LoadingIndicator>
+                </span>
+              </StyledButton>
+            </div>
+          </div>
+        </div>
+      </form>
     </section>
 
     <ConfirmModalVue v-if="isRevealed" @close-click="confirm(true)">
