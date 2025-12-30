@@ -63,4 +63,22 @@ jobs:
       - name: Build Vite project
         working-directory: ./SecureSend/ClientApp
         run: pnpm run build
+  update_container:
+    name: Update Securesend container on remote server
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    if: github.event_name == 'release' && github.event.action == 'published' && !github.event.release.prerelease
+    steps:
+      - name: Execute update_containers.sh on remote server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          port: 49153
+          script: |
+            echo "Executing update_containers.sh for Securesend container using docker-compose.yaml"
+            cd ~/hosting/scripts || exit 1
+            sudo bash ./update_container.sh securesend ../docker-compose.yml ../../.env
 
