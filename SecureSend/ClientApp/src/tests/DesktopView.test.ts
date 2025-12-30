@@ -1,9 +1,8 @@
 import { VueWrapper, flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
-import { mountComponent, waitForExpect } from "@/tests/utils";
+import { mountComponent } from "@/tests/utils";
 import { UploadLimitsService } from "@/services/UploadLimitsService";
-import { HTMLInputElement } from "happy-dom";
 import { ref } from "vue";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 
