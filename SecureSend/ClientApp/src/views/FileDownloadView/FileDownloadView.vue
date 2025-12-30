@@ -52,7 +52,7 @@ if (!props.verifyUploadResponse.isProtected) {
     >
       <h1 class="text-4xl text-white text-center">Download files</h1>
       <div
-        class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow bg-gray-700 border-gray-600"
+        class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow-sm bg-gray-700 border-gray-600"
       >
         <div v-if="isDownloadAllAvailable">
           <StyledButton
@@ -86,7 +86,7 @@ if (!props.verifyUploadResponse.isProtected) {
       class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0 w-full"
     >
       <div
-        class="w-full p-6 rounded-lg shadow border md:mt-0 sm:max-w-md bg-gray-800 border-gray-700 sm:p-8"
+        class="w-full p-6 rounded-lg shadow-sm border md:mt-0 sm:max-w-md bg-gray-800 border-gray-700 sm:p-8"
       >
         <h2
           class="mb-1 text-xl font-bold leading-tight tracking-tight md:text-2xl text-white"

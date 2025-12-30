@@ -10,7 +10,7 @@
       id="default-checkbox"
       type="checkbox"
       :value="value"
-      class="w-4 h-4 text-blue-600 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
+      class="w-4 h-4 text-blue-600 rounded-sm focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
     />
     <label
       v-if="label"

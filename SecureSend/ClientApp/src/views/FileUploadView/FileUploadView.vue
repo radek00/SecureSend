@@ -6,13 +6,13 @@
       class="w-11/12 h-11/12 flex-col items-center mt-10 gap-5 flex"
     >
       <div
-        class="w-full p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+        class="w-full p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800"
       >
         <form @submit="onSubmit" class="flex flex-col justify-between gap-4">
-          <FormStepper class="px-[10px]" :step="step"></FormStepper>
+          <FormStepper class="px-2.5" :step="step"></FormStepper>
           <div class="flex overflow-hidden items-center h-auto">
             <div
-              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              class="w-full shrink-0 transition-transform duration-700 px-2.5"
               :style="{ transform }"
             >
               <SchemaInput
@@ -31,7 +31,7 @@
               ></CheckboxSchemaInput>
             </div>
             <div
-              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              class="w-full shrink-0 transition-transform duration-700 px-2.5"
               :style="{ transform }"
             >
               <SchemaInput
@@ -47,14 +47,14 @@
               >
                 <template #label>
                   <span
-                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300"
                     >{{ `Max allowed: ${dateLimit}` }}</span
                   >
                 </template>
               </SchemaInput>
             </div>
             <div
-              class="w-full shrink-0 transition-transform duration-700 px-[10px]"
+              class="w-full shrink-0 transition-transform duration-700 px-2.5"
               :style="{ transform }"
             >
               <FileInput
@@ -117,7 +117,7 @@
         </form>
       </div>
       <div
-        class="w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-800"
+        class="w-full p-4 border rounded-lg shadow-sm sm:p-8 bg-gray-800 border-gray-800"
         v-if="storageItem.length > 0"
       >
         <h2 class="text-xl font-bold text-white border-b border-gray-700 pb-2">
@@ -136,7 +136,7 @@
         <!-- Left Column: Settings & History -->
         <div class="w-1/3 flex flex-col gap-5">
           <!-- Settings Panel -->
-          <div class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800">
+          <div class="p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800">
             <h2
               class="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2"
             >
@@ -170,7 +170,7 @@
               >
                 <template #label>
                   <span
-                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
+                    class="float-right bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300"
                     >{{ `Max allowed: ${dateLimit}` }}</span
                   >
                 </template>
@@ -189,7 +189,7 @@
 
           <!-- Upload History Panel -->
           <div
-            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800"
+            class="p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800"
             v-if="storageItem.length > 0"
           >
             <h2
@@ -204,7 +204,7 @@
         <!-- Right Column: File Upload & Queue -->
         <div class="w-2/3 flex flex-col gap-5">
           <div
-            class="p-6 border rounded-lg shadow bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
+            class="p-6 border rounded-lg shadow-sm bg-gray-800 border-gray-800 h-full flex flex-col justify-between"
           >
             <div>
               <h2
