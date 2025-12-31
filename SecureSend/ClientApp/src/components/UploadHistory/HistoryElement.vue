@@ -29,6 +29,7 @@ const copyToClipboard = (link: string) => {
           class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
         >
           <DropdownIcon :class="{ 'rotate-180': value }"></DropdownIcon>
+          <span class="sr-only">Expand details</span>
         </button>
       </div>
       <div class="flex-1 min-w-0 ms-4">
@@ -46,6 +47,7 @@ const copyToClipboard = (link: string) => {
         <button
           class="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center border"
           @click="copyToClipboard(upload.link)"
+          type="button"
         >
           <span id="default-message" class="inline-flex items-center">
             <CopyIcon></CopyIcon>

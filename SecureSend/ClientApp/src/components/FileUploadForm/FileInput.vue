@@ -189,7 +189,7 @@ const areOptionsAvailable = (state: UploadState) => {
           type="button"
           :tabindex="step !== 2 ? -1 : 0"
           @keyup.enter="() => addMoreFilesInput?.click()"
-          class="w-fit text-blue-600 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center"
+          class="w-fit text-blue-600 dark:text-blue-300 border border-blue-700 dark:border-blue-400 hover:bg-blue-700 dark:hover:bg-blue-600 hover:text-white focus:ring-4 focus:outline-hidden focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center cursor-pointer"
         >
           <PlusIcon class="w-4 h-4"></PlusIcon>
           <span class="ml-2">Add more files</span>

@@ -71,7 +71,7 @@ if (!props.verifyUploadResponse.isProtected) {
         >
           <template #cardBottom>
             <a
-              class="font-medium text-blue-500 hover:underline"
+              class="font-medium text-blue-700 hover:underline"
               :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${fileName}`"
               >Download</a
             >
