@@ -1,13 +1,13 @@
 <template>
   <div class="flex items-center mb-4">
     <input
+      :id="name"
       :name="name"
       v-bind="$attrs"
       :checked="checked"
       @change="
         $emit('update:modelValue', ($event.target as HTMLInputElement).checked)
       "
-      id="default-checkbox"
       type="checkbox"
       :value="value"
       class="w-4 h-4 text-blue-600 rounded-sm focus:ring-blue-500 ring-offset-gray-50 dark:ring-offset-gray-800 focus:ring-2 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
