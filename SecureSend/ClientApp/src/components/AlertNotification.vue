@@ -3,7 +3,7 @@
     <div
       v-show="isShown"
       ref="root"
-      :class="`flex items-center gap-2 w-fit p-3 mb-4 text-sm border rounded-lg bg-gray-800 ${textColor}`"
+      :class="`flex items-center gap-2 w-fit p-3 mb-4 text-sm border rounded-lg bg-gray-50 dark:bg-gray-800 ${textColor}`"
       role="alert"
     >
       <InfoIcon></InfoIcon>
@@ -14,7 +14,7 @@
       <button
         @click="onCloseClick()"
         type="button"
-        class="p-1 rounded-lg focus:ring-2 focus:ring-gray-300 inline-flex items-center justify-center h-6 w-6 text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700"
+        class="p-1 rounded-lg focus:ring-2 focus:ring-gray-300 inline-flex items-center justify-center h-6 w-6 text-gray-500 hover:text-gray-900 dark:hover:text-white bg-gray-50 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
         data-dismiss-target="#toast-success"
         aria-label="Close"
       >

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full rounded-full bg-gray-700 mt-2">
+  <div class="w-full rounded-full bg-gray-200 dark:bg-gray-700 mt-2">
     <div
       v-bind="$attrs"
       data-test="progress-bar"

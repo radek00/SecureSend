@@ -60,14 +60,14 @@ const areOptionsAvailable = (state: UploadState) => {
       for="dropzone-file"
       :tabindex="step !== 2 ? -1 : 0"
       @keyup.enter="() => fileInput?.click()"
-      class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-700 border-gray-600 focus:border-gray-500 focus:bg-gray-600 hover:border-gray-500 hover:bg-gray-600"
+      class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-gray-400 dark:focus:border-gray-500 focus:bg-gray-100 dark:focus:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600"
     >
       <span class="flex flex-col items-center justify-center pt-5 pb-6">
         <UploadIcon></UploadIcon>
-        <span v-if="!isOverDropZone" class="mb-2 text-sm text-gray-400">
+        <span v-if="!isOverDropZone" class="mb-2 text-sm text-gray-500 dark:text-gray-400">
           <span class="font-semibold">Click to upload</span> or drag and drop
         </span>
-        <span v-else class="mb-2 text-sm text-gray-400">
+        <span v-else class="mb-2 text-sm text-gray-500 dark:text-gray-400">
           <span class="font-semibold">Drop files to upload</span>
         </span>
       </span>
@@ -87,7 +87,7 @@ const areOptionsAvailable = (state: UploadState) => {
   <div v-else>
     <SizeLimit :files="files" class="mb-5"></SizeLimit>
     <div
-      class="flex flex-col gap-5 w-full justify-between h-75 overflow-y-auto p-6 border rounded-lg shadow-sm bg-gray-700 border-gray-600"
+      class="flex flex-col gap-5 w-full justify-between h-75 overflow-y-auto p-6 border rounded-lg shadow-sm bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600"
     >
       <TransitionGroup name="list">
         <FileCard
@@ -101,7 +101,7 @@ const areOptionsAvailable = (state: UploadState) => {
               v-if="value[1] === UploadState.NewFile && !isLoading"
               @click="emit('onFileRemove', key)"
               type="button"
-              class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+              class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-300 dark:focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
             >
               <TrashIcon class="w-5 h-3"></TrashIcon>
               <span class="sr-only">Remove file</span>
@@ -113,7 +113,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 @click="emit('onCancel', key)"
                 type="button"
                 :disabled="!isUploadSetup"
-                class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+                class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-300 dark:focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <CloseIcon class="w-5 h-3"></CloseIcon>
                 <span class="sr-only">Cancel</span>
@@ -124,7 +124,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 @click="emit('onPause', key)"
                 type="button"
                 :disabled="!isUploadSetup"
-                class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+                class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-300 dark:focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <PauseIcon class="w-5 h-3"></PauseIcon>
                 <span class="sr-only">Pause</span>
@@ -135,7 +135,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 @click="emit('onResume', key)"
                 type="button"
                 :disabled="!isUploadSetup"
-                class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-800"
+                class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-300 dark:focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <PlayIcon class="w-5 h-3"></PlayIcon>
                 <span class="sr-only">Resume</span>
@@ -148,24 +148,24 @@ const areOptionsAvailable = (state: UploadState) => {
             >
               <li
                 v-if="value[1] === UploadState.NewFile && !isLoading"
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
               >
                 <a href="#" @click="emit('onFileRemove', key)">Remove</a>
               </li>
               <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
                 v-if="isUploadSetup && value[1] === UploadState.InProgress"
               >
                 <a href="#" @click="emit('onCancel', key)">Cancel</a>
               </li>
               <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
                 v-if="isUploadSetup && value[1] === UploadState.InProgress"
               >
                 <a href="#" @click="emit('onPause', key)">Pause</a>
               </li>
               <li
-                class="px-4 py-2 hover:bg-gray-600 hover:text-white"
+                class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
                 v-if="isUploadSetup && value[1] === UploadState.Paused"
               >
                 <a href="#" @click="emit('onResume', key)">Resume</a>
