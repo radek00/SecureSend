@@ -8,8 +8,8 @@ const limits = inject<IUseFileLimits>("sizeLimits")!;
 <template>
   <div
     v-if="limits.sizeLimit.value > 0"
-    class="text-center"
-    :class="{ 'text-red-500': limits.isLimitExceeded.value }"
+    class="text-center text-gray-700 dark:text-gray-300"
+    :class="{ 'text-red-500 dark:text-red-500': limits.isLimitExceeded.value }"
   >
     Size limit: {{ limits.totalSize }}/{{ limits.sizeLimit }} GB
   </div>

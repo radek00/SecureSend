@@ -25,6 +25,7 @@ const copyToClipboard = (link: string) => {
       <div class="shrink-0" @click="toggle()">
         <button
           data-test="history-expand"
+          type="button"
           class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
         >
           <DropdownIcon :class="{ 'rotate-180': value }"></DropdownIcon>
@@ -32,18 +33,18 @@ const copyToClipboard = (link: string) => {
       </div>
       <div class="flex-1 min-w-0 ms-4">
         <p
-          class="text-sm font-medium truncate text-white"
+          class="text-sm font-medium truncate text-gray-900 dark:text-white"
           data-test="history-title"
         >
           {{ new Date(upload.uploadDate).toDateString() }}
         </p>
-        <p class="text-sm truncate text-gray-400">
+        <p class="text-sm truncate text-gray-600 dark:text-gray-400">
           Expires on {{ new Date(upload.expirationDate).toDateString() }}
         </p>
       </div>
-      <div class="inline-flex items-center text-base font-semibold text-white">
+      <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
         <button
-          class="text-gray-400 bg-gray-800 border-gray-600 hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center border"
+          class="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center border"
           @click="copyToClipboard(upload.link)"
         >
           <span id="default-message" class="inline-flex items-center">
@@ -58,7 +59,6 @@ const copyToClipboard = (link: string) => {
         <FileCard
           :file-name="file.fileName!"
           :size="file.fileSize"
-          class="bg-slate-700"
         ></FileCard>
       </li>
     </ul>

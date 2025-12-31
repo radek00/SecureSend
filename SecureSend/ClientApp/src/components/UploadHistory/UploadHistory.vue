@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <div class="overflow-auto max-h-40 lg:max-h-76 pr-4">
-    <ul role="list" class="divide-y divide-gray-700">
+    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
       <HistoryElement
         v-for="(upload, idx) in uploads"
         :key="idx"

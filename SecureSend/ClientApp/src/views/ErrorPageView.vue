@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-gray-900">
+  <section class="bg-white dark:bg-gray-900">
     <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) lg:py-16 lg:px-6">
       <div class="mx-auto max-w-(--breakpoint-sm) text-center">
         <h1
@@ -8,11 +8,11 @@
           {{ errorCode }}
         </h1>
         <p
-          class="mb-4 text-3xl tracking-tight font-bold md:text-4xl text-white"
+          class="mb-4 text-3xl tracking-tight font-bold md:text-4xl text-gray-900 dark:text-white"
         >
           {{ heading }}
         </p>
-        <p class="mb-4 text-lg font-light text-gray-400">
+        <p class="mb-4 text-lg font-light text-gray-600 dark:text-gray-400">
           {{ bottomText }}
         </p>
         <router-link
