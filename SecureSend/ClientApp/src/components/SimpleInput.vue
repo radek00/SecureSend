@@ -7,6 +7,7 @@
     >{{ props.label }}<slot name="label"></slot
   ></label>
   <input
+    :id="props.name"
     :value="value"
     @input="
       $emit('update:modelValue', ($event.target as HTMLInputElement).value)
