@@ -18,31 +18,31 @@
   },
   "dependencies": {
     "vee-validate": "^4.15.1",
-    "vue": "^3.5.24",
-    "vue-router": "^4.6.3"
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@tsconfig/node24": "^24.0.3",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.5",
     "@types/wicg-file-system-access": "^2023.10.7",
-    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitejs/plugin-vue": "^6.0.3",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-plugin-vue": "^10.6.2",
-    "happy-dom": "^20.0.11",
+    "happy-dom": "^20.1.0",
     "jiti": "^2.6.1",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6",
+    "vite": "^7.3.1",
     "vite-plugin-mkcert": "^1.17.9",
-    "vitest": "^4.0.15",
-    "vue-tsc": "^3.1.5"
+    "vitest": "^4.0.16",
+    "vue-tsc": "^3.2.2"
   }
 }
