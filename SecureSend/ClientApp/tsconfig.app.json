@@ -12,6 +12,6 @@
     "lib": ["ESNext", "DOM", "WebWorker"],
     "module": "ESNext",
     "target": "esnext",
-    "types": ["@types/wicg-file-system-access"],
+    "types": ["@types/wicg-file-system-access"]
   }
 }
