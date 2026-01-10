@@ -43,7 +43,7 @@ const trapFocus = (element: HTMLElement) => {
   <div
     role="dialog"
     aria-modal="true"
-    class="backdrop-blur-sm fixed top-0 bottom-1/2 left-0 z-40 h-full w-screen flex items-center justify-center p-5 bg-gray-900/50 dark:bg-gray-900/50"
+    class="backdrop-blur-sm fixed top-0 bottom-1/2 left-0 z-40 h-full w-screen flex items-center justify-center p-5 bg-gray-900/50"
   >
     <div class="relative w-full max-w-2xl max-h-full" ref="dialogElement">
       <!-- Modal content -->
