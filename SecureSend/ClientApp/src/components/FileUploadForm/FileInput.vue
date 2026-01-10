@@ -64,10 +64,13 @@ const areOptionsAvailable = (state: UploadState) => {
     >
       <span class="flex flex-col items-center justify-center pt-5 pb-6">
         <UploadIcon></UploadIcon>
-        <span v-if="!isOverDropZone" class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+        <span
+          v-if="!isOverDropZone"
+          class="mb-2 text-sm text-gray-500 dark:text-gray-300"
+        >
           <span class="font-semibold">Click to upload</span> or drag and drop
         </span>
-        <span v-else class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+        <span v-else class="mb-2 text-sm text-gray-500 dark:text-gray-300">
           <span class="font-semibold">Drop files to upload</span>
         </span>
       </span>
