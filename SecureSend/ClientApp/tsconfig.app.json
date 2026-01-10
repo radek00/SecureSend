@@ -8,8 +8,10 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "lib": ["ESNext", "DOM", "WebWorker"],
-    "types": ["@types/wicg-file-system-access"]
+    "module": "ESNext",
+    "target": "esnext",
+    "types": ["@types/wicg-file-system-access"],
   }
 }
