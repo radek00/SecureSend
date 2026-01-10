@@ -3,7 +3,8 @@
     <li
       :class="{
         'text-blue-500 after:border-blue-800 ': step === 0,
-        'after:border-4 after:inline-block after:border-gray-300 dark:after:border-gray-700 ': step !== 0,
+        'after:border-4 after:inline-block after:border-gray-300 dark:after:border-gray-700 ':
+          step !== 0,
       }"
       class="flex w-full items-center after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block after:transition after:linear after:duration-1000"
     >

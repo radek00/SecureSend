@@ -1,5 +1,7 @@
 <template>
-  <div class="w-auto p-6 rounded-lg shadow-sm bg-gray-300 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+  <div
+    class="w-auto p-6 rounded-lg shadow-sm bg-gray-300 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+  >
     <div class="flex w-full gap-4 items-center">
       <div class="hidden sm:block">
         <FileIcon></FileIcon>

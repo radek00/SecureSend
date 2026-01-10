@@ -120,7 +120,9 @@
         class="w-full p-4 border rounded-lg shadow-sm sm:p-8 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-800"
         v-if="storageItem.length > 0"
       >
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+        <h2
+          class="text-xl font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2"
+        >
           Upload history
         </h2>
         <UploadHistory :uploads="storageItem"></UploadHistory>

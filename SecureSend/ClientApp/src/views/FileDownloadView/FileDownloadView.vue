@@ -50,7 +50,9 @@ if (!props.verifyUploadResponse.isProtected) {
       class="w-11/12 md:w-6/12"
       v-if="!verifyUploadResponse.isProtected || isPasswordValid"
     >
-      <h1 class="text-4xl text-gray-900 dark:text-white text-center">Download files</h1>
+      <h1 class="text-4xl text-gray-900 dark:text-white text-center">
+        Download files
+      </h1>
       <div
         class="max-h-[70vh] overflow-y-auto flex flex-col gap-5 mt-5 w-full justify-between p-6 border rounded-lg shadow-sm bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600"
       >
@@ -71,7 +73,7 @@ if (!props.verifyUploadResponse.isProtected) {
         >
           <template #cardBottom>
             <a
-              class="font-medium text-blue-700 hover:underline"
+              class="font-medium text-blue-700 dark:text-blue-400 hover:underline"
               :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${fileName}`"
               >Download</a
             >

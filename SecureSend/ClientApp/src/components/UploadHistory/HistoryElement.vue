@@ -43,7 +43,9 @@ const copyToClipboard = (link: string) => {
           Expires on {{ new Date(upload.expirationDate).toDateString() }}
         </p>
       </div>
-      <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+      <div
+        class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+      >
         <button
           class="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center border"
           @click="copyToClipboard(upload.link)"
@@ -58,10 +60,7 @@ const copyToClipboard = (link: string) => {
     </div>
     <ul class="ml-[1.6rem] mt-3 flex flex-col gap-3" v-if="value">
       <li v-for="(file, idx) in upload.files" :key="idx">
-        <FileCard
-          :file-name="file.fileName!"
-          :size="file.fileSize"
-        ></FileCard>
+        <FileCard :file-name="file.fileName!" :size="file.fileSize"></FileCard>
       </li>
     </ul>
   </li>

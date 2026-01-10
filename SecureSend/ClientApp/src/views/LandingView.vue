@@ -7,7 +7,9 @@
     >
       Share your files securely.
     </h1>
-    <p class="text-lg text-center max-w-3xl mx-auto text-gray-600 dark:text-slate-400">
+    <p
+      class="text-lg text-center max-w-3xl mx-auto text-gray-600 dark:text-slate-400"
+    >
       Secure Send lets you share files with end-to-end encryption. Set your
       upload to expire whenever you want and generate a link to access the
       upload.
