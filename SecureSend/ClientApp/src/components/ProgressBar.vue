@@ -3,7 +3,7 @@
     <div
       v-bind="$attrs"
       data-test="progress-bar"
-      class="text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+      class="text-xs font-medium text-white text-center p-0.5 leading-none rounded-full"
       :class="classComputed"
       :style="{
         width: styleComputed,
@@ -27,7 +27,7 @@ const classComputed = computed(() => {
   if (props.state[1] === UploadState.InProgress) {
     return "bg-blue-600";
   } else if (props.state[1] === UploadState.Completed) {
-    return "bg-green-600";
+    return "bg-green-700";
   } else if (props.state[1] === UploadState.Failed) {
     return "bg-red-600";
   }
