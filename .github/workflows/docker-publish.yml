@@ -64,7 +64,7 @@ jobs:
     # if: github.event_name == 'release' && github.event.action == 'published' && !github.event.release.prerelease
     steps:
       - name: Execute update_containers.sh on remote server
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.4
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
