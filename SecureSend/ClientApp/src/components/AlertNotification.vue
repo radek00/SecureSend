@@ -48,7 +48,8 @@ defineEmits(["onCloseClick"]);
 const root = ref();
 
 const textColor = computed(() => {
-  if (props.type === DialogType.Danger) return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-800";
+  if (props.type === DialogType.Danger)
+    return "text-red-600 dark:text-red-400 border-red-300 dark:border-red-800";
   if (props.type === DialogType.Success)
     return "text-green-700 dark:text-green-400 border-green-300 dark:border-green-800";
   return "";
