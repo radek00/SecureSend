@@ -26,7 +26,6 @@ const baseConfig: UserConfig = {
   server: {
     port: 3000,
     strictPort: true,
-    https: true,
     proxy: {
       "/api": {
         target: "https://localhost:7109",
@@ -50,7 +49,7 @@ export default defineConfig((config: UserConfig): UserConfig => {
           },
           output: {
             entryFileNames: () => "assets/js/[name]-[hash].js",
-            inlineDynamicImports: false,
+            codeSplitting: false,
           },
         },
       },
@@ -68,7 +67,7 @@ export default defineConfig((config: UserConfig): UserConfig => {
           },
           output: {
             entryFileNames: () => "[name].js",
-            inlineDynamicImports: true,
+            codeSplitting: false,
           },
         },
       },
