@@ -17,6 +17,6 @@
         fill="currentFill"
       />
     </svg>
-    <span class="sr-only">Loading...</span>
+    <span class="sr-only fixed">Loading...</span>
   </div>
 </template>

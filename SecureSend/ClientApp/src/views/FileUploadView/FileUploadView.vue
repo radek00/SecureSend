@@ -71,7 +71,7 @@
             </div>
           </div>
           <div
-            class="flex gap-3 flex-col-reverse justify-between items-center px-[10px]"
+            class="flex gap-3 flex-col-reverse justify-between items-center px-2.5"
           >
             <div class="flex gap-3 flex-col w-full">
               <StyledButton
@@ -183,7 +183,7 @@
                 type="button"
                 :disabled="(!meta.dirty && !files.size) || isLoading"
                 :category="ButtonType.cancel"
-                class="w-full"
+                class="w-full cursor-pointer"
                 data-test="reset-button"
                 @click="formReset()"
                 >Reset</StyledButton
@@ -230,7 +230,7 @@
 
             <div class="mt-5">
               <StyledButton
-                class="w-full py-4 text-lg"
+                class="w-full py-4 text-lg cursor-pointer"
                 :category="ButtonType.primary"
                 :disabled="
                   !meta.valid || isLoading || !files.size || isLimitExceeded

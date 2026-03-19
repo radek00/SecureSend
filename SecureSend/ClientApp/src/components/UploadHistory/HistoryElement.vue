@@ -29,7 +29,7 @@ const copyToClipboard = (link: string) => {
           class="text-sm underline cursor-pointer text-blue-500 hover:text-blue-300 hover:no-underline flex items-center gap-2 mt-2"
         >
           <DropdownIcon :class="{ 'rotate-180': value }"></DropdownIcon>
-          <span class="sr-only">Expand details</span>
+          <span class="sr-only fixed">Expand details</span>
         </button>
       </div>
       <div class="flex-1 min-w-0 ms-4">
