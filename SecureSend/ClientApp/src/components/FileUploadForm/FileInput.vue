@@ -107,7 +107,7 @@ const areOptionsAvailable = (state: UploadState) => {
               class="hidden md:inline-flex m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-300 dark:focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
             >
               <TrashIcon class="w-5 h-3"></TrashIcon>
-              <span class="sr-only">Remove file</span>
+              <span class="sr-only fixed">Remove file</span>
             </button>
             <div class="hidden md:flex gap-1 justify-between">
               <button
@@ -119,7 +119,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 class="m-0 border hover:enabled:bg-red-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-red-500 hover:enabled:text-white focus:ring-red-300 dark:focus:ring-red-800 hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <CloseIcon class="w-5 h-3"></CloseIcon>
-                <span class="sr-only">Cancel</span>
+                <span class="sr-only fixed">Cancel</span>
               </button>
               <button
                 data-test="pause-button"
@@ -130,7 +130,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 class="m-0 border hover:enabled:bg-orange-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-orange-500 hover:enabled:text-white focus:ring-orange-300 dark:focus:ring-orange-800 hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <PauseIcon class="w-5 h-3"></PauseIcon>
-                <span class="sr-only">Pause</span>
+                <span class="sr-only fixed">Pause</span>
               </button>
               <button
                 data-test="resume-button"
@@ -141,7 +141,7 @@ const areOptionsAvailable = (state: UploadState) => {
                 class="m-0 border hover:enabled:bg-green-700 focus:ring-4 focus:outline-hidden font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 border-green-500 hover:enabled:text-white focus:ring-green-300 dark:focus:ring-green-800 hover:bg-green-500 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:border-gray-300 dark:disabled:border-gray-800"
               >
                 <PlayIcon class="w-5 h-3"></PlayIcon>
-                <span class="sr-only">Resume</span>
+                <span class="sr-only fixed">Resume</span>
               </button>
             </div>
 
