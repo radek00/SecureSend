@@ -1,6 +1,6 @@
 <template>
   <button
-    class="text-white focus:ring-4 focus:enabled::outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500"
+    class="text-white focus:ring-4 focus:enabled:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500"
     :class="{
       'bg-blue-600 hover:enabled:bg-blue-700 focus:enabled:ring-blue-300 dark:focus:enabled:ring-blue-800':
         category === ButtonType.primary,
