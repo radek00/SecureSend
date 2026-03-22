@@ -1,6 +1,6 @@
 export default class StreamTracker {
   private readonly totalChunks: number;
-  private currentChunk = 1;
+  private currentChunk = 0;
   private readonly fileName: string;
   private readonly broadcast = new BroadcastChannel("progress-channel");
   constructor(totalSize: number, fileName: string) {
@@ -16,15 +16,13 @@ export default class StreamTracker {
     controller: TransformStreamDefaultController
   ) {
     try {
+      controller.enqueue(chunk);
       this.broadcast.postMessage({
         request: "progress",
         value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
         fileName: this.fileName,
       });
-      if (this.currentChunk < this.totalChunks) {
-        this.currentChunk++;
-      }
-      controller.enqueue(chunk);
+      this.currentChunk++;
     } catch (error) {
       this.broadcast.close();
       controller.error(error);
@@ -34,7 +32,7 @@ export default class StreamTracker {
   public flush() {
     this.broadcast.postMessage({
       request: "progress",
-      value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
+      value: "100%",
       fileName: this.fileName,
     });
     this.broadcast.close();
