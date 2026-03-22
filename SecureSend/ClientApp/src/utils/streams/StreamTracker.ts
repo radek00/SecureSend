@@ -21,7 +21,9 @@ export default class StreamTracker {
         value: `${Math.ceil((this.currentChunk / this.totalChunks) * 100)}%`,
         fileName: this.fileName,
       });
-      this.currentChunk++;
+      if (this.currentChunk < this.totalChunks) {
+        this.currentChunk++;
+      }
       controller.enqueue(chunk);
     } catch (error) {
       this.broadcast.close();
