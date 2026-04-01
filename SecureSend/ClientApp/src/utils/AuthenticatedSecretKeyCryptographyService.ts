@@ -18,6 +18,8 @@ export default class AuthenticatedSecretKeyCryptographyService {
 
   private readonly requirePassword: boolean;
 
+  private metadataKey!: CryptoKey;
+
   constructor(
     password?: string,
     b64Key?: string,
@@ -70,6 +72,7 @@ export default class AuthenticatedSecretKeyCryptographyService {
       this.masterKey as string
     );
     this.nonceBase = await this.generateNonceBase();
+    this.metadataKey = await this.deriveMetadataKey();
   }
 
   async generateNonceBase() {
@@ -204,5 +207,98 @@ export default class AuthenticatedSecretKeyCryptographyService {
         ])
       )
     );
+  }
+
+  /**
+   * Derives a separate encryption key for metadata using HKDF with domain separation
+   */
+  private async deriveMetadataKey(): Promise<CryptoKey> {
+    const encoder = new TextEncoder();
+    const inputKey = await crypto.subtle.importKey(
+      "raw",
+      this.derivedKey,
+      "HKDF",
+      false,
+      ["deriveKey"]
+    );
+
+    return await crypto.subtle.deriveKey(
+      {
+        name: "HKDF",
+        salt: this.salt,
+        info: encoder.encode("metadata-encryption-v1"),
+        hash: "SHA-256",
+      },
+      inputKey,
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  /**
+   * Encrypts metadata as a JSON object and returns base64-encoded encrypted blob
+   * @param metadata Object to encrypt (will be JSON stringified)
+   * @returns Base64-encoded encrypted metadata
+   */
+  public async encryptMetadata(metadata: object): Promise<string> {
+    const encoder = new TextEncoder();
+    const jsonData = encoder.encode(JSON.stringify(metadata));
+    
+    // Generate random nonce for this encryption
+    const nonce = crypto.getRandomValues(new Uint8Array(this.NONCE_LENGTH));
+    
+    const encryptedData = await crypto.subtle.encrypt(
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      this.metadataKey,
+      jsonData
+    );
+
+    // Prepend nonce to encrypted data for storage
+    const combined = new Uint8Array(nonce.length + encryptedData.byteLength);
+    combined.set(nonce, 0);
+    combined.set(new Uint8Array(encryptedData), nonce.length);
+
+    // Return as base64
+    return btoa(String.fromCharCode(...combined));
+  }
+
+  /**
+   * Decrypts base64-encoded metadata and returns parsed JSON object
+   * @param encryptedBase64 Base64-encoded encrypted metadata (nonce + ciphertext)
+   * @returns Decrypted metadata object
+   */
+  public async decryptMetadata(encryptedBase64: string): Promise<any> {
+    // Decode base64
+    const combined = new Uint8Array(
+      atob(encryptedBase64)
+        .split("")
+        .map((c) => c.charCodeAt(0))
+    );
+
+    // Extract nonce and ciphertext
+    const nonce = combined.slice(0, this.NONCE_LENGTH);
+    const ciphertext = combined.slice(this.NONCE_LENGTH);
+
+    const decryptedData = await crypto.subtle.decrypt(
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      this.metadataKey,
+      ciphertext
+    );
+
+    const decoder = new TextDecoder();
+    const jsonString = decoder.decode(decryptedData);
+    return JSON.parse(jsonString);
   }
 }

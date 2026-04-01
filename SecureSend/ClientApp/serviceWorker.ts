@@ -22,26 +22,41 @@ const decrypt = async (id: string, url: string) => {
   if (!fileData) return new Response(null, { status: 400 });
 
   try {
+    const urlParams = new URL(url).searchParams;
+    const fileName = urlParams.get("fileName");
+    
+    if (!fileName) {
+      throw new Error("fileName parameter missing");
+    }
+    
+    // Look up file metadata
+    const metadata = fileData.metadata?.[fileName];
+    if (!metadata) {
+      throw new Error("Metadata not found for file");
+    }
+
     const fileResponse = await fetch(url);
     if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
+    
+    // Use decrypted fileName for progress tracking
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
-      +fileResponse.headers.get("Content-Length"),
-      new URL(url).searchParams.get("fileName"),
+      +fileResponse.headers.get("Content-Length")!,
+      metadata.fileName,
       fileData.password
     );
+    
+    // Set headers based on decrypted metadata
     const headers = {
-      "Content-Disposition":
-        fileResponse.headers.get("Content-Disposition") ?? "attachment",
-      "Content-Type":
-        fileResponse.headers.get("Content-Type") ?? "application/octet-stream",
+      "Content-Disposition": `attachment; filename="${encodeURIComponent(metadata.fileName)}"`,
+      "Content-Type": metadata.contentType ?? "application/octet-stream",
       "Content-Length": fileResponse.headers.get("Content-Length")!,
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {
-    return new Response(null, { status: error.message });
+    return new Response(null, { status: 500 });
   }
 };
 

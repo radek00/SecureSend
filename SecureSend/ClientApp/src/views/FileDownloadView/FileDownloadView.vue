@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const isDownloadAllAvailable = useCheckHasFeature("showDirectoryPicker");
-const { downloadAll, setupDownload, fileDownloadStatuses } = useDownloadAll();
+const { downloadAll, setupDownload, fileDownloadStatuses, fileMetadata } = useDownloadAll();
 const { isPasswordValid, verifyPassword, password } = useDownloadForm();
 
 const isLoading = inject<Ref<boolean>>("isLoading");
@@ -32,7 +32,7 @@ const viewSecureUpload = async () => {
   );
   if (isPasswordValid.value) {
     secureUpload.value = upload;
-    setupDownload(
+    await setupDownload(
       secureUpload.value!,
       props.b64Key,
       props.verifyUploadResponse.isProtected ? password.value : undefined
@@ -66,10 +66,8 @@ if (!props.verifyUploadResponse.isProtected) {
         <FileCard
           v-for="[fileName, status] in fileDownloadStatuses"
           :key="fileName"
-          :file-name="fileName"
-          :size="
-            secureUpload!.files!.find((f) => f.fileName === fileName)?.fileSize
-          "
+          :file-name="fileMetadata.get(fileName)?.fileName ?? 'Unknown'"
+          :file-size="fileMetadata.get(fileName)?.fileSize ?? 0"
         >
           <template #cardBottom>
             <a

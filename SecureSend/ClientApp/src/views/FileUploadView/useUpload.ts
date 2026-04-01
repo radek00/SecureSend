@@ -49,15 +49,25 @@ export function useUpload() {
     try {
       await handlePause(file);
       const currentChunk = num + 1;
+      
+      // Encrypt metadata on first chunk only
+      let encryptedFileMetadata: string | undefined;
+      if (currentChunk === 1) {
+        const metadata = {
+          fileName: file.name,
+          contentType: file.type,
+          fileSize: file.size
+        };
+        encryptedFileMetadata = await keychain.encryptMetadata(metadata);
+      }
+      
       await SecureSendService.uploadChunk(
         uuid,
         currentChunk,
         totalChunks,
-        file.name,
         chunk,
-        file.type,
-        file.size,
         chunkId,
+        encryptedFileMetadata,
         controllers.get(file.name)?.signal
       );
       const progress = Math.ceil((currentChunk / totalChunks) * 100);

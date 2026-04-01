@@ -20,22 +20,26 @@ export abstract class SecureSendService {
     id: string,
     chunkNumber: number,
     totalChunks: number,
-    name: string,
     chunk: ArrayBuffer,
-    fileType: string,
-    totalFileSize: number,
     chunkId: string,
+    metadata?: string,
     controller?: AbortSignal
   ): Promise<void> => {
     const formData = new FormData();
-    formData.append("chunk", new Blob([chunk], { type: fileType }), name);
+    formData.append("chunk", new Blob([chunk]));
+    
+    let url = `${endpoints.uploadChunks}?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}&chunkId=${chunkId}`;
+    if (metadata) {
+      url += `&metadata=${encodeURIComponent(metadata)}`;
+    }
+    
     const requestOptions: RequestInit = {
       method: "POST",
       body: formData,
       signal: controller ?? undefined,
     };
     return await fetchWrapper.post<void>(
-      `${endpoints.uploadChunks}?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}&totalFileSize=${totalFileSize}&chunkId=${chunkId}`,
+      url,
       undefined,
       requestOptions
     );
