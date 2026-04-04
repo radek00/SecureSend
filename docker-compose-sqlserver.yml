@@ -1,4 +1,3 @@
-version: '3.4'
 volumes:
   secureSend:
 networks:
@@ -27,8 +26,8 @@ services:
     networks:
       - secureSend
     depends_on:
-      - db
-  db:
+      - db-sqlserver
+  db-sqlserver:
     image: "mcr.microsoft.com/mssql/server"
     environment:
       SA_PASSWORD: "YourStrong@Passw0rd"
