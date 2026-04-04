@@ -31,7 +31,7 @@ namespace SecureSend.Controllers
         {
             var fileStream = await _sender.Send(file, token);
             Response.Headers.Append("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
-            return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
+            return new FileStreamResult(fileStream.FileStream, "application/octet-stream");
         }
         
         [HttpGet]

@@ -31,7 +31,7 @@ namespace SecureSend.Application.Commands.Handlers
                 if (persisted is not null) await _repository.DeleteAsync(persisted, cancellationToken);
                 throw new SizeLimitExceededException();
             }
-            var secureFile = await _fileService.HandleChunk(chunk, command.uploadId, command.totalFileSize);
+            var secureFile = await _fileService.HandleChunk(chunk, command.uploadId, command.metadata);
 
             if (secureFile is not null)
             {

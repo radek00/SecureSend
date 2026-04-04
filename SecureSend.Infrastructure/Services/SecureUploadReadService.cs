@@ -26,7 +26,7 @@ namespace SecureSend.Infrastructure.Services
         public async Task<UploadedFilesReadModel?> GetUploadedFile(string fileName, Guid id, CancellationToken cancellationToken)
         {
             return await _files
-                        .Where(x => x.SecureSendUploadId == id && x.DisplayFileName == fileName)
+                        .Where(x => x.SecureSendUploadId == id && x.RandomFileName == fileName)
                         .AsNoTracking()
                         .FirstOrDefaultAsync(cancellationToken);
         }

@@ -27,8 +27,7 @@ namespace SecureSend.Application.Queries.Handlers
                 new FileResultDto
                 {
                     FileStream = stream,
-                    FileName = file.DisplayFileName,
-                    ContentType = file.ContentType
+                    FileName = file.RandomFileName
                 };
             
 
