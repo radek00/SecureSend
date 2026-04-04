@@ -20,14 +20,14 @@ namespace SecureSend.Application.Queries.Handlers
         {
             var file = await _secureUploadReadService.GetUploadedFile(WebUtility.HtmlEncode(request.fileName), request.id, cancellationToken);
             if (file == null) throw new FileDoesNotExistException(request.fileName);
-            var stream = _fileService.DownloadFile(file.SecureSendUploadId, file.RandomFileName);
+            var stream = _fileService.DownloadFile(file.SecureSendUploadId, file.FileName);
             if (stream == null) throw new NoSavedFileFoundException(WebUtility.HtmlEncode(request.fileName), file.SecureSendUploadId);
 
             return
                 new FileResultDto
                 {
                     FileStream = stream,
-                    FileName = file.RandomFileName
+                    FileName = file.FileName
                 };
             
 
