@@ -28,7 +28,7 @@ namespace SecureSend.Application.Commands.Handlers
                 ExpiryDate = upload.ExpiryDate,
                 Files = upload.Files.Select(f => new SecureFileDto 
                 { 
-                    FileName = f.RandomFileName, 
+                    FileName = f.FileName, 
                     Metadata = f.Metadata
                 })
 

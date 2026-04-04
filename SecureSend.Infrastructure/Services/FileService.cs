@@ -61,7 +61,7 @@ namespace SecureSend.Infrastructure.Services
             {
                 var uploadDir = GetUploadDirectory(uploadId);
                 var chunkDir = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
-                var finalFilePath = Path.Combine(uploadDir!.FullName, state.SecureSendFile.RandomFileName);
+                var finalFilePath = Path.Combine(uploadDir!.FullName, state.SecureSendFile.FileName);
 
                 if (chunk.ChunkNumber == state.NextChunk)
                 {

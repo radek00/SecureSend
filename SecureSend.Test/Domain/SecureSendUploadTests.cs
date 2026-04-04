@@ -53,7 +53,7 @@ public class SecureSendUploadTests
         upload.AddFile(SecureSendFile.Create(fileName, "application/octet-stream", new long()));
 
         Assert.Equal(upload.Files.First().DisplayFileName, WebUtility.HtmlEncode(fileName));
-        Assert.True(upload.Files.First().RandomFileName != fileName);
+        Assert.True(upload.Files.First().FileName != fileName);
 
     }
 

@@ -5,12 +5,12 @@ namespace SecureSend.Domain.ValueObjects
 {
     public record SecureSendFile
     {
-        public string RandomFileName { get; }
+        public string FileName { get; }
         public string Metadata { get; }
 
         public SecureSendFile(string fileName, string metadata)
         {
-            RandomFileName = fileName;
+            FileName = fileName;
             Metadata = metadata;
         }
 

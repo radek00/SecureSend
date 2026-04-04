@@ -27,14 +27,14 @@ namespace SecureSend.Domain.Entities
 
         public void AddFile(SecureSendFile file)
         {
-            var alreadyExists = Files.Any(f => f.RandomFileName == file.RandomFileName);
-            if (alreadyExists) throw new FileAlreadyExistsException(Id, file.RandomFileName);
+            var alreadyExists = Files.Any(f => f.FileName == file.FileName);
+            if (alreadyExists) throw new FileAlreadyExistsException(Id, file.FileName);
             Files.Add(file);
         }
 
         public void RemoveFile(string randomFileName)
         {
-            var existingFile = Files.FirstOrDefault(f => f.RandomFileName == randomFileName);
+            var existingFile = Files.FirstOrDefault(f => f.FileName == randomFileName);
             if (existingFile is not null) Files.Remove(existingFile);
         }
 
