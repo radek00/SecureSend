@@ -12,6 +12,7 @@ namespace SecureSend.Test.Application.Handlers;
 
 public class CancelUploadHandlerTests
 {
+    private const string SampleMetadata = "encrypted-metadata-sample";
     private readonly Mock<ISecureSendUploadRepository> _repository;
     private readonly Mock<IFileService> _fileService;
     private readonly SecureSendUpload upload;
@@ -24,14 +25,15 @@ public class CancelUploadHandlerTests
         _factory = new SecureSendUploadFactory();
         _fileService = new Mock<IFileService>();
         _commandHandler = new CancelUploadHandler(_fileService.Object, _repository.Object);
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, String.Empty);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
     }
     
     [Fact]
     public async Task Handle_Succeeds()
     {
-        upload.AddFile(SecureSendFile.Create("test.txt", "text/plain", new long()));
-        var command = new CancelUpload(Guid.NewGuid(), "test.txt");
+        var file = SecureSendFile.Create(SampleMetadata);
+        upload.AddFile(file);
+        var command = new CancelUpload(Guid.NewGuid(), file.FileName);
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
 

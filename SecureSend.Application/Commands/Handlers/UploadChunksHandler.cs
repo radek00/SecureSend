@@ -22,6 +22,10 @@ namespace SecureSend.Application.Commands.Handlers
         public async Task<Unit> Handle(UploadChunks command, CancellationToken cancellationToken)
         {
             var chunk = new SecureUploadChunk(command.chunkNumber, command.totalChunks, command.chunk, command.chunkId);
+            if (command.chunkNumber == 1 && string.IsNullOrWhiteSpace(command.metadata))
+            {
+                throw new MissingMetadataException();
+            }
             if (!_sizeTrackerService.TryUpdateUploadSize(command.uploadId, command.chunk.Length))
             {
                 
@@ -44,7 +48,6 @@ namespace SecureSend.Application.Commands.Handlers
                 
                 persisted.AddFile(secureFile);
                 await _repository.SaveChanges(cancellationToken);
-
             }
             return Unit.Value;
         }

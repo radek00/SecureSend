@@ -41,7 +41,7 @@ public class VerifySecureUploadHandlerTests
     {
         var upload = new SecureUploadsReadModel()
         {
-            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(-5), IsViewed = false
+            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(-5)
         };
         var query = new VerifyUpload(Guid.NewGuid());
         _readService.Setup(x => x.GetSecureUpload(query.id, It.IsAny<CancellationToken>()))!
@@ -58,7 +58,7 @@ public class VerifySecureUploadHandlerTests
     {
         var upload = new SecureUploadsReadModel()
         {
-            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(5), IsViewed = false, PasswordHash = Array.Empty<byte>()
+            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(5), PasswordHash = Array.Empty<byte>()
         };
         var query = new VerifyUpload(Guid.NewGuid());
         _readService.Setup(x => x.GetSecureUpload(query.id, It.IsAny<CancellationToken>()))!
@@ -76,7 +76,7 @@ public class VerifySecureUploadHandlerTests
     {
         var upload = new SecureUploadsReadModel()
         {
-            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(5), IsViewed = false
+            Id = Guid.NewGuid(), UploadDate = DateTime.Now, ExpiryDate = DateTime.Now.AddDays(5)
         };
         var query = new VerifyUpload(Guid.NewGuid());
         _readService.Setup(x => x.GetSecureUpload(query.id, It.IsAny<CancellationToken>()))!

@@ -29,7 +29,7 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async Task Handle_Throws_InvalidPasswordException()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, "testing");
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
@@ -42,13 +42,12 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async Task Handle_Succeeds_EmptyPassword()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), false, null);
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(-5), null);
         var command = new ViewSecureUpload(Guid.NewGuid(), "wrong password");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
         
         var result  = await _commandHandler.Handle(command, It.IsAny<CancellationToken>());
-        Assert.True(upload.IsViewed);
         Assert.NotNull(result);
         Assert.IsType<SecureUploadDto>(result);
     }
@@ -56,13 +55,12 @@ public class ViewSecureUploadHandlerTests
     [Fact]
     public async Task Handle_Succeeds_Protected()
     {
-        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, "testing");
+        var upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), "testing");
         var command = new ViewSecureUpload(Guid.NewGuid(), "testing");
         _repository.Setup(x => x.GetAsync(command.id, It.IsAny<CancellationToken>()))!
             .ReturnsAsync(upload);
         
         var result  = await _commandHandler.Handle(command, It.IsAny<CancellationToken>());
-        Assert.True(upload.IsViewed);
         Assert.NotNull(result);
         Assert.IsType<SecureUploadDto>(result);
     }

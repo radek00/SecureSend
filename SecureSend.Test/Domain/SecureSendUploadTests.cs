@@ -2,7 +2,6 @@ using SecureSend.Domain.Entities;
 using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.ValueObjects;
-using System.Net;
 
 namespace SecureSend.Test.Domain;
 
@@ -12,11 +11,12 @@ public class SecureSendUploadTests
 
     private readonly ISecureSendUploadFactory _factory;
     private readonly SecureSendUpload upload;
+    private const string SampleMetadata = "{\"fileName\":\"test_file\",\"contentType\":\"application/octet-stream\",\"fileSize\":0}";
 
     public SecureSendUploadTests()
     {
         _factory = new SecureSendUploadFactory();
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, "testing");
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), "testing");
     }
 
     #endregion
@@ -24,7 +24,7 @@ public class SecureSendUploadTests
     [Fact]
     public void AddFile_Succeeds()
     {
-        upload.AddFile(SecureSendFile.Create("test_file", "application/octet-stream", new long()));
+        upload.AddFile(SecureSendFile.Create(SampleMetadata));
         Assert.Single(upload.Files);
     }
 
@@ -34,34 +34,28 @@ public class SecureSendUploadTests
         IList<SecureSendFile> files = new List<SecureSendFile>();
         for (int i = 0; i < 5; i++)
         {
-            files.Add(SecureSendFile.Create($"{i}_test_file", "application/octet-stream", new long()));
+            var metadata = $"{{\"fileName\":\"{i}_test_file\",\"contentType\":\"application/octet-stream\",\"fileSize\":0}}";
+            files.Add(SecureSendFile.Create(metadata));
         }
         upload.AddMultipleFiles(files);
-        Assert.Collection(upload.Files,
-            x => Assert.Equal("0_test_file", x.DisplayFileName),
-            x => Assert.Equal("1_test_file", x.DisplayFileName),
-            x => Assert.Equal("2_test_file", x.DisplayFileName),
-            x => Assert.Equal("3_test_file", x.DisplayFileName),
-            x => Assert.Equal("4_test_file", x.DisplayFileName));
-
+        Assert.Equal(5, upload.Files.Count);
     }
 
     [Fact]
-    public void SecureSendFile_Has_Saintized_File_Names()
+    public void SecureSendFile_Has_Random_File_Names()
     {
-        var fileName = "<test>_file";
-        upload.AddFile(SecureSendFile.Create(fileName, "application/octet-stream", new long()));
-
-        Assert.Equal(upload.Files.First().DisplayFileName, WebUtility.HtmlEncode(fileName));
-        Assert.True(upload.Files.First().FileName != fileName);
-
+        var file1 = SecureSendFile.Create(SampleMetadata);
+        var file2 = SecureSendFile.Create(SampleMetadata);
+        
+        Assert.NotEqual(file1.FileName, file2.FileName);
     }
 
     [Fact]
     public void AddFile_Throws_FileAlreadyExistsException()
     {
-        upload.AddFile(SecureSendFile.Create("test_file", "application/octet-stream", new long()));
-        var exception = Record.Exception(() => upload.AddFile(SecureSendFile.Create("test_file", "application/octet-stream", new long())));
+        var file = SecureSendFile.Create(SampleMetadata);
+        upload.AddFile(file);
+        var exception = Record.Exception(() => upload.AddFile(file));
         Assert.NotNull(exception);
         Assert.IsType<FileAlreadyExistsException>(exception);
     }
@@ -69,10 +63,10 @@ public class SecureSendUploadTests
     [Fact]
     public void RemoveFile_Succeeds()
     {
-
-        upload.AddFile(SecureSendFile.Create("test_file", "application/octet-stream", new long()));
+        var file = SecureSendFile.Create(SampleMetadata);
+        upload.AddFile(file);
         Assert.Single(upload.Files);
-        upload.RemoveFile("test_file");
+        upload.RemoveFile(file.FileName);
         Assert.Empty(upload.Files);
     }
 
@@ -88,5 +82,35 @@ public class SecureSendUploadTests
     public void VerifyHash_Succeeds()
     {
         upload!.PasswordHash!.VerifyHash("testing");
+    }
+
+    [Fact]
+    public void Create_GeneratesRandomFileName()
+    {
+        var file1 = SecureSendFile.Create(SampleMetadata);
+        var file2 = SecureSendFile.Create(SampleMetadata);
+        Assert.NotEqual(file1.FileName, file2.FileName);
+    }
+
+    [Fact]
+    public void Create_ThrowsException_WhenMetadataEmpty()
+    {
+        var exception = Record.Exception(() => SecureSendFile.Create(""));
+        Assert.IsType<ArgumentException>(exception);
+    }
+
+    [Fact]
+    public void Create_ThrowsException_WhenMetadataNull()
+    {
+        var exception = Record.Exception(() => SecureSendFile.Create(null!));
+        Assert.IsType<ArgumentException>(exception);
+    }
+
+    [Fact]
+    public void Create_StoresMetadata()
+    {
+        var metadata = "{\"fileName\":\"test.txt\",\"contentType\":\"text/plain\",\"fileSize\":1024}";
+        var file = SecureSendFile.Create(metadata);
+        Assert.Equal(metadata, file.Metadata);
     }
 }
