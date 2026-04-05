@@ -28,16 +28,21 @@ const isLoading = inject<Ref<boolean>>("isLoading");
 const secureUpload = ref<SecureUploadDto | null | undefined>(null);
 
 const viewSecureUpload = async () => {
-  const upload = await verifyPassword(
-    props.verifyUploadResponse.secureUploadId
-  );
-  if (isPasswordValid.value) {
-    secureUpload.value = upload;
-    await setupDownload(
-      secureUpload.value!,
-      props.b64Key,
-      props.verifyUploadResponse.isProtected ? password.value : undefined
+  isLoading!.value = true;
+  try {
+    const upload = await verifyPassword(
+      props.verifyUploadResponse.secureUploadId
     );
+    if (isPasswordValid.value) {
+      secureUpload.value = upload;
+      await setupDownload(
+        secureUpload.value!,
+        props.b64Key,
+        props.verifyUploadResponse.isProtected ? password.value : undefined
+      );
+    }
+  } finally {
+    isLoading!.value = false;
   }
 };
 
@@ -49,7 +54,9 @@ if (!props.verifyUploadResponse.isProtected) {
   <div class="flex justify-center items-center mt-14 md:mt-20">
     <div
       class="w-11/12 md:w-6/12"
-      v-if="!verifyUploadResponse.isProtected || isPasswordValid"
+      v-if="
+        (!verifyUploadResponse.isProtected || isPasswordValid) && !isLoading
+      "
     >
       <h1 class="text-4xl text-gray-900 dark:text-white text-center">
         Download files
