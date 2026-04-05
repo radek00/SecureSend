@@ -24,11 +24,11 @@ const decrypt = async (id: string, url: string) => {
   try {
     const urlParams = new URL(url).searchParams;
     const fileName = urlParams.get("fileName");
-    
+
     if (!fileName) {
       throw new Error("fileName parameter missing");
     }
-    
+
     const metadata = fileData.metadata?.get(fileName);
     if (!metadata) {
       throw new Error("Metadata not found for file");
@@ -37,7 +37,7 @@ const decrypt = async (id: string, url: string) => {
     const fileResponse = await fetch(url);
     if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
-    
+
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
@@ -45,8 +45,7 @@ const decrypt = async (id: string, url: string) => {
       fileName,
       fileData.password
     );
-    
-    // Set headers based on decrypted metadata
+
     const headers = {
       "Content-Disposition": `attachment; filename="${encodeURIComponent(metadata.fileName)}"`,
       "Content-Type": metadata.contentType ?? "application/octet-stream",

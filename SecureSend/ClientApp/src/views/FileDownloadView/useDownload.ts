@@ -12,7 +12,7 @@ export function useDownloadAll() {
   const fileDownloadStatuses = ref<Map<string, DownloadStateTuple>>(
     new Map<string, DownloadStateTuple>()
   );
-  
+
   const fileMetadata = new Map<string, FileMetadata>();
 
   const setupDownload = async (
@@ -26,11 +26,13 @@ export function useDownloadAll() {
       b64Key
     );
     await keychain.start();
-    
+
     // Decrypt all file metadata
     if (secureUpload.files) {
       for (const file of secureUpload.files) {
-        const metadata = await keychain.decryptMetadata(file.metadata) as FileMetadata;
+        const metadata = (await keychain.decryptMetadata(
+          file.metadata
+        )) as FileMetadata;
         fileMetadata.set(file.fileName, metadata);
         fileDownloadStatuses.value.set(file.fileName, [
           "Download not started",
@@ -43,7 +45,7 @@ export function useDownloadAll() {
     //upgrade db containers => set concrete versions in docker compose
     //adjust tests
     //add end-to-end tests with playwright
-    
+
     navigator.serviceWorker.controller?.postMessage({
       request: "init",
       id: secureUpload.secureUploadId,
@@ -63,7 +65,7 @@ export function useDownloadAll() {
           if (!metadata) {
             throw new Error("Metadata not found");
           }
-          
+
           const writableStream = await (
             await directoryHandle.getFileHandle(metadata.fileName, {
               create: true,

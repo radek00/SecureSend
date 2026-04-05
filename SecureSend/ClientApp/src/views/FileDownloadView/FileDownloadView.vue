@@ -20,7 +20,8 @@ const props = defineProps<{
 }>();
 
 const isDownloadAllAvailable = useCheckHasFeature("showDirectoryPicker");
-const { downloadAll, setupDownload, fileDownloadStatuses, fileMetadata } = useDownloadAll();
+const { downloadAll, setupDownload, fileDownloadStatuses, fileMetadata } =
+  useDownloadAll();
 const { isPasswordValid, verifyPassword, password } = useDownloadForm();
 
 const isLoading = inject<Ref<boolean>>("isLoading");

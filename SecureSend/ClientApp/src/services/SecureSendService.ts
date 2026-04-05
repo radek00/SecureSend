@@ -27,22 +27,18 @@ export abstract class SecureSendService {
   ): Promise<void> => {
     const formData = new FormData();
     formData.append("chunk", new Blob([chunk]));
-    
+
     let url = `${endpoints.uploadChunks}?uploadId=${id}&chunkNumber=${chunkNumber}&totalChunks=${totalChunks}&chunkId=${chunkId}`;
     if (metadata) {
       url += `&metadata=${encodeURIComponent(metadata)}`;
     }
-    
+
     const requestOptions: RequestInit = {
       method: "POST",
       body: formData,
       signal: controller ?? undefined,
     };
-    return await fetchWrapper.post<void>(
-      url,
-      undefined,
-      requestOptions
-    );
+    return await fetchWrapper.post<void>(url, undefined, requestOptions);
   };
 
   static viewSecureUpload = async (
