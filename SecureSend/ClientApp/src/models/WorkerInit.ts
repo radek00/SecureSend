@@ -5,5 +5,5 @@ export interface IWorkerInit {
   b64key: string;
   password?: string;
   id: string;
-  metadata?: Record<string, FileMetadata>;
+  metadata?: Map<string, FileMetadata>;
 }

@@ -29,8 +29,7 @@ const decrypt = async (id: string, url: string) => {
       throw new Error("fileName parameter missing");
     }
     
-    // Look up file metadata
-    const metadata = fileData.metadata?.[fileName];
+    const metadata = fileData.metadata?.get(fileName);
     if (!metadata) {
       throw new Error("Metadata not found for file");
     }
@@ -39,12 +38,11 @@ const decrypt = async (id: string, url: string) => {
     if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
     
-    // Use decrypted fileName for progress tracking
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
       +fileResponse.headers.get("Content-Length")!,
-      metadata.fileName,
+      fileName,
       fileData.password
     );
     

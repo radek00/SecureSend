@@ -13,10 +13,7 @@ export function useDownloadAll() {
     new Map<string, DownloadStateTuple>()
   );
   
-  // Store file metadata for each file (key: fileName)
-  const fileMetadata = ref<Map<string, FileMetadata>>(
-    new Map<string, FileMetadata>()
-  );
+  const fileMetadata = new Map<string, FileMetadata>();
 
   const setupDownload = async (
     secureUpload: SecureUploadDto,
@@ -34,27 +31,25 @@ export function useDownloadAll() {
     if (secureUpload.files) {
       for (const file of secureUpload.files) {
         const metadata = await keychain.decryptMetadata(file.metadata) as FileMetadata;
-        fileMetadata.value.set(file.fileName, metadata);
+        fileMetadata.set(file.fileName, metadata);
         fileDownloadStatuses.value.set(file.fileName, [
           "Download not started",
           DownloadState.NewFile,
         ]);
       }
     }
-    
-    // Convert Map to Record for service worker
-    // this is probably useless. If service worker can handle Map, we can just pass the Map directly. If it can't, we can convert to Record like this
-    const metadataRecord: Record<string, FileMetadata> = {};
-    fileMetadata.value.forEach((metadata, fileName) => {
-      metadataRecord[fileName] = metadata;
-    });
+    //todo
+    //check reactivity of fileMetadata
+    //upgrade db containers => set concrete versions in docker compose
+    //adjust tests
+    //add end-to-end tests with playwright
     
     navigator.serviceWorker.controller?.postMessage({
       request: "init",
       id: secureUpload.secureUploadId,
       b64key: b64Key,
-      password: password,
-      metadata: metadataRecord,
+      password: password ?? undefined,
+      metadata: fileMetadata,
     } as IWorkerInit);
   };
   const downloadAll = async (secureUpload: SecureUploadDto) => {
@@ -64,7 +59,7 @@ export function useDownloadAll() {
     for (const file of files) {
       const promise = async (): Promise<void> => {
         try {
-          const metadata = fileMetadata.value.get(file.fileName);
+          const metadata = fileMetadata.get(file.fileName);
           if (!metadata) {
             throw new Error("Metadata not found");
           }
