@@ -96,14 +96,14 @@ public class SecureSendUploadTests
     public void Create_ThrowsException_WhenMetadataEmpty()
     {
         var exception = Record.Exception(() => SecureSendFile.Create(""));
-        Assert.IsType<ArgumentException>(exception);
+        Assert.IsType<MissingMetadataException>(exception);
     }
 
     [Fact]
     public void Create_ThrowsException_WhenMetadataNull()
     {
         var exception = Record.Exception(() => SecureSendFile.Create(null!));
-        Assert.IsType<ArgumentException>(exception);
+        Assert.IsType<MissingMetadataException>(exception);
     }
 
     [Fact]

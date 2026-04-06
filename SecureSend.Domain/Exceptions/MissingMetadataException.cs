@@ -1,6 +1,5 @@
-using SecureSend.Domain.Exceptions;
 
-namespace SecureSend.Application.Exceptions;
+namespace SecureSend.Domain.Exceptions;
 
 public class MissingMetadataException : SecureSendException
 {

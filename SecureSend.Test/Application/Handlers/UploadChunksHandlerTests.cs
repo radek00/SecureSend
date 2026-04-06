@@ -6,6 +6,7 @@ using SecureSend.Application.Commands.Handlers;
 using SecureSend.Application.Exceptions;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Entities;
+using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.Repositories;
 using SecureSend.Domain.ValueObjects;

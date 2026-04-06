@@ -1,5 +1,4 @@
 ﻿using SecureSend.Domain.Exceptions;
-using System.Net;
 
 namespace SecureSend.Domain.ValueObjects
 {
@@ -17,7 +16,7 @@ namespace SecureSend.Domain.ValueObjects
         public static SecureSendFile Create(string metadata)
         {
             if (string.IsNullOrEmpty(metadata)) 
-                throw new ArgumentException("Metadata cannot be null or empty", nameof(metadata));
+                throw new MissingMetadataException();
             
             return new SecureSendFile(Path.GetRandomFileName(), metadata);
         }
