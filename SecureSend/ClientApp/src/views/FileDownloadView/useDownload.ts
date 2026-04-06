@@ -40,11 +40,6 @@ export function useDownloadAll() {
         ]);
       }
     }
-    //todo
-    //check reactivity of fileMetadata
-    //upgrade db containers => set concrete versions in docker compose
-    //adjust tests
-    //add end-to-end tests with playwright
 
     navigator.serviceWorker.controller?.postMessage({
       request: "init",
