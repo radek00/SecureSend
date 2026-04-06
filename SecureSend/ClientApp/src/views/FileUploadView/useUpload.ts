@@ -50,7 +50,6 @@ export function useUpload() {
       await handlePause(file);
       const currentChunk = num + 1;
 
-      // Encrypt metadata on first chunk only
       let encryptedFileMetadata: string | undefined;
       if (currentChunk === 1) {
         const metadata = {
