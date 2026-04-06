@@ -9,6 +9,7 @@ import {
   UploadExpiredError,
 } from "@/models/errors/ResponseErrors";
 import type { UploadVerifyResponseDTO } from "@/models/VerifyUploadResponseDTO";
+import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
 
 describe("FileDownloadView", () => {
   let wrapper: VueWrapper<any>;
@@ -22,6 +23,16 @@ describe("FileDownloadView", () => {
           postMessage: () => {},
         },
       },
+    });
+    vi.spyOn(
+      AuthenticatedSecretKeyCryptographyService.prototype,
+      "start"
+    ).mockResolvedValue();
+    vi.spyOn(
+      AuthenticatedSecretKeyCryptographyService.prototype,
+      "decryptMetadata"
+    ).mockImplementation(async (encryptedMetadata: string) => {
+      return JSON.parse(encryptedMetadata);
     });
     const component = mountComponent(App);
     wrapper = component.wrapper;
@@ -62,17 +73,21 @@ describe("FileDownloadView", () => {
       expiryDate: null,
       files: [
         {
-          fileName: "test.txt",
-          contentType: "application/text",
-          fileSize: 100,
+          fileName: "random-file-name.bin",
+          metadata: JSON.stringify({
+            fileName: "test.txt",
+            contentType: "application/text",
+            fileSize: 100,
+          }),
         },
       ],
     });
     await unlockButton.trigger("submit");
+    await flushPromises();
     await wrapper.vm.$nextTick();
     expect(wrapper.html()).toContain("test.txt");
     expect(wrapper.find("a").attributes("href")).toEqual(
-      "/api/SecureSend/download?id=280a2753-5b23-4fbd-83fe-b080379c3ad2&fileName=test.txt"
+      "/api/SecureSend/download?id=280a2753-5b23-4fbd-83fe-b080379c3ad2&fileName=random-file-name.bin"
     );
   });
 
