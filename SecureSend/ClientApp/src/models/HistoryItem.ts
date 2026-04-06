@@ -1,8 +1,8 @@
-import type { SecureFileDto } from "@/models/SecureFileDto";
+import type { FileMetadata, SecureFileDto } from "@/models/SecureFileDto";
 
 export interface HistoryItem {
   link: string;
   uploadDate: string;
   expirationDate: string;
-  files: Partial<SecureFileDto>[];
+  files: Partial<SecureFileDto & FileMetadata>[];
 }
