@@ -20,15 +20,17 @@ namespace SecureSend.Application.Commands.Handlers
             {
                 upload.PasswordHash.VerifyHash(request.password);
             }
-            upload.MarkAsViewed();
-            await _repository.SaveChanges(cancellationToken);
 
             var uploadDto = new SecureUploadDto()
             {
                 SecureUploadId = upload.Id,
                 UploadDate = upload.UploadDate,
                 ExpiryDate = upload.ExpiryDate,
-                Files = upload.Files.Select(f => new SecureFileDto { ContentType = f.ContentType, FileName = f.DisplayFileName, FileSize = f.FileSize})
+                Files = upload.Files.Select(f => new SecureFileDto 
+                { 
+                    FileName = f.FileName, 
+                    Metadata = f.Metadata
+                })
 
             };
 

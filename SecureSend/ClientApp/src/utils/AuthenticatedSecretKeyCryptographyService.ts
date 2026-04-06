@@ -1,3 +1,5 @@
+import type { FileMetadata } from "@/models/SecureFileDto";
+
 export default class AuthenticatedSecretKeyCryptographyService {
   public static readonly KEY_LENGTH_IN_BYTES = 32;
   public static readonly SALT_LENGTH_IN_BYTES = 16;
@@ -5,18 +7,18 @@ export default class AuthenticatedSecretKeyCryptographyService {
 
   private readonly NONCE_LENGTH = 12;
   private readonly tagLengthInBytes: number;
-
   private readonly ALGORITHM = "AES-GCM";
 
-  private cryptoKey!: CryptoKey;
-  private derivedKey!: ArrayBuffer;
   private readonly masterKey: string | Uint8Array;
-
   private readonly salt: Uint8Array<ArrayBuffer>;
-  private nonceBase!: ArrayBuffer;
-  public seq: number;
-
   private readonly requirePassword: boolean;
+
+  private derivedKey: ArrayBuffer | null = null;
+  private cryptoKey: CryptoKey | null = null;
+  private nonceBase: ArrayBuffer | null = null;
+  private metadataKey: CryptoKey | null = null;
+
+  public seq: number;
 
   constructor(
     password?: string,
@@ -65,18 +67,30 @@ export default class AuthenticatedSecretKeyCryptographyService {
     );
   }
 
-  async start() {
-    this.cryptoKey = await this.getCryptoKeyFromRawKey(
-      this.masterKey as string
+  async start(): Promise<void> {
+    this.derivedKey = this.requirePassword
+      ? await this.derivePbkdfKeyMaterial(this.masterKey as string)
+      : await this.deriveHkdfKeyMaterial(this.masterKey as Uint8Array);
+
+    this.cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      this.derivedKey!,
+      { name: this.ALGORITHM },
+      true,
+      ["encrypt", "decrypt"]
     );
-    this.nonceBase = await this.generateNonceBase();
+
+    this.nonceBase = await this.generateNonceBase(this.derivedKey!);
+    this.metadataKey = await this.deriveMetadataKey(this.derivedKey!);
   }
 
-  async generateNonceBase() {
+  private async generateNonceBase(
+    derivedKey: ArrayBuffer
+  ): Promise<ArrayBuffer> {
     const encoder = new TextEncoder();
     const inputKey = await crypto.subtle.importKey(
       "raw",
-      this.derivedKey,
+      derivedKey,
       "HKDF",
       false,
       ["deriveKey"]
@@ -104,56 +118,65 @@ export default class AuthenticatedSecretKeyCryptographyService {
     return base.slice(0, this.NONCE_LENGTH);
   }
 
-  generateNonce(seq: number) {
+  private generateNonce(seq: number, nonceBase: ArrayBuffer) {
     if (seq > 0xffffffff) {
       throw new Error("record sequence number exceeds limit");
     }
-    const nonce = new DataView(this.nonceBase.slice(0));
+    const nonce = new DataView(nonceBase.slice(0));
     const m = nonce.getUint32(nonce.byteLength - 4);
     const xor = (m ^ seq) >>> 0; //forces unsigned int xor
     nonce.setUint32(nonce.byteLength - 4, xor);
     return new Uint8Array(nonce.buffer);
   }
 
-  public async getCryptoKeyFromRawKey(password: string) {
-    this.derivedKey = this.requirePassword
-      ? await this.derivePbkdfKeyMaterial(password)
-      : await this.deriveHkdfKeyMaterial();
-    return await crypto.subtle.importKey(
-      "raw",
-      this.derivedKey,
-      {
-        name: this.ALGORITHM,
-      },
-      true,
-      ["encrypt", "decrypt"]
-    );
-  }
-
-  public async encrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
-    const nonce = this.generateNonce(seq);
+  private async encryptWithKey(
+    data: Uint8Array,
+    seq: number,
+    cryptoKey: CryptoKey,
+    nonceBase: ArrayBuffer
+  ): Promise<ArrayBuffer> {
+    const nonce = this.generateNonce(seq, nonceBase);
     return await crypto.subtle.encrypt(
       {
         name: this.ALGORITHM,
         iv: nonce,
         tagLength: this.tagLengthInBytes * 8,
       },
-      this.cryptoKey,
+      cryptoKey,
       data.buffer as ArrayBuffer
     );
   }
 
-  public async decrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
-    const nonce = this.generateNonce(seq);
+  public async encrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
+    if (!this.cryptoKey || !this.nonceBase) {
+      throw new Error("Service not initialized. Call start() first.");
+    }
+    return this.encryptWithKey(data, seq, this.cryptoKey!, this.nonceBase!);
+  }
+
+  private async decryptWithKey(
+    data: Uint8Array,
+    seq: number,
+    cryptoKey: CryptoKey,
+    nonceBase: ArrayBuffer
+  ): Promise<ArrayBuffer> {
+    const nonce = this.generateNonce(seq, nonceBase);
     return await crypto.subtle.decrypt(
       {
         name: this.ALGORITHM,
         iv: nonce,
         tagLength: this.tagLengthInBytes * 8,
       },
-      this.cryptoKey,
+      cryptoKey,
       data as Uint8Array<ArrayBuffer>
     );
+  }
+
+  public async decrypt(data: Uint8Array, seq: number): Promise<ArrayBuffer> {
+    if (!this.cryptoKey || !this.nonceBase) {
+      throw new Error("Service not initialized. Call start() first.");
+    }
+    return this.decryptWithKey(data, seq, this.cryptoKey!, this.nonceBase!);
   }
 
   private async derivePbkdfKeyMaterial(password: string): Promise<ArrayBuffer> {
@@ -165,18 +188,19 @@ export default class AuthenticatedSecretKeyCryptographyService {
       false,
       ["deriveBits"]
     );
-    const keyBuffer = await crypto.subtle.deriveBits(
+    return await crypto.subtle.deriveBits(
       { name: "PBKDF2", salt: this.salt, iterations: 1e6, hash: "SHA-256" },
       keyMaterial,
       256
     );
-    return keyBuffer;
   }
 
-  private async deriveHkdfKeyMaterial() {
+  private async deriveHkdfKeyMaterial(
+    masterKey: Uint8Array
+  ): Promise<ArrayBuffer> {
     const keyMaterial = await crypto.subtle.importKey(
       "raw",
-      this.masterKey as BufferSource,
+      masterKey as BufferSource,
       "HKDF",
       false,
       ["deriveBits"]
@@ -190,11 +214,11 @@ export default class AuthenticatedSecretKeyCryptographyService {
         hash: "SHA-256",
       },
       keyMaterial,
-      256 // 256 bits key length
+      256
     );
   }
 
-  getSecret() {
+  getSecret(): string {
     if (this.requirePassword) return btoa(String.fromCharCode(...this.salt));
     return btoa(
       String.fromCharCode(
@@ -204,5 +228,98 @@ export default class AuthenticatedSecretKeyCryptographyService {
         ])
       )
     );
+  }
+
+  private async deriveMetadataKey(derivedKey: ArrayBuffer): Promise<CryptoKey> {
+    const encoder = new TextEncoder();
+    const inputKey = await crypto.subtle.importKey(
+      "raw",
+      derivedKey,
+      "HKDF",
+      false,
+      ["deriveKey"]
+    );
+
+    return await crypto.subtle.deriveKey(
+      {
+        name: "HKDF",
+        salt: this.salt,
+        info: encoder.encode("metadata-encryption-v1"),
+        hash: "SHA-256",
+      },
+      inputKey,
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  private async encryptMetadataWithKey(
+    metadata: object,
+    metadataKey: CryptoKey
+  ): Promise<string> {
+    const encoder = new TextEncoder();
+    const jsonData = encoder.encode(JSON.stringify(metadata));
+    const nonce = crypto.getRandomValues(new Uint8Array(this.NONCE_LENGTH));
+
+    const encryptedData = await crypto.subtle.encrypt(
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      metadataKey,
+      jsonData
+    );
+
+    const combined = new Uint8Array(nonce.length + encryptedData.byteLength);
+    combined.set(nonce, 0);
+    combined.set(new Uint8Array(encryptedData), nonce.length);
+
+    return btoa(String.fromCharCode(...combined));
+  }
+
+  public async encryptMetadata(metadata: object): Promise<string> {
+    if (!this.metadataKey) {
+      throw new Error("Service not initialized. Call start() first.");
+    }
+    return this.encryptMetadataWithKey(metadata, this.metadataKey!);
+  }
+  private async decryptMetadataWithKey(
+    encryptedBase64: string,
+    metadataKey: CryptoKey
+  ): Promise<FileMetadata> {
+    const combined = new Uint8Array(
+      atob(encryptedBase64)
+        .split("")
+        .map((c) => c.charCodeAt(0))
+    );
+
+    const nonce = combined.slice(0, this.NONCE_LENGTH);
+    const ciphertext = combined.slice(this.NONCE_LENGTH);
+
+    const decryptedData = await crypto.subtle.decrypt(
+      {
+        name: this.ALGORITHM,
+        iv: nonce,
+        tagLength: this.tagLengthInBytes * 8,
+      },
+      metadataKey,
+      ciphertext
+    );
+
+    const decoder = new TextDecoder();
+    const jsonString = decoder.decode(decryptedData);
+    return JSON.parse(jsonString);
+  }
+
+  public async decryptMetadata(encryptedBase64: string): Promise<FileMetadata> {
+    if (!this.metadataKey) {
+      throw new Error("Service not initialized. Call start() first.");
+    }
+    return this.decryptMetadataWithKey(encryptedBase64, this.metadataKey!);
   }
 }

@@ -1,8 +1,10 @@
 import { SecureSendService } from "@/services/SecureSendService";
 import { DownloadState, type DownloadStateTuple } from "@/models/DownloadState";
 import type { SecureUploadDto } from "@/models/SecureUploadDto";
+import type { FileMetadata } from "@/models/SecureFileDto";
 import { onUnmounted, ref } from "vue";
 import type { IWorkerInit } from "@/models/WorkerInit";
+import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
 
 export function useDownloadAll() {
   const broadcast = new BroadcastChannel("progress-channel");
@@ -11,22 +13,38 @@ export function useDownloadAll() {
     new Map<string, DownloadStateTuple>()
   );
 
-  const setupDownload = (
+  const fileMetadata = new Map<string, FileMetadata>();
+
+  const setupDownload = async (
     secureUpload: SecureUploadDto,
     b64Key: string,
     password?: string
   ) => {
-    secureUpload.files!.forEach((file) =>
-      fileDownloadStatuses.value.set(file.fileName!, [
-        "Download not started",
-        DownloadState.NewFile,
-      ])
+    const keychain = new AuthenticatedSecretKeyCryptographyService(
+      password,
+      b64Key
     );
+    await keychain.start();
+
+    if (secureUpload.files) {
+      for (const file of secureUpload.files) {
+        const metadata = (await keychain.decryptMetadata(
+          file.metadata
+        )) as FileMetadata;
+        fileMetadata.set(file.fileName, metadata);
+        fileDownloadStatuses.value.set(file.fileName, [
+          "Download not started",
+          DownloadState.NewFile,
+        ]);
+      }
+    }
+
     navigator.serviceWorker.controller?.postMessage({
       request: "init",
       id: secureUpload.secureUploadId,
       b64key: b64Key,
-      password: password,
+      password: password ?? undefined,
+      metadata: fileMetadata,
     } as IWorkerInit);
   };
   const downloadAll = async (secureUpload: SecureUploadDto) => {
@@ -36,22 +54,27 @@ export function useDownloadAll() {
     for (const file of files) {
       const promise = async (): Promise<void> => {
         try {
+          const metadata = fileMetadata.get(file.fileName);
+          if (!metadata) {
+            throw new Error("Metadata not found");
+          }
+
           const writableStream = await (
-            await directoryHandle.getFileHandle(file.fileName!, {
+            await directoryHandle.getFileHandle(metadata.fileName, {
               create: true,
             })
           ).createWritable();
           const response = await SecureSendService.downloadFile(
             secureUpload.secureUploadId!,
-            file.fileName!
+            file.fileName
           );
           await response.body!.pipeTo(writableStream);
-          fileDownloadStatuses.value.set(file.fileName!, [
+          fileDownloadStatuses.value.set(file.fileName, [
             "Download completed",
             DownloadState.Completed,
           ]);
         } catch {
-          fileDownloadStatuses.value.set(file.fileName!, [
+          fileDownloadStatuses.value.set(file.fileName, [
             "Error with downloading file",
             DownloadState.Failed,
           ]);
@@ -78,5 +101,5 @@ export function useDownloadAll() {
     broadcast.close();
   });
 
-  return { downloadAll, setupDownload, fileDownloadStatuses };
+  return { downloadAll, setupDownload, fileDownloadStatuses, fileMetadata };
 }

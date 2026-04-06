@@ -1,28 +1,24 @@
 ﻿using SecureSend.Domain.Exceptions;
-using System.Net;
 
 namespace SecureSend.Domain.ValueObjects
 {
     public record SecureSendFile
     {
-        public string DisplayFileName { get; }
-        public string RandomFileName { get; }
-        public string ContentType { get; }
-        public long FileSize { get; }
+        public string FileName { get; }
+        public string Metadata { get; }
 
-        public SecureSendFile(string displayFileName, string contentType, long fileSize, string randomFileName)
+        public SecureSendFile(string fileName, string metadata)
         {
-            DisplayFileName = displayFileName;
-            ContentType = contentType;
-            FileSize = fileSize;
-            RandomFileName = randomFileName;
+            FileName = fileName;
+            Metadata = metadata;
         }
 
-        public static SecureSendFile Create(string displayFileName, string contentType, long fileSize)
+        public static SecureSendFile Create(string metadata)
         {
-            if (string.IsNullOrEmpty(displayFileName)) throw new EmptyFileNameException();
-            return new SecureSendFile(WebUtility.HtmlEncode(displayFileName), contentType, fileSize,
-                Path.GetRandomFileName());
+            if (string.IsNullOrEmpty(metadata)) 
+                throw new MissingMetadataException("Metadata must be provided.");
+            
+            return new SecureSendFile(Path.GetRandomFileName(), metadata);
         }
     }
 }

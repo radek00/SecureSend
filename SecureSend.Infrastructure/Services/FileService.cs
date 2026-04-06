@@ -39,12 +39,14 @@ namespace SecureSend.Infrastructure.Services
             return file != null ? new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true) : null;
         }
 
-        public async Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize)
+        public async Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, string? metadata)
         {
             var uploadStates = _uploadStates.GetOrAdd(uploadId, _ => new ConcurrentDictionary<string, UploadState>());
             var state = uploadStates.GetOrAdd(chunk.ChunkDirectory, _ => new UploadState
             {
-                SecureSendFile = SecureSendFile.Create(chunk.Chunk.FileName, chunk.ContentType, totalFileSize),
+                SecureSendFile = metadata != null 
+                    ? SecureSendFile.Create(metadata) 
+                    : throw new MissingMetadataException("Metadata must be provided on first chunk."),
                 TotalChunks = chunk.TotalChunks
             });
 
@@ -59,7 +61,7 @@ namespace SecureSend.Infrastructure.Services
             {
                 var uploadDir = GetUploadDirectory(uploadId);
                 var chunkDir = GetChunkDirectory(uploadId, chunk.ChunkDirectory);
-                var finalFilePath = Path.Combine(uploadDir!.FullName, state.SecureSendFile.RandomFileName);
+                var finalFilePath = Path.Combine(uploadDir!.FullName, state.SecureSendFile.FileName);
 
                 if (chunk.ChunkNumber == state.NextChunk)
                 {

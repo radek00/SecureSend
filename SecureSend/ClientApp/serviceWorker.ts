@@ -22,26 +22,38 @@ const decrypt = async (id: string, url: string) => {
   if (!fileData) return new Response(null, { status: 400 });
 
   try {
+    const urlParams = new URL(url).searchParams;
+    const fileName = urlParams.get("fileName");
+
+    if (!fileName) {
+      throw new Error("fileName parameter missing");
+    }
+
+    const metadata = fileData.metadata?.get(fileName);
+    if (!metadata) {
+      throw new Error("Metadata not found for file");
+    }
+
     const fileResponse = await fetch(url);
     if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
+
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
-      +fileResponse.headers.get("Content-Length"),
-      new URL(url).searchParams.get("fileName"),
+      +fileResponse.headers.get("Content-Length")!,
+      fileName,
       fileData.password
     );
+
     const headers = {
-      "Content-Disposition":
-        fileResponse.headers.get("Content-Disposition") ?? "attachment",
-      "Content-Type":
-        fileResponse.headers.get("Content-Type") ?? "application/octet-stream",
-      "Content-Length": fileResponse.headers.get("Content-Length")!,
+      "Content-Disposition": `attachment; filename="${metadata.fileName}"`,
+      "Content-Type": metadata.contentType ?? "application/octet-stream",
+      "Content-Length": metadata.fileSize,
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {
-    return new Response(null, { status: error.message });
+    return new Response(null, { status: 500 });
   }
 };
 

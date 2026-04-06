@@ -1,4 +1,3 @@
-version: '3.4'
 volumes:
   secureSend:
 networks:
@@ -15,7 +14,7 @@ services:
       - Database=SqlServer
 
     #sql server options
-      - SqlServerOptions__Server=db
+      - SqlServerOptions__Server=db-sqlserver
       - SqlServerOptions__Port=1433
       - SqlServerOptions__Database=SecureSend
       - SqlServerOptions__TrustedConnection=False
@@ -27,9 +26,10 @@ services:
     networks:
       - secureSend
     depends_on:
-      - db
-  db:
-    image: "mcr.microsoft.com/mssql/server"
+      - db-sqlserver
+  db-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    restart: always
     environment:
       SA_PASSWORD: "YourStrong@Passw0rd"
       ACCEPT_EULA: "Y"

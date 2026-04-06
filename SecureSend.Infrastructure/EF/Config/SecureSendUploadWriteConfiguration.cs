@@ -14,7 +14,6 @@ namespace SecureSend.Infrastructure.EF.Config
 
             var uploadDateConverter = new ValueConverter<SecureSendUploadDate, DateTime>(d => d.Value, d => new SecureSendUploadDate(d));
             var expiryDateConverter = new ValueConverter<SecureSendExpiryDate, DateTime?>(d => d.Value, d => new SecureSendExpiryDate(d));
-            var isViewedConverter = new ValueConverter<SecureSendIsViewed, bool>(v => v.Value, v => new SecureSendIsViewed(v));
             var passwordHashConverter =
                 new ValueConverter<SecureSendPasswordHash, byte[]?>(v => v.Value, v => new SecureSendPasswordHash(v));
 
@@ -30,10 +29,6 @@ namespace SecureSend.Infrastructure.EF.Config
                 .HasColumnName("ExpiryDate")
                 .IsRequired(false);
 
-            builder.Property(p => p.IsViewed)
-                .HasConversion(isViewedConverter)
-                .HasColumnName("IsViewed");
-
             builder.Property(p => p.PasswordHash)
                 .HasConversion(passwordHashConverter!)
                 .HasColumnName("PasswordHash")
@@ -43,10 +38,8 @@ namespace SecureSend.Infrastructure.EF.Config
             {
                 fileBuilder.Property<int>("Id");
                 fileBuilder.HasKey("Id");
-                fileBuilder.Property(p => p.DisplayFileName);
-                fileBuilder.Property(p => p.RandomFileName);
-                fileBuilder.Property(p => p.ContentType);
-                fileBuilder.Property(p => p.FileSize);
+                fileBuilder.Property(p => p.FileName);
+                fileBuilder.Property(p => p.Metadata).IsRequired(true);
 
                 fileBuilder.ToTable("UploadedFiles");
 

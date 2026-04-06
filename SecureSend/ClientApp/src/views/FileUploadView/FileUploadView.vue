@@ -289,7 +289,7 @@ import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
 import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 import { useFileLimits } from "@/utils/composables/useFileLimits";
 import UploadHistory from "@/components/UploadHistory/UploadHistory.vue";
-import type { SecureFileDto } from "@/models/SecureFileDto";
+import type { FileMetadata, SecureFileDto } from "@/models/SecureFileDto";
 import type { HistoryItem } from "@/models/HistoryItem";
 import { useLocalStorage } from "@/utils/composables/useLocalStorage";
 import { isDesktop, useScreenSize } from "@/utils/composables/useScreenSize";
@@ -380,7 +380,7 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 const addToHistory = () => {
-  const uploadedFiles: Partial<SecureFileDto>[] = [];
+  const uploadedFiles: Partial<SecureFileDto & FileMetadata>[] = [];
   files.value.forEach((_value, file) => {
     uploadedFiles.push({ fileName: file.name, fileSize: file.size });
   });

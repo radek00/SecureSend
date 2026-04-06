@@ -31,7 +31,7 @@ namespace SecureSend.Controllers
         {
             var fileStream = await _sender.Send(file, token);
             Response.Headers.Append("Content-Disposition", $"attachment;filename={HttpUtility.UrlEncode(fileStream.FileName)}");
-            return new FileStreamResult(fileStream.FileStream, fileStream.ContentType);
+            return new FileStreamResult(fileStream.FileStream, "application/octet-stream");
         }
         
         [HttpGet]
@@ -50,7 +50,7 @@ namespace SecureSend.Controllers
 
         [HttpPost]
         [Route("uploadChunks")]
-        public async Task<IActionResult> UploadChunks([FromQuery] UploadChunks command, CancellationToken token)
+        public async Task<IActionResult> UploadChunks([FromForm] UploadChunks command, CancellationToken token)
         {
             await _sender.Send(command, token);
             return NoContent();

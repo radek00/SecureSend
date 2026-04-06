@@ -10,10 +10,10 @@ namespace SecureSend.Domain.Factories
 
         }
 
-        public SecureSendUpload CreateSecureSendUpload(Guid id, DateTime? expiryDate, bool isViewed, string? password)
+        public SecureSendUpload CreateSecureSendUpload(Guid id, DateTime? expiryDate, string? password)
         {
             return new SecureSendUpload(SecureSendUploadId.Create(id), SecureSendUploadDate.Create(),
-                SecureSendExpiryDate.Create(expiryDate), new SecureSendIsViewed(isViewed),
+                SecureSendExpiryDate.Create(expiryDate), 
                 SecureSendPasswordHash.Create(password));
         }
     }

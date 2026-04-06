@@ -6,7 +6,7 @@ namespace SecureSend.Application.Services
     public interface IFileService
     {
         FileStream? DownloadFile(Guid uploadId, string fileName);
-        Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, long totalFileSize);
+        Task<SecureSendFile?> HandleChunk(SecureUploadChunk chunk, Guid uploadId, string? metadata);
 
         void RemoveUpload(Guid uploadId);
         void RemoveFileFromUpload(Guid uploadId, string fileName);

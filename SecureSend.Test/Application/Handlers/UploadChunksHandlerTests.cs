@@ -6,6 +6,7 @@ using SecureSend.Application.Commands.Handlers;
 using SecureSend.Application.Exceptions;
 using SecureSend.Application.Services;
 using SecureSend.Domain.Entities;
+using SecureSend.Domain.Exceptions;
 using SecureSend.Domain.Factories;
 using SecureSend.Domain.Repositories;
 using SecureSend.Domain.ValueObjects;
@@ -23,6 +24,7 @@ public class UploadChunksHandlerTests
     private readonly ISecureSendUploadFactory _factory;
     private readonly ICommandHandler<UploadChunks, Unit> _commandHandler;
     private readonly SecureSendUpload upload;
+    private const string SampleMetadata = "{\"fileName\":\"file.txt\",\"contentType\":\"text/plain\",\"fileSize\":96648224}";
 
     public UploadChunksHandlerTests()
     {
@@ -31,7 +33,7 @@ public class UploadChunksHandlerTests
         _uploadSizeTrackerService = new Mock<IUploadSizeTrackerService>();
         _commandHandler = new UploadChunksHandler(_fileService.Object, _repository.Object, _uploadSizeTrackerService.Object);
         _factory = new SecureSendUploadFactory();
-        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), false, String.Empty);
+        upload = _factory.CreateSecureSendUpload(Guid.NewGuid(), DateTime.Now.AddDays(5), String.Empty);
         _file = new Mock<IFormFile>();
         _file.Setup(x => x.FileName).Returns("file.txt");
         _file.Setup(x => x.ContentType).Returns("text/plain");
@@ -47,13 +49,13 @@ public class UploadChunksHandlerTests
     [Fact]
     public async Task Handle_Succeeds_When_Last_Chunk_Merged()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
-        var secureFile = SecureSendFile.Create("file.txt", "text/plain", command.totalFileSize);
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, Guid.NewGuid(), SampleMetadata);
+        var secureFile = SecureSendFile.Create(SampleMetadata);
         
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(upload);
         
-        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
             .ReturnsAsync(secureFile);
             
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
@@ -68,9 +70,9 @@ public class UploadChunksHandlerTests
     [Fact]
     public async Task Handle_Succeeds_When_Not_Last_Chunk()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 1, 5, _file.Object, 96648224, Guid.NewGuid());
+        var command = new UploadChunks(Guid.NewGuid(), 2, 5, _file.Object, Guid.NewGuid(), null);
         
-        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
             .ReturnsAsync((SecureSendFile?)null);
             
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
@@ -85,13 +87,13 @@ public class UploadChunksHandlerTests
     [Fact]
     public async Task Handle_Throws_UploadDoesNotExistException()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
-        var secureFile = SecureSendFile.Create("file.txt", "text/plain", command.totalFileSize);
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, Guid.NewGuid(), SampleMetadata);
+        var secureFile = SecureSendFile.Create(SampleMetadata);
 
         _repository.Setup(x => x.GetAsync(command.uploadId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(default(SecureSendUpload));
             
-        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
             .ReturnsAsync(secureFile);
             
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
@@ -105,9 +107,9 @@ public class UploadChunksHandlerTests
     [Fact]
     public async Task Handle_Throws_InvalidChunkCountException()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, Guid.NewGuid(), SampleMetadata);
         
-        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.totalFileSize))
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
             .ThrowsAsync(new InvalidChunkCountException(5, 4));
             
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
@@ -120,11 +122,38 @@ public class UploadChunksHandlerTests
     [Fact]
     public async Task Handle_Throws_SizeLimitExceededException()
     {
-        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, 96648224, Guid.NewGuid());
+        var command = new UploadChunks(Guid.NewGuid(), 5, 5, _file.Object, Guid.NewGuid(), SampleMetadata);
         SetupLimitCheck(false, command.uploadId, command.chunk.Length);
 
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
         Assert.NotNull(exception);
         Assert.IsType<SizeLimitExceededException>(exception);
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsException_When_Metadata_Missing_On_FirstChunk()
+    {
+        var command = new UploadChunks(Guid.NewGuid(), 1, 5, _file.Object, Guid.NewGuid(), null);
+
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
+            .ThrowsAsync(new MissingMetadataException(""));
+
+        SetupLimitCheck(true, command.uploadId, command.chunk.Length);
+
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
+        Assert.NotNull(exception);
+        Assert.IsType<MissingMetadataException>(exception);
+    }
+
+    [Fact]
+    public async Task Handle_Succeeds_When_Metadata_Null_On_SubsequentChunks()
+    {
+        var command = new UploadChunks(Guid.NewGuid(), 3, 5, _file.Object, Guid.NewGuid(), null);
+            
+        SetupLimitCheck(true, command.uploadId, command.chunk.Length);
+
+        var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
+        
+        Assert.Null(exception);
     }
 }

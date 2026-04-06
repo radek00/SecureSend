@@ -1,4 +1,3 @@
-version: '3.4'
 volumes:
   secureSend:
 networks:
@@ -14,7 +13,7 @@ services:
     #db provider
       - Database=Postgres
     #postgres options
-      - PostgresOptions__Host=db
+      - PostgresOptions__Host=db-postgres
       - PostgresOptions__Password=example
       - PostgresOptions__UserId=postgres
       - PostgresOptions__Database=SecureSend
@@ -23,9 +22,9 @@ services:
     networks:
       - secureSend
     depends_on:
-      - db
-  db:
-    image: postgres
+      - db-postgres
+  db-postgres:
+    image: postgres:18.3
     restart: always
     environment:
       POSTGRES_PASSWORD: example
