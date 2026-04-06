@@ -13,7 +13,7 @@ services:
     #db provider
       - Database=Postgres
     #postgres options
-      - PostgresOptions__Host=db
+      - PostgresOptions__Host=db-postgres
       - PostgresOptions__Password=example
       - PostgresOptions__UserId=postgres
       - PostgresOptions__Database=SecureSend

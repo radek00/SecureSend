@@ -14,7 +14,7 @@ services:
       - Database=SqlServer
 
     #sql server options
-      - SqlServerOptions__Server=db
+      - SqlServerOptions__Server=db-sqlserver
       - SqlServerOptions__Port=1433
       - SqlServerOptions__Database=SecureSend
       - SqlServerOptions__TrustedConnection=False
