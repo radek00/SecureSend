@@ -16,7 +16,7 @@ namespace SecureSend.Domain.ValueObjects
         public static SecureSendFile Create(string metadata)
         {
             if (string.IsNullOrEmpty(metadata)) 
-                throw new MissingMetadataException();
+                throw new MissingMetadataException("Metadata must be provided.");
             
             return new SecureSendFile(Path.GetRandomFileName(), metadata);
         }

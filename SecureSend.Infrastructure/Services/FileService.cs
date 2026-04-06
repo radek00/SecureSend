@@ -46,7 +46,7 @@ namespace SecureSend.Infrastructure.Services
             {
                 SecureSendFile = metadata != null 
                     ? SecureSendFile.Create(metadata) 
-                    : throw new MissingMetadataException(),
+                    : throw new MissingMetadataException("Metadata must be provided on first chunk."),
                 TotalChunks = chunk.TotalChunks
             });
 

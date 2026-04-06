@@ -32,9 +32,9 @@ namespace SecureSend.Domain.Entities
             Files.Add(file);
         }
 
-        public void RemoveFile(string randomFileName)
+        public void RemoveFile(string fileName)
         {
-            var existingFile = Files.FirstOrDefault(f => f.FileName == randomFileName);
+            var existingFile = Files.FirstOrDefault(f => f.FileName == fileName);
             if (existingFile is not null) Files.Remove(existingFile);
         }
 

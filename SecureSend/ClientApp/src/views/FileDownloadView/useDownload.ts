@@ -20,14 +20,12 @@ export function useDownloadAll() {
     b64Key: string,
     password?: string
   ) => {
-    // Initialize crypto service to decrypt metadata
     const keychain = new AuthenticatedSecretKeyCryptographyService(
       password,
       b64Key
     );
     await keychain.start();
 
-    // Decrypt all file metadata
     if (secureUpload.files) {
       for (const file of secureUpload.files) {
         const metadata = (await keychain.decryptMetadata(
