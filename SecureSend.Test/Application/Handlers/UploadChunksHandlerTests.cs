@@ -133,7 +133,10 @@ public class UploadChunksHandlerTests
     public async Task Handle_ThrowsException_When_Metadata_Missing_On_FirstChunk()
     {
         var command = new UploadChunks(Guid.NewGuid(), 1, 5, _file.Object, Guid.NewGuid(), null);
-            
+
+        _fileService.Setup(x => x.HandleChunk(It.IsAny<SecureUploadChunk>(), command.uploadId, command.metadata))
+            .ThrowsAsync(new MissingMetadataException());
+
         SetupLimitCheck(true, command.uploadId, command.chunk.Length);
 
         var exception = await Record.ExceptionAsync(() => _commandHandler.Handle(command, It.IsAny<CancellationToken>()));
