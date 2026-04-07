@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.5.33530.505
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend", "SecureSend\SecureSend.csproj", "{EB9A5562-34AB-4CAB-B488-5E68C4218270}"
 EndProject
@@ -16,6 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.PostgresMigrations", "SecureSend.PostgresMigrations\SecureSend.PostgresMigrations.csproj", "{EBF94ECB-C3A4-4F80-8F34-31F8A82B1E81}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.Test", "SecureSend.Test\SecureSend.Test.csproj", "{B83D3323-5B39-486B-9D5A-18F03D830F3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend.IntegrationTests", "SecureSend.IntegrationTests\SecureSend.IntegrationTests.csproj", "{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +52,10 @@ Global
 		{B83D3323-5B39-486B-9D5A-18F03D830F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B83D3323-5B39-486B-9D5A-18F03D830F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B83D3323-5B39-486B-9D5A-18F03D830F3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
