@@ -20,17 +20,16 @@ public class SecureSendWebApplicationFactory : WebApplicationFactory<Program>, I
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Integration");
+        builder.UseSetting("PostgresOptions:Host", _postgreSqlContainer.Hostname);
+        builder.UseSetting("PostgresOptions:Port", _postgreSqlContainer.GetMappedPublicPort(5432).ToString());
+        builder.UseSetting("PostgresOptions:Database", "SecureSend");
+        builder.UseSetting("PostgresOptions:UserId", "postgres");
+        builder.UseSetting("PostgresOptions:Password", "example");
     }
 
     public async Task InitializeAsync()
     {
         await _postgreSqlContainer.StartAsync();
-
-        Environment.SetEnvironmentVariable("PostgresOptions__Host", _postgreSqlContainer.Hostname);
-        Environment.SetEnvironmentVariable("PostgresOptions__Port", _postgreSqlContainer.GetMappedPublicPort(5432).ToString());
-        Environment.SetEnvironmentVariable("PostgresOptions__Database", "SecureSend");
-        Environment.SetEnvironmentVariable("PostgresOptions__UserId", "postgres");
-        Environment.SetEnvironmentVariable("PostgresOptions__Password", "example");
     }
 
     public new async Task DisposeAsync()
