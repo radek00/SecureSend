@@ -30,7 +30,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Unit Tests
-        run: dotnet test SecureSend.Test/SecureSend.Test.csproj --no-restore --verbosity normal
+        run: dotnet test SecureSend.UnitTests/SecureSend.UnitTests.csproj --no-restore --verbosity normal
 
       - name: Integration Tests
         if: matrix.os == 'ubuntu-latest'
