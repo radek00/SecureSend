@@ -28,9 +28,13 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
-      
-      - name: Test
-        run:  dotnet test --no-restore --verbosity normal
+
+      - name: Unit Tests
+        run: dotnet test SecureSend.Test/SecureSend.Test.csproj --no-restore --verbosity normal
+
+      - name: Integration Tests
+        if: matrix.os == 'ubuntu-latest'
+        run: dotnet test SecureSend.IntegrationTests/SecureSend.IntegrationTests.csproj --no-restore --verbosity normal
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
