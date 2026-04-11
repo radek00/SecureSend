@@ -203,7 +203,7 @@ export function useUpload() {
         controllers.clear();
         return UploadResult.AllCanceled;
       }
-    } catch (error) {
+    } catch {
       //fail due to Upload Error
       if (
         ![...files.value.values()].find(

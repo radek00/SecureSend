@@ -49,11 +49,14 @@ const decrypt = async (id: string, url: string) => {
     const headers = {
       "Content-Disposition": `attachment; filename="${metadata.fileName}"`,
       "Content-Type": metadata.contentType ?? "application/octet-stream",
-      "Content-Length": metadata.fileSize,
+      "Content-Length": metadata.fileSize.toString(),
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {
-    return new Response(null, { status: 500 });
+    return new Response(null, {
+      status: 500,
+      statusText: (error as Error).message,
+    });
   }
 };
 
