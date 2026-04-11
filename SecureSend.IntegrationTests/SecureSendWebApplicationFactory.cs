@@ -7,9 +7,11 @@ namespace SecureSend.IntegrationTests;
 public class SecureSendWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgreSqlContainer;
+    public string TempStoragePath { get; }
 
     public SecureSendWebApplicationFactory()
     {
+        TempStoragePath = Path.Combine(Path.GetTempPath(), "SecureSendTests", Guid.NewGuid().ToString());
         _postgreSqlContainer = new PostgreSqlBuilder("postgres:18.3")
             .WithDatabase("SecureSend")
             .WithUsername("postgres")
@@ -25,15 +27,21 @@ public class SecureSendWebApplicationFactory : WebApplicationFactory<Program>, I
         builder.UseSetting("PostgresOptions:Database", "SecureSend");
         builder.UseSetting("PostgresOptions:UserId", "postgres");
         builder.UseSetting("PostgresOptions:Password", "example");
+        builder.UseSetting("FileStorageOptions:Path", TempStoragePath);
     }
 
     public async Task InitializeAsync()
     {
+        Directory.CreateDirectory(TempStoragePath);
         await _postgreSqlContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await _postgreSqlContainer.DisposeAsync();
+        if (Directory.Exists(TempStoragePath))
+        {
+            Directory.Delete(TempStoragePath, true);
+        }
     }
 }
