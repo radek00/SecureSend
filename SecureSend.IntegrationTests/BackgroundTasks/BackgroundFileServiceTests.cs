@@ -49,7 +49,7 @@ public class BackgroundFileServiceTests(SecureSendWebApplicationFactory factory)
         // Assert
         var readContext = base.DbReadContext;
         
-        var remainingUploads = await readContext.SecureSendUploads.ToListAsync();
+        var remainingUploads = await readContext.SecureSendUploads.AsNoTracking().ToListAsync();
         
         Assert.Contains(remainingUploads, u => u.Id == activeUpload.Id.Value);
         Assert.DoesNotContain(remainingUploads, u => u.Id == expiredUpload.Id.Value);

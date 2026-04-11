@@ -62,7 +62,7 @@ public class BackgroundFailedUploadRemoverServiceTests(SecureSendWebApplicationF
         // Assert
         var readDbcontext = base.DbReadContext;
         
-        var remainingUploads = await readDbcontext.SecureSendUploads.ToListAsync();
+        var remainingUploads = await readDbcontext.SecureSendUploads.AsNoTracking().ToListAsync();
         
         Assert.Contains(remainingUploads, u => u.Id == activeUpload.Id.Value);
         Assert.Contains(remainingUploads, u => u.Id == uploadWithFile.Id.Value);
