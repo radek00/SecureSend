@@ -30,11 +30,11 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Unit Tests
-        run: dotnet test SecureSend.UnitTests/SecureSend.UnitTests.csproj --no-restore --verbosity normal
+        run: dotnet test SecureSend.UnitTests/SecureSend.UnitTests.csproj --no-restore --verbosity normal /p:SkipSpaBuild=true
 
       - name: Integration Tests
         if: matrix.os == 'ubuntu-latest'
-        run: dotnet test SecureSend.IntegrationTests/SecureSend.IntegrationTests.csproj --no-restore --verbosity normal
+        run: dotnet test SecureSend.IntegrationTests/SecureSend.IntegrationTests.csproj --no-restore --verbosity normal /p:SkipSpaBuild=true
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
