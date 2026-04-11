@@ -4,16 +4,23 @@ using SecureSend.Infrastructure.EF.Context;
 
 namespace SecureSend.IntegrationTests;
 
-public class BaseIntegrationTest(SecureSendWebApplicationFactory factory) : IClassFixture<SecureSendWebApplicationFactory>
+public abstract class BaseIntegrationTest : IClassFixture<SecureSendWebApplicationFactory>, IDisposable
 {
-    protected readonly SecureSendWebApplicationFactory _factory = factory;
-    protected SecureSendDbReadContext DbReadContext => GetContext<SecureSendDbReadContext>();
-    protected SecureSendDbWriteContext DbWriteContext => GetContext<SecureSendDbWriteContext>();
-    protected IServiceScope ServiceScope => _factory.Services.CreateScope();
+    protected readonly SecureSendWebApplicationFactory _factory;
+    protected readonly IServiceScope _scope;
 
-    private TContext GetContext<TContext>() where TContext : DbContext
+    protected SecureSendDbReadContext DbReadContext => _scope.ServiceProvider.GetRequiredService<SecureSendDbReadContext>();
+    protected SecureSendDbWriteContext DbWriteContext => _scope.ServiceProvider.GetRequiredService<SecureSendDbWriteContext>();
+
+    protected BaseIntegrationTest(SecureSendWebApplicationFactory factory)
     {
-        var scope = _factory.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<TContext>();
+        _factory = factory;
+        _scope = _factory.Services.CreateScope();
+    }
+
+    public void Dispose()
+    {
+        _scope?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

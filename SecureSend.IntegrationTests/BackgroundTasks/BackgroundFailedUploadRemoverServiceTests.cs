@@ -40,7 +40,7 @@ public class BackgroundFailedUploadRemoverServiceTests(SecureSendWebApplicationF
         dbContext.SecureSendUploads.Add(uploadWithFile);
         await dbContext.SaveChangesAsync();
 
-        var serviceProvider = base.ServiceScope.ServiceProvider; 
+        var serviceProvider = base._scope.ServiceProvider;
         var logger = serviceProvider.GetRequiredService<ILogger<BackgroundFileService>>();
         var config = serviceProvider.GetRequiredService<IConfiguration>();
         

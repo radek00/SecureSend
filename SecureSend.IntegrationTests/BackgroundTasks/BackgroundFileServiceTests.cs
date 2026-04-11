@@ -28,7 +28,7 @@ public class BackgroundFileServiceTests(SecureSendWebApplicationFactory factory)
         dbContext.SecureSendUploads.Add(activeUpload);
         await dbContext.SaveChangesAsync();
 
-        var serviceProvider = base.ServiceScope.ServiceProvider;
+        var serviceProvider = base._scope.ServiceProvider;
         var logger = serviceProvider.GetRequiredService<ILogger<BackgroundFileService>>();
 
         var sut = new BackgroundFileService(logger, serviceProvider);

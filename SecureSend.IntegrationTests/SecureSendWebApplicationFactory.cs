@@ -36,12 +36,13 @@ public class SecureSendWebApplicationFactory : WebApplicationFactory<Program>, I
         await _postgreSqlContainer.StartAsync();
     }
 
-    public new async Task DisposeAsync()
+    async Task IAsyncLifetime.DisposeAsync()
     {
         await _postgreSqlContainer.DisposeAsync();
         if (Directory.Exists(TempStoragePath))
         {
             Directory.Delete(TempStoragePath, true);
         }
+        await base.DisposeAsync();
     }
 }
