@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.SqlServerMigrati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.PostgresMigrations", "SecureSend.PostgresMigrations\SecureSend.PostgresMigrations.csproj", "{EBF94ECB-C3A4-4F80-8F34-31F8A82B1E81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.UnitTests", "SecureSend.Test\SecureSend.UnitTests.csproj", "{B83D3323-5B39-486B-9D5A-18F03D830F3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureSend.UnitTests", "SecureSend.UnitTests\SecureSend.UnitTests.csproj", "{B83D3323-5B39-486B-9D5A-18F03D830F3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSend.IntegrationTests", "SecureSend.IntegrationTests\SecureSend.IntegrationTests.csproj", "{4C1CFE1C-BCE4-404D-A6A1-3F9968037E02}"
 EndProject
