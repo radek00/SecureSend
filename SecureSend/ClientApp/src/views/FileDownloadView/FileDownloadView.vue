@@ -81,6 +81,7 @@ if (!props.verifyUploadResponse.isProtected) {
             <a
               class="font-medium text-blue-700 dark:text-blue-400 hover:underline"
               :href="`${endpoints.download}?id=${secureUpload!.secureUploadId}&fileName=${fileName}`"
+              data-test="download-link"
               >Download</a
             >
             <ProgressBar :state="status"></ProgressBar>
@@ -116,9 +117,14 @@ if (!props.verifyUploadResponse.isProtected) {
               :isValid="isPasswordValid"
               errorMessage="Invalid password"
               autofocus
+              data-test="password"
             ></SimpleInput>
           </div>
-          <StyledButton :category="ButtonType.primary" type="submit">
+          <StyledButton
+            :category="ButtonType.primary"
+            type="submit"
+            data-test="unlock-button"
+          >
             <span class="flex items-center justify-center">
               Unlock
               <LoadingIndicator
