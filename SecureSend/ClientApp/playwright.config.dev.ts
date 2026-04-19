@@ -2,8 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 import playwrightConfig from "./playwright.config";
 
 export default defineConfig({
-    ...playwrightConfig,
-     use: {
+  ...playwrightConfig,
+  use: {
     baseURL: "https://localhost:3000/",
     trace: "on-first-retry",
   },
@@ -17,4 +17,4 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
     },
   ],
-})
+});
