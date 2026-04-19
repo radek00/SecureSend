@@ -1,5 +1,6 @@
 /// <reference lib="WebWorker" />
 import { IWorkerInit } from "./src/models/WorkerInit";
+import { debugLog } from "./src/utils/utils";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -73,6 +74,13 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (event.data === "ping") {
+    debugLog("Service worker is alive", map);
+    if (event.source) {
+      event.source.postMessage("pong");
+    }
+    return;
+  }
   if (event.data.request === "init") {
     map.set(event.data.id, { ...event.data });
   }

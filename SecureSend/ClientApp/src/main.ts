@@ -39,6 +39,9 @@ const registerServiceWorker = async () => {
           console.log("Service worker active");
         }
       }
+      setInterval(() => {
+        navigator.serviceWorker.controller?.postMessage("ping");
+      }, 10000);
     } catch (error) {
       console.error(`Registration failed with ${error}`);
     }

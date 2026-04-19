@@ -172,7 +172,11 @@ test.describe("File upload and download flow", () => {
   test("copy link to clipboard works", async ({ page, context }) => {
     await uploadFile(page, false);
 
+      try {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  } catch (error) {
+    console.log('Permission granting not supported on this browser');
+  }
 
     await page.locator('[data-test="copy-link-button"]').click();
 
@@ -239,3 +243,4 @@ test.describe("File upload and download flow", () => {
     await expect(downloadPage.getByText("file3.txt")).toBeVisible();
   });
 });
+
