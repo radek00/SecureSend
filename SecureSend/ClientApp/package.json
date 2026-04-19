@@ -14,7 +14,9 @@
     "build-worker": "vite build --mode worker",
     "lint": "eslint . --fix",
     "prettier-verify": "prettier . --check --config ./.prettierrc.json",
-    "test": "vitest"
+    "test": "vitest",
+    "test-dev": "playwright test --config=playwright.config.dev.ts",
+    "test-prod": "playwright test --config=playwright.config.prod.ts"
   },
   "dependencies": {
     "vee-validate": "^4.15.1",
