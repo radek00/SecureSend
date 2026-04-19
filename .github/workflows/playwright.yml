@@ -47,9 +47,11 @@ jobs:
         working-directory: ./SecureSend
         run: dotnet publish -c Release -o ./bin/Release
       
-      - name: Start .NET app
+      - name: Start .NET app and wait
         working-directory: ./SecureSend
-        run: dotnet ./bin/Release/SecureSend.dll --urls "http://localhost:5001" &
+        run: |
+          dotnet ./bin/Release/SecureSend.dll --urls "http://localhost:5001" &
+          npx wait-on tcp:5001 -t 60000
 
       - name: Run Playwright tests
         working-directory: ./SecureSend/ClientApp
