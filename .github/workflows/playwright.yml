@@ -49,7 +49,10 @@ jobs:
       
       - name: Start .NET app and wait
         working-directory: ./SecureSend
+        env:
+          FileStorageOptions__Path: /tmp/SecureSendStorage
         run: |
+          mkdir -p /tmp/SecureSendStorage
           dotnet ./bin/Release/SecureSend.dll --urls "http://localhost:5001" &
           npx wait-on tcp:5001 -t 60000
 
