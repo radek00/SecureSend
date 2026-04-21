@@ -1,5 +1,6 @@
 /// <reference lib="WebWorker" />
 import { IWorkerInit } from "./src/models/WorkerInit";
+import { debugLog } from "./src/utils/utils";
 
 declare const self: ServiceWorkerGlobalScope;
 

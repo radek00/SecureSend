@@ -84,6 +84,7 @@ const areOptionsAvailable = (state: UploadState) => {
         multiple
         tabindex="-1"
         ref="fileInput"
+        data-test="file-input"
       />
     </label>
   </div>

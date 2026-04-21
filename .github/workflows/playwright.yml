@@ -1,0 +1,68 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+env:
+  DOTNET_VERSION: '10.x'
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.3
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: example
+          POSTGRES_DB: SecureSend
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          node-version: lts/*
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ./SecureSend/ClientApp
+        run: npm install -g pnpm && pnpm install
+
+      - name: Install Playwright Browsers
+        working-directory: ./SecureSend/ClientApp
+        run: pnpm exec playwright install --with-deps
+
+      # - name: Install SSL Certificates
+      #   run: dotnet dev-certs https --trust
+
+      - name: Publish .NET app
+        working-directory: ./SecureSend
+        run: dotnet publish -c Release -o ./bin/Release
+      
+      - name: Start .NET app and wait
+        working-directory: ./SecureSend
+        env:
+          FileStorageOptions__Path: /tmp/SecureSendStorage
+        run: |
+          mkdir -p /tmp/SecureSendStorage
+          dotnet ./bin/Release/SecureSend.dll --urls "http://localhost:5001" &
+          npx wait-on tcp:5001 -t 60000
+
+      - name: Run Playwright tests
+        working-directory: ./SecureSend/ClientApp
+        run: pnpm test-prod
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: ./SecureSend/ClientApp/playwright-report/
+          retention-days: 30

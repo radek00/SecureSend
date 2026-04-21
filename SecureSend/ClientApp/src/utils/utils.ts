@@ -12,3 +12,9 @@ export function toUTCDate(date: Date) {
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
   );
 }
+
+export function debugLog(...args: any[]) {
+  if (import.meta.env.DEV) {
+    console.log(...args);
+  }
+}

@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     environment: "happy-dom",
     setupFiles: ["./src/tests/setup.ts"],
+    include: ["src/tests/**/*.test.ts"],
   },
   resolve: {
     alias: [{ find: "@", replacement: resolve(__dirname, "./src") }],

@@ -104,6 +104,7 @@
                 isLimitExceeded
               "
               type="submit"
+              data-test="next-upload-button"
             >
               <span class="flex items-center justify-center">
                 {{ step < 2 ? "Next" : "Upload" }}
@@ -236,6 +237,7 @@
                   !meta.valid || isLoading || !files.size || isLimitExceeded
                 "
                 type="submit"
+                data-test="upload-button"
               >
                 <span class="flex items-center justify-center">
                   Upload
@@ -258,6 +260,7 @@
           :value="createDownloadUrl()"
           label="Share your files"
           name="downloadUrl"
+          data-test="download-link-input"
         ></SimpleInput>
       </template>
       <template #footer>
@@ -265,6 +268,7 @@
           type="button"
           @click="copyToClipboard()"
           :category="ButtonType.primary"
+          data-test="copy-link-button"
           >Copy to clipboard</StyledButton
         >
       </template>
