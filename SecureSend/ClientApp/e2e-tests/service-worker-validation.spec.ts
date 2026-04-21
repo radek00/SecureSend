@@ -8,18 +8,4 @@ test.describe.parallel("Service worker validation", () => {
     });
     expect(serviceWorker).not.toBeNull();
   });
-
-  test("service worker receives ping every 10 seconds", async ({ page }) => {
-    await page.goto("/");
-    const pingReceived = await page.evaluate(() => {
-      return new Promise((resolve) => {
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          if (event.data === "pong") {
-            resolve(true);
-          }
-        });
-      });
-    });
-    expect(pingReceived).toBe(true);
-  });
 });

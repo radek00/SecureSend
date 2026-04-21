@@ -74,13 +74,6 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data === "ping") {
-    debugLog("Service worker is alive", map);
-    if (event.source) {
-      event.source.postMessage("pong");
-    }
-    return;
-  }
   if (event.data.request === "init") {
     map.set(event.data.id, { ...event.data });
   }
