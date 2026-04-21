@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { readFile } from "fs";
+import { readFile } from "fs/promises";
 
 test.describe("File upload and download flow", () => {
   const testFileName = "test-file.txt";
@@ -86,10 +86,8 @@ test.describe("File upload and download flow", () => {
 
     expect(downloadPath).toBeTruthy();
 
-    readFile(downloadPath!, "utf-8", (err, data) => {
-      expect(err).toBeNull();
-      expect(data).toBe(testFileContent);
-    });
+    const downloadedData = await readFile(downloadPath!, "utf-8");
+    expect(downloadedData).toBe(testFileContent);
   });
 
   test("upload file with password and download successfully", async ({
@@ -131,10 +129,8 @@ test.describe("File upload and download flow", () => {
     const downloadPath = await download.path();
     expect(downloadPath).toBeTruthy();
 
-    readFile(downloadPath, "utf-8", (err, data) => {
-      expect(err).toBeNull();
-      expect(data).toBe(testFileContent);
-    });
+    const downloadedData = await readFile(downloadPath!, "utf-8");
+    expect(downloadedData).toBe(testFileContent);
   });
 
   test("upload fails with invalid password on download", async ({
