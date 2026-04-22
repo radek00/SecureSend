@@ -22,7 +22,7 @@
                 data-test="password"
                 :disabled="!values.isPasswordRequired"
               ></SchemaInput>
-              <div class="flex items-center gap-2">
+              <div class="flex items-stretch gap-2 mt-3">
                 <CheckboxSchemaInput
                   name="isPasswordRequired"
                   :checked-value="true"
@@ -162,7 +162,7 @@
                   data-test="password"
                   :disabled="!values.isPasswordRequired"
                 ></SchemaInput>
-                <div class="flex items-center gap-2">
+                <div class="flex items-stretch gap-2 mt-3">
                   <CheckboxSchemaInput
                     name="isPasswordRequired"
                     :checked-value="true"
