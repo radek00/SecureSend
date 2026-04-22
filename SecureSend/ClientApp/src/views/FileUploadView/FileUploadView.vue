@@ -22,13 +22,19 @@
                 data-test="password"
                 :disabled="!values.isPasswordRequired"
               ></SchemaInput>
-              <CheckboxSchemaInput
-                name="isPasswordRequired"
-                :checked-value="true"
-                label="Password required"
-                :tabindex="step !== 0 ? -1 : 0"
-                autofocus
-              ></CheckboxSchemaInput>
+              <div class="flex items-center gap-2">
+                <CheckboxSchemaInput
+                  name="isPasswordRequired"
+                  :checked-value="true"
+                  label="Password required"
+                  :tabindex="step !== 0 ? -1 : 0"
+                  autofocus
+                ></CheckboxSchemaInput>
+                <InfoPopover>
+                  Files are always encrypted, but you can choose a custom
+                  password.
+                </InfoPopover>
+              </div>
             </div>
             <div
               class="w-full shrink-0 transition-transform duration-700 px-2.5"
@@ -156,12 +162,18 @@
                   data-test="password"
                   :disabled="!values.isPasswordRequired"
                 ></SchemaInput>
-                <CheckboxSchemaInput
-                  name="isPasswordRequired"
-                  :checked-value="true"
-                  label="Password required"
-                  autofocus
-                ></CheckboxSchemaInput>
+                <div class="flex items-center gap-2">
+                  <CheckboxSchemaInput
+                    name="isPasswordRequired"
+                    :checked-value="true"
+                    label="Password required"
+                    autofocus
+                  ></CheckboxSchemaInput>
+                  <InfoPopover>
+                    Files are always encrypted, but you can choose a custom
+                    password.
+                  </InfoPopover>
+                </div>
               </div>
               <SchemaInput
                 name="expiryDate"
@@ -289,6 +301,7 @@ import SimpleInput from "@/components/SimpleInput.vue";
 import LoadingIndicator from "@/components/LoadingIndicator.vue";
 import { useAlert } from "@/utils/composables/useAlert";
 import CheckboxSchemaInput from "@/components/CheckboxSchemaInput.vue";
+import InfoPopover from "@/components/InfoPopover.vue";
 import { useFileUploadForm } from "@/views/FileUploadView/useFileUploadForm";
 import { UploadResult, useUpload } from "@/views/FileUploadView/useUpload";
 import { useFileLimits } from "@/utils/composables/useFileLimits";
