@@ -2,7 +2,7 @@
   <div class="relative" v-click-outside="() => (isExpanded = false)">
     <button
       @click="isExpanded = !isExpanded"
-      class=" text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-200 dark:focus:ring-gray-400 rounded-full"
+      class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-200 dark:focus:ring-gray-400 rounded-full"
       type="button"
     >
       <QuestionCircle class="w-5 h-5"></QuestionCircle>
