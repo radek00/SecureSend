@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import { useField } from "vee-validate";
 import SimpleCheckboxInput from "@/components/SimpleCheckboxInput.vue";
 

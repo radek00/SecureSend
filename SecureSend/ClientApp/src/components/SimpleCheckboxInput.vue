@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import ErrorMessage from "@/components/ErrorMessage.vue";
 
 defineEmits(["update:modelValue"]);

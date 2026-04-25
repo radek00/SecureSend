@@ -1,3 +1,6 @@
+<script setup>
+defineOptions({ inheritAttrs: false });
+</script>
 <template>
   <div role="status">
     <svg

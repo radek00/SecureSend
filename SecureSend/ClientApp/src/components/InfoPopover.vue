@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import { ref, useId } from "vue";
 import QuestionCircle from "@/assets/icons/QuestionCircle.vue";
 
