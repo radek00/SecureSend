@@ -28,9 +28,10 @@
                   :checked-value="true"
                   label="Password required"
                   :tabindex="step !== 0 ? -1 : 0"
+                  aria-describedby="passwordInfo"
                   autofocus
                 ></CheckboxSchemaInput>
-                <InfoPopover>
+                <InfoPopover id="passwordInfo" :tabindex="step !== 0 ? -1 : 0">
                   Files are always encrypted, but you can choose a custom
                   password.
                 </InfoPopover>
@@ -167,9 +168,10 @@
                     name="isPasswordRequired"
                     :checked-value="true"
                     label="Password required"
+                    aria-describedby="passwordInfo"
                     autofocus
                   ></CheckboxSchemaInput>
-                  <InfoPopover>
+                  <InfoPopover id="passwordInfo">
                     Files are always encrypted, but you can choose a custom
                     password.
                   </InfoPopover>
