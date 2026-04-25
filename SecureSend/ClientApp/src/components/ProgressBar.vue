@@ -15,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import type { DownloadStateTuple } from "@/models/DownloadState";
 import { UploadState, type UploadStateTuple } from "@/models/UploadStateTuple";
 import { computed } from "vue";

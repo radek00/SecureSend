@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import { useField } from "vee-validate";
 import SimpleInput from "@/components/SimpleInput.vue";
 const props = defineProps<{

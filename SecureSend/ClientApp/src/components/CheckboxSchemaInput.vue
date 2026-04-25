@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
 import { useField } from "vee-validate";
 import SimpleCheckboxInput from "@/components/SimpleCheckboxInput.vue";
 
@@ -19,7 +20,7 @@ const { errorMessage, value, meta, handleChange, checked } = useField(
 );
 </script>
 <template>
-  <div class="mt-3">
+  <div>
     <SimpleCheckboxInput
       :checked="checked"
       :value="value"

@@ -4,6 +4,7 @@ import FileUploadView from "@/views/FileUploadView/FileUploadView.vue";
 import { mountComponent, waitForExpect } from "@/tests/utils";
 import { UploadLimitsService } from "@/services/UploadLimitsService";
 import { HTMLInputElement } from "happy-dom";
+import SchemaInput from "@/components/SchemaInput.vue";
 
 describe("Upload form", () => {
   let wrapper: VueWrapper<any>;
@@ -54,7 +55,11 @@ describe("Upload form", () => {
 
     await waitForExpect(() => {
       expect(
-        wrapper.find('div[data-test="password"]').find("span").text()
+        wrapper
+          .findAllComponents(SchemaInput)
+          .find((c) => c.props("name") === "password")!
+          .find('[data-test="error-message"] span')
+          .text()
       ).toEqual("Password is required.");
     });
   });
@@ -76,7 +81,9 @@ describe("Upload form", () => {
     await waitForExpect(async () => {
       expect(
         wrapper
-          .find('div[data-test="expirationDate"] p[data-test="error-message"]')
+          .findAllComponents(SchemaInput)
+          .find((c) => c.props("name") === "expiryDate")!
+          .find('p[data-test="error-message"]')
           .text()
       ).toEqual("Expiry date must be later than today.");
     });

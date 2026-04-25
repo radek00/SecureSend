@@ -1,3 +1,6 @@
+<script setup lang="ts">
+defineOptions({ inheritAttrs: false });
+</script>
 <template>
   <div role="status">
     <svg

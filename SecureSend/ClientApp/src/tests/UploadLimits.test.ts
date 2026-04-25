@@ -5,6 +5,7 @@ import { mountComponent, waitForExpect } from "@/tests/utils";
 import FileInput from "@/components/FileUploadForm/FileInput.vue";
 import { UploadLimitsService } from "@/services/UploadLimitsService";
 import SizeLimit from "@/components/FileUploadForm/SizeLimit.vue";
+import SchemaInput from "@/components/SchemaInput.vue";
 
 describe("Form validation when size limits are set", () => {
   let wrapper: VueWrapper<any>;
@@ -71,7 +72,9 @@ describe("Form validation when size limits are set", () => {
     await waitForExpect(() => {
       expect(
         wrapper
-          .find('div[data-test="expirationDate"] p[data-test="error-message"]')
+          .findAllComponents(SchemaInput)
+          .find((c) => c.props("name") === "expiryDate")!
+          .find('p[data-test="error-message"]')
           .text()
       ).toEqual("Max allowed expiration date is: 2022-02-23");
     }, 500);
