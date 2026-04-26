@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import AppInitializer from "./components/AppInitializer.vue";
 </script>
 
 <template>
@@ -7,17 +8,20 @@ import { RouterView } from "vue-router";
     id="alert-container"
     class="absolute z-50 h-fit top-1 left-1 flex flex-col"
   ></div>
-  <RouterView v-slot="{ Component, route }">
-    <transition name="fade" mode="out-in">
-      <suspense>
-        <component
-          v-if="Component"
-          :is="Component"
-          :key="route.path"
-        ></component>
-      </suspense>
-    </transition>
-  </RouterView>
+
+  <AppInitializer>
+    <RouterView v-slot="{ Component, route }">
+      <transition name="fade" mode="out-in">
+        <suspense>
+          <component
+            v-if="Component"
+            :is="Component"
+            :key="route.path"
+          ></component>
+        </suspense>
+      </transition>
+    </RouterView>
+  </AppInitializer>
 </template>
 
 <style>
