@@ -76,5 +76,9 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data.request === "init") {
     map.set(event.data.id, { ...event.data });
+    debugLog(`Worker received init request for id: ${event.data.id}`);
+    if (event.source) {
+      event.source.postMessage({ request: "initialized", id: event.data.id });
+    }
   }
 });

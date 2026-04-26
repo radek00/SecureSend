@@ -5,6 +5,7 @@ import type { FileMetadata } from "@/models/SecureFileDto";
 import { onUnmounted, ref } from "vue";
 import type { IWorkerInit } from "@/models/WorkerInit";
 import AuthenticatedSecretKeyCryptographyService from "@/utils/AuthenticatedSecretKeyCryptographyService";
+import { debugLog } from "@/utils/utils";
 
 export function useDownloadAll() {
   const broadcast = new BroadcastChannel("progress-channel");
@@ -46,6 +47,17 @@ export function useDownloadAll() {
       password: password ?? undefined,
       metadata: fileMetadata,
     } as IWorkerInit);
+
+    return new Promise<void>((resolve) => {
+      const onMessage = (event: MessageEvent) => {
+        if (event.data.request === "initialized") {
+          navigator.serviceWorker.removeEventListener("message", onMessage);
+          debugLog(`Worker completed initialization for id: ${event.data.id}`);
+          resolve();
+        }
+      };
+      navigator.serviceWorker.addEventListener("message", onMessage);
+    });
   };
   const downloadAll = async (secureUpload: SecureUploadDto) => {
     const directoryHandle = await window.showDirectoryPicker();
