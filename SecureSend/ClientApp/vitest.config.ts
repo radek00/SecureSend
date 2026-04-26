@@ -9,6 +9,7 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: ["./src/tests/setup.ts"],
     include: ["src/tests/**/*.test.ts"],
+    clearMocks: true,
   },
   resolve: {
     alias: [{ find: "@", replacement: resolve(__dirname, "./src") }],
