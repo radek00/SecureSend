@@ -1,6 +1,6 @@
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import AppInitalizer from "@/components/AppInitalizer.vue";
+import { describe, test, expect, vi, afterEach } from "vitest";
+import AppInitalizer from "@/components/AppInitializer.vue";
 import router from "@/router";
 
 vi.mock("@/router", () => ({
