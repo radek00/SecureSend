@@ -1,8 +1,11 @@
 <template>
-  <section class="bg-white dark:bg-gray-900">
+  <section
+    class="bg-white dark:bg-gray-900 flex items-center justify-center h-full"
+  >
     <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) lg:py-16 lg:px-6">
       <div class="mx-auto max-w-(--breakpoint-sm) text-center">
         <h1
+          v-if="props.errorCode !== 'unsupported'"
           class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 text-primary-500"
         >
           {{ errorCode }}
@@ -16,6 +19,7 @@
           {{ bottomText }}
         </p>
         <router-link
+          v-if="props.errorCode !== 'unsupported'"
           to="/"
           class="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-primary-900 my-4"
           >Back to Homepage</router-link
@@ -41,6 +45,13 @@ const determineText = () => {
       heading: "Upload expired.",
       bottomText: "Sorry, your upload has expired. Try creating a new one",
     };
+  if (props.errorCode === "unsupported") {
+    return {
+      heading: "Unsupported browser.",
+      bottomText:
+        "Your browser does not support the features required to use SecureSend. Please try using a different browser.",
+    };
+  }
   return {
     heading: "Something's missing.",
     bottomText: "Either the link is corrupted or the upload does not exist.",

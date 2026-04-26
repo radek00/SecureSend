@@ -12,12 +12,15 @@ const app = createApp(App);
 const { openDanger } = useAlert();
 
 const isLoading = ref<boolean>(false);
+const isWorkerLoading = ref<boolean>(true);
 
 app.provide("isLoading", isLoading);
+app.provide("isWorkerLoading", isWorkerLoading);
 
 app.config.errorHandler = (err) => {
   console.error(err);
   isLoading!.value = false;
+  isWorkerLoading.value = false;
   openDanger("Something went wrong");
 };
 
@@ -37,13 +40,21 @@ const registerServiceWorker = async () => {
       } else if (registration.active) {
         debugLog("Service worker active");
       }
+
+      await navigator.serviceWorker.ready;
+      isWorkerLoading.value = false;
     } catch (error) {
       console.error(`Registration failed with ${error}`);
+      isWorkerLoading.value = false;
+      router.push({ name: "error", params: { errorCode: "unsupported" } });
     }
+  } else {
+    isWorkerLoading.value = false;
+    router.push({ name: "error", params: { errorCode: "unsupported" } });
   }
 };
-registerServiceWorker();
 
 app.use(router);
+registerServiceWorker();
 
 app.mount("#app");

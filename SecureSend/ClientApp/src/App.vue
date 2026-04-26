@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { inject, type Ref } from "vue";
 import { RouterView } from "vue-router";
+
+const isWorkerLoading = inject<Ref<boolean>>("isWorkerLoading");
 </script>
 
 <template>
@@ -7,7 +10,13 @@ import { RouterView } from "vue-router";
     id="alert-container"
     class="absolute z-50 h-fit top-1 left-1 flex flex-col"
   ></div>
-  <RouterView v-slot="{ Component, route }">
+  <p
+    v-if="isWorkerLoading"
+    class="flex h-full items-center justify-center text-4xl"
+  >
+    Loading...
+  </p>
+  <RouterView v-else v-slot="{ Component, route }">
     <transition name="fade" mode="out-in">
       <suspense>
         <component
