@@ -42,7 +42,7 @@ const decrypt = async (id: string, url: string) => {
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
-      +fileResponse.headers.get("Content-Length")!,
+      metadata.fileSize,
       fileName,
       fileData.password
     );
