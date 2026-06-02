@@ -50,7 +50,7 @@ const decrypt = async (id: string, url: string) => {
     const headers = {
       "Content-Disposition": `attachment; filename="${metadata.fileName}"`,
       "Content-Type": metadata.contentType ?? "application/octet-stream",
-      "Content-Length": metadata.fileSize.toString(),
+      "Content-Length": fileResponse.headers.get("Content-Length")!,
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {
