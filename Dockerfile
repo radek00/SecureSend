@@ -10,12 +10,10 @@ USER appuser
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-RUN curl -SLO https://deb.nodesource.com/nsolid_setup_deb.sh
-RUN chmod 500 nsolid_setup_deb.sh
-RUN ./nsolid_setup_deb.sh 24
-RUN apt-get install nodejs -y
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+RUN apt-get install -y nodejs
 RUN corepack enable
-RUN corepack prepare pnpm@latest --activate
+RUN corepack prepare pnpm@11 --activate
 
 COPY ["SecureSend/SecureSend.csproj", "SecureSend/"]
 COPY ["SecureSend.Application/SecureSend.Application.csproj", "SecureSend.Application/"]
