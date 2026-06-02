@@ -39,10 +39,14 @@ const decrypt = async (id: string, url: string) => {
     if (!fileResponse.ok) throw new Error(fileResponse.statusText);
     const body = fileResponse.body!;
 
+    const contentLength = fileResponse.headers.get("Content-Length");
+    if (!contentLength) {
+      throw new Error("Content-Length header missing");
+    }
     const decryptedResponse = decryptStream(
       body,
       fileData.b64key,
-      metadata.fileSize,
+      parseInt(contentLength),
       fileName,
       fileData.password
     );
@@ -50,7 +54,7 @@ const decrypt = async (id: string, url: string) => {
     const headers = {
       "Content-Disposition": `attachment; filename="${metadata.fileName}"`,
       "Content-Type": metadata.contentType ?? "application/octet-stream",
-      "Content-Length": fileResponse.headers.get("Content-Length")!,
+      "Content-Length": contentLength,
     };
     return new Response(decryptedResponse, { headers });
   } catch (error) {
